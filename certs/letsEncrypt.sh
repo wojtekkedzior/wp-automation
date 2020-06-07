@@ -19,8 +19,8 @@ certbot certonly \
             --logs-dir /opt/certbot/logs \
             --config-dir /opt/certbot/config \
             --work-dir /opt/certbot/work  \
-            --manual-auth-hook certs/authenticator.sh \
-            --manual-cleanup-hook certs/cleanup.sh \
+            --manual-auth-hook authenticator.sh \
+            --manual-cleanup-hook cleanup.sh \
             --manual-public-ip-logging-ok \
             --agree-tos  \
             --preferred-challenges dns \
