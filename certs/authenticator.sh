@@ -7,6 +7,9 @@ echo $CERTBOT_REMAINING_CHALLENGES
 echo $CERTBOT_ALL_DOMAINS
 echo $CERTBOT_AUTH_OUTPUT
 
+echo pwd
+ls
+
 python3 DNSChallenge.py -d $CERTBOT_DOMAIN  -c $CERTBOT_VALIDATION > file
 
 cat file
