@@ -1,4 +1,4 @@
-#!/bin/bash
+source /home/wojtek/.basheditor/remote-debugging-v1.sh localhost 33333 #BASHEDITOR-TMP-REMOTE-DEBUGGING-END|Origin line:#!/bin/bash
 
 while getopts sd:e: option
 do
@@ -31,9 +31,9 @@ echo "email: " $email
                #     python3 updateCertManager.py $domain && {
                             # Upload certificate to EC2
                             echo $AWS_SSH_KEY
-                            scp -oStrictHostKeyChecking=no -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/cert.pem  ec2-user@backend.$domain:
-                            scp -oStrictHostKeyChecking=no -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/fullchain.pem  ec2-user@backend.$domain:
-                            scp -oStrictHostKeyChecking=no -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/privkey.pem ec2-user@backend.$domain:
+                            scp -oStrictHostKeyChecking=no -v -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/cert.pem  ec2-user@backend.$domain:
+                            scp -oStrictHostKeyChecking=no -v -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/fullchain.pem  ec2-user@backend.$domain:
+                            scp -oStrictHostKeyChecking=no -v -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/privkey.pem ec2-user@backend.$domain:
                             
                             # Restart httpd
                             ssh -oStrictHostKeyChecking=no -i $AWS_SSH_KEY ec2-user@backend.$domain "sudo service httpd restart"
