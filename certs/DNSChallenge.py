@@ -66,7 +66,7 @@ class DNSChallenge(AWSAccount):
         
         while True:
             try:
-                dnsTxtRecord = dns.resolver.query(self._getChallengeURL(),"TXT").response.answer[0][-1].to_text()
+                dnsTxtRecord = dns.resolver.query(self._getChallengeURL(),"TXT").response.answer[0].to_text()
                 
                 if(("\"" + challenge +"\"") == dnsTxtRecord) :
                     print("Records match. Challenge: ", "\"" + challenge +"\"" , " dnsTXT: ", dnsTxtRecord)
