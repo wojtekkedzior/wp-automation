@@ -31,13 +31,13 @@ echo "email: " $email
                #     python3 updateCertManager.py $domain && {
                             # Upload certificate to EC2
                             echo $AWS_SSH_KEY
-                            scp  /opt/certbot/config/live/$domain/cert.pem  ec2-user@backend.$domain:
-                            scp -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/fullchain.pem  ec2-user@backend.$domain:
-                            scp -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/privkey.pem ec2-user@backend.$domain:
+                            scp -oStrictHostKeyChecking=no -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/cert.pem  ec2-user@backend.$domain:
+                            scp -oStrictHostKeyChecking=no -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/fullchain.pem  ec2-user@backend.$domain:
+                            scp -oStrictHostKeyChecking=no -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/privkey.pem ec2-user@backend.$domain:
                             
                             # Restart httpd
-                            ssh -i $AWS_SSH_KEY ec2-user@backend.$domain "sudo service httpd restart"
-                            ssh -i $AWS_SSH_KEY ec2-user@backend.$domain "sudo service httpd status"
+                            ssh -oStrictHostKeyChecking=no -i $AWS_SSH_KEY ec2-user@backend.$domain "sudo service httpd restart"
+                            ssh -oStrictHostKeyChecking=no -i $AWS_SSH_KEY ec2-user@backend.$domain "sudo service httpd status"
                   #  } || {
                      #   echo "Something went wrong"
                         #exit 1
