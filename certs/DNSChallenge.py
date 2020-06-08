@@ -85,7 +85,7 @@ class DNSChallenge(AWSAccount):
         print("TXT record contains: ", dnsTxtRecord, "Waiting for a minute to give ACME enough time to query the challenge and validate it.")    
         # The Challenge TXT record is there and resolved locally, so now need to wait for ACME to hit it.  We won't knot when that will happen so this is a best-guess value.
         # Without a timeout here ACME won't have enough time to validate the challenge and the request will thus fail.  The danger here is that we may end up hitting some timeouts.        
-        time.sleep(300)    
+        time.sleep(600)    
         
 
     def cleanup(self):
