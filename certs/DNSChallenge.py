@@ -65,9 +65,10 @@ class DNSChallenge(AWSAccount):
         self._requestToRoute53('UPSERT')
         
         while True:
+            print("trying to resolve query")
             try:
                 dnsTxtRecord = dns.resolver.query(self._getChallengeURL(),"TXT").response.answer[0].to_text()
-                print(dnsTxtRecord)
+                print("resolver output: ", dnsTxtRecord)
                 if(("\"" + challenge +"\"") == dnsTxtRecord) :
                     print("Records match. Challenge: ", "\"" + challenge +"\"" , " dnsTXT: ", dnsTxtRecord)
                     break
