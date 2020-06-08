@@ -72,8 +72,8 @@ class DNSChallenge(AWSAccount):
                     print("Records match. Challenge: ", "\"" + challenge +"\"" , " dnsTXT: ", dnsTxtRecord)
                     break
                 print("TXT record resolved, but does not have the expected value:. ", dnsTxtRecord)
-            except:
-                print("Waiting for the TXT record to resolve: ", self._getChallengeURL())
+            except someError:
+                print("Waiting for the TXT record to resolve: ", self._getChallengeURL(), " ", someError)
             
             time.sleep(5)
 
