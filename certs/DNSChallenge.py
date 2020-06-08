@@ -72,8 +72,12 @@ class DNSChallenge(AWSAccount):
                     print("Records match. Challenge: ", "\"" + challenge +"\"" , " dnsTXT: ", dnsTxtRecord)
                     break
                 print("TXT record resolved, but does not have the expected value:. ", dnsTxtRecord)
-            except (RuntimeError):
+            except dns.resolver.NXDOMAIN:
+                    print ("No such domain") 
+            except dns.resolver.Timeout:
                 print("Waiting for the TXT record to resolve: ", self._getChallengeURL(), " ", RuntimeError)
+            except dns.exception.DNSException:
+                print ("Unhandled exception") 
             
             time.sleep(5)
 
