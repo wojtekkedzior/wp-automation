@@ -31,7 +31,7 @@ echo "email: " $email
                #     python3 updateCertManager.py $domain && {
                             # Upload certificate to EC2
                             echo $AWS_SSH_KEY
-                            scp -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/cert.pem  ec2-user@backend.$domain:
+                            scp  /opt/certbot/config/live/$domain/cert.pem  ec2-user@backend.$domain:
                             scp -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/fullchain.pem  ec2-user@backend.$domain:
                             scp -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/privkey.pem ec2-user@backend.$domain:
                             
