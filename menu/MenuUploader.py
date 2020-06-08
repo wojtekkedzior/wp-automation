@@ -53,8 +53,8 @@ def addAttachmentToS3(message, session):
 def updateMenu(session):
     s3client = session.client("s3")
     
-    email_user = ""
-    email_pass = ""
+    email_user = os.environ["USERNAME"]
+    email_pass = os.environ["PASSWORD"]
  
     with MailBox('imap.gmail.com').login(email_user,email_pass, 'INBOX') as mailbox:
         for message in mailbox.fetch(limit=1, reverse=True):
@@ -83,15 +83,12 @@ def updateMenu(session):
                 sys.exit(1)
 
 def lambda_handler(event, context):
-    session = boto3.Session(profile_name="wpuser")
+    session = boto3.Session()
     updateMenu(session)
 
-    # TODO implement
     return {
         'statusCode': 200,
- #       'body': json.dumps('Hello from Lambda!')
     }
-    
     
 if __name__ == "__main__":
     session = boto3.Session(profile_name="wpuser")
