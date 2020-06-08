@@ -15,9 +15,9 @@ echo "email: " $email
 
 echo 2 | \
 certbot certonly \
-           --logs-dir /home/wojtek/Documents/certbot/logs \
-           --config-dir /home/wojtek/Documents/certbot/config \
-           --work-dir /home/wojtek/Documents/certbot/work  \
+           --logs-dir /opt/certbot/logs \
+           --config-dir /opt/certbot/config \
+           --work-dir /opt/certbot/work  \
            --manual-auth-hook ./authenticator.sh \
            --manual-cleanup-hook ./cleanup.sh \
            --manual-public-ip-logging-ok \
