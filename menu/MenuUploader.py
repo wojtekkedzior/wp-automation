@@ -49,6 +49,7 @@ def addAttachmentToS3(message, session):
     print(response)
     sys.exit(0)
 
+
 def updateMenu(session):
     s3client = session.client("s3")
     
@@ -81,6 +82,17 @@ def updateMenu(session):
                 print(f"'This shouldn't happen: {existingMenuDate}")
                 sys.exit(1)
 
+def lambda_handler(event, context):
+    session = boto3.Session(profile_name="wpuser")
+    updateMenu(session)
+
+    # TODO implement
+    return {
+        'statusCode': 200,
+ #       'body': json.dumps('Hello from Lambda!')
+    }
+    
+    
 if __name__ == "__main__":
     session = boto3.Session(profile_name="wpuser")
     updateMenu(session)
