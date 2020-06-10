@@ -15,7 +15,7 @@ MENU_FILE = "menu.pdf"
 def returnMessage(body, status=200):
     return {
         'statusCode': status,
-        'body': response,
+        'body': body,
     }
     
 def addAttachmentToS3(message, session):
