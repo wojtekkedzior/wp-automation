@@ -5,10 +5,8 @@ Created on Apr 13, 2020
 """
 import boto3
 import time
-import sys
-import argparse
-
 import os
+
 #https://github.com/ikvk/imap_tools
 from imap_tools import MailBox
 
@@ -25,7 +23,9 @@ def addAttachmentToS3(message, session):
     
     if(not message.attachments[0].filename.endswith(".pdf")):
         print("File not a pdf, so not publishing it")
-        sys.exit(1)
+        return {
+            'statusCode': 400,
+        }
 
     resp = s3client.put_object(
             Body=message.attachments[0].payload, Bucket=os.environ["BUCKET_NAME"], Key=MENU_FILE, 
@@ -47,7 +47,6 @@ def addAttachmentToS3(message, session):
     )
       
     print(response)
-    sys.exit(0)
 
 
 def updateMenu(session):
@@ -80,7 +79,9 @@ def updateMenu(session):
                 addAttachmentToS3(message, session)
             else:
                 print(f"'This shouldn't happen: {existingMenuDate}")
-                sys.exit(1)
+                return {
+                    'statusCode': 400,
+                }
 
 def lambda_handler(event, context):
     session = boto3.Session()
