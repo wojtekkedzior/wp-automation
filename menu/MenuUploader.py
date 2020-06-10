@@ -76,7 +76,7 @@ def updateMenu(session):
             existingMenuDate = resp['TagSet'][0]['Value']
             
             if(float(existingMenuDate) == message.date.timestamp()):
-                return "The current menu has been uploaded from this message."
+                return returnMessage("The current menu has been uploaded from this message.")
             elif(float(existingMenuDate) < message.date.timestamp()):
                 print("Email is newer so upload")
                 addAttachmentToS3(message, session)
