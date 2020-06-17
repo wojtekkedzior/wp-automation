@@ -1,4 +1,4 @@
-source /home/wojtek/.basheditor/remote-debugging-v1.sh localhost 33333 #BASHEDITOR-TMP-REMOTE-DEBUGGING-END|Origin line:#!/bin/bash
+#!/bin/bash
 
 while getopts sd:e: option
 do
