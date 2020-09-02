@@ -105,7 +105,7 @@ class DNSChallenge(AWSAccount):
         # Without a timeout here ACME won't have enough time to validate the challenge and the request will thus fail.  The danger here is that we may end up hitting some timeouts.        
         
         print("waiting...")
-        time.sleep(600)    
+        time.sleep(1860)    
         
 
     def cleanup(self):
