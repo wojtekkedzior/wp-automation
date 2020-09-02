@@ -65,21 +65,21 @@ class DNSChallenge(AWSAccount):
         self._requestToRoute53('UPSERT')
         
         while True:
-            try:
-                resp = self.route53Client.test_dns_answer(
-                       HostedZoneId=self._findHostedZone(),
-                       RecordName=self._getChallengeURL(),
-                       RecordType='TXT'               
-                    )
-                
-                print(resp)
-                
-                if (resp['ResponseCode'] == 'NOERROR'):
-                    break
-                
-            except Route53.Client.exceptions.NoSuchHostedZone:
-                  print("TXT record resolved, but does not have the expected value:. ", dnsTxtRecord)
+#             try:
+            resp = self.route53Client.test_dns_answer(
+                   HostedZoneId=self._findHostedZone(),
+                   RecordName=self._getChallengeURL(),
+                   RecordType='TXT'               
+                )
             
+            print(resp)
+            
+            if (resp['ResponseCode'] == 'NOERROR'):
+                break
+            
+#             except Route53.Client.exceptions.NoSuchHostedZone:
+#                   print("TXT record resolved, but does not have the expected value:. ", dnsTxtRecord)
+        
             time.sleep(5)
         
 #         while True:
