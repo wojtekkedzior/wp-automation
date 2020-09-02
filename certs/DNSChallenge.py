@@ -65,26 +65,46 @@ class DNSChallenge(AWSAccount):
         self._requestToRoute53('UPSERT')
         
         while True:
-            print("trying to resolve query")
             try:
-                dnsTxtRecord = dns.resolver.query(self._getChallengeURL(),"TXT").response.answer[0][0].to_text()
-                print("resolver output: ", dnsTxtRecord)
-                if(("\"" + challenge +"\"") == dnsTxtRecord) :
-                    print("Records match. Challenge: ", "\"" + challenge +"\"" , " dnsTXT: ", dnsTxtRecord)
+                resp = self.route53Client.test_dns_answer(
+                       HostedZoneId=self._findHostedZone(),
+                       RecordName=self._getChallengeURL(),
+                       ResourceType='TXT'               
+                    )
+                
+                print(resp)
+                
+                if (resp['ResponseCode'] == 'NOERROR'):
                     break
-                print("TXT record resolved, but does not have the expected value:. ", dnsTxtRecord)
-            except dns.resolver.NXDOMAIN:
-                    print ("No such domain") 
-            except dns.resolver.Timeout:
-                print("Waiting for the TXT record to resolve: ", self._getChallengeURL(), " ", RuntimeError)
-            except dns.exception.DNSException:
-                print ("Unhandled exception") 
+                
+            except Route53.Client.exceptions.NoSuchHostedZone:
+                  print("TXT record resolved, but does not have the expected value:. ", dnsTxtRecord)
             
             time.sleep(5)
+        
+#         while True:
+#             print("trying to resolve query")
+#             try:
+#                 dnsTxtRecord = dns.resolver.query(self._getChallengeURL(),"TXT").response.answer[0][0].to_text()
+#                 print("resolver output: ", dnsTxtRecord)
+#                 if(("\"" + challenge +"\"") == dnsTxtRecord) :
+#                     print("Records match. Challenge: ", "\"" + challenge +"\"" , " dnsTXT: ", dnsTxtRecord)
+#                     break
+#                 print("TXT record resolved, but does not have the expected value:. ", dnsTxtRecord)
+#             except dns.resolver.NXDOMAIN:
+#                     print ("No such domain") 
+#             except dns.resolver.Timeout:
+#                 print("Waiting for the TXT record to resolve: ", self._getChallengeURL(), " ", RuntimeError)
+#             except dns.exception.DNSException:
+#                 print ("Unhandled exception") 
+#             
+#             time.sleep(5)
 
-        print("TXT record contains: ", dnsTxtRecord, "Waiting for a minute (5 to be exact) to give ACME enough time to query the challenge and validate it.")    
+#         print("TXT record contains: ", dnsTxtRecord, "Waiting for a minute (5 to be exact) to give ACME enough time to query the challenge and validate it.")    
         # The Challenge TXT record is there and resolved locally, so now need to wait for ACME to hit it.  We won't knot when that will happen so this is a best-guess value.
         # Without a timeout here ACME won't have enough time to validate the challenge and the request will thus fail.  The danger here is that we may end up hitting some timeouts.        
+        
+        print("waiting...")
         time.sleep(600)    
         
 
