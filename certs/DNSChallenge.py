@@ -69,7 +69,7 @@ class DNSChallenge(AWSAccount):
                 resp = self.route53Client.test_dns_answer(
                        HostedZoneId=self._findHostedZone(),
                        RecordName=self._getChallengeURL(),
-                       ResourceType='TXT'               
+                       RecordType='TXT'               
                     )
                 
                 print(resp)
