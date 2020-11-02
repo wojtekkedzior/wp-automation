@@ -15,17 +15,17 @@ echo "email: " $email
 
 echo 2 | \
 certbot certonly \
-           --logs-dir /opt/certbot/logs \
            --config-dir /opt/certbot/config \
-           --work-dir /opt/certbot/work  \
-           --manual-auth-hook ./authenticator.sh \
+           --logs-dir     /opt/certbot/logs \
+           --work-dir   /opt/certbot/work  \
+           --agree-tos  \
+           --domains "*.$domain, $domain" \
+           -m $email \
+           --manual \
+           --manual-auth-hook       ./authenticator.sh \
            --manual-cleanup-hook ./cleanup.sh \
            --manual-public-ip-logging-ok \
-           --agree-tos  \
-           --preferred-challenges dns \
-           --manual \
-           -m $email \
-           --domains "*.$domain, $domain" && {
+           --preferred-challenges dns && {
                 # Create or update certificate in ACM 
                 python3 updateCertManager.py $domain && {
                        # Upload certificate to EC2
