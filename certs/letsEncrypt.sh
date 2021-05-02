@@ -13,19 +13,19 @@ echo "skipcert: " $skipCert_flag
 echo "domain: " $domain
 echo "email: " $email
 
-echo 2 | \
-certbot certonly \
-           --config-dir /opt/certbot/config \
-           --logs-dir     /opt/certbot/logs \
-           --work-dir   /opt/certbot/work  \
-           --agree-tos  \
-           --domains "*.$domain, $domain" \
-           -m $email \
-           --manual \
-           --manual-auth-hook       ./authenticator.sh \
-           --manual-cleanup-hook ./cleanup.sh \
-           --manual-public-ip-logging-ok \
-           --preferred-challenges dns && {
+#echo 2 | \
+#certbot certonly \
+        #    --config-dir /opt/certbot/config \
+        #    --logs-dir     /opt/certbot/logs \
+        #    --work-dir   /opt/certbot/work  \
+        #    --agree-tos  \
+        #    --domains "*.$domain, $domain" \
+        #    -m $email \
+        #    --manual \
+        #    --manual-auth-hook       ./authenticator.sh \
+        #    --manual-cleanup-hook ./cleanup.sh \
+        #    --manual-public-ip-logging-ok \
+        #    --preferred-challenges dns && {
                 # Create or update certificate in ACM 
                 python3 updateCertManager.py $domain && {
                        # Upload certificate to EC2
@@ -41,10 +41,10 @@ certbot certonly \
                    echo "Something went wrong"
                    exit 1
                 }
-        } || {
-           echo "Something went wrong"
-           exit 1
-        }
+        # } || {
+        #    echo "Something went wrong"
+        #    exit 1
+        # }
             
 #TODO have to do this before we do anything!
 #  sudo systemd-resolve --flush-caches

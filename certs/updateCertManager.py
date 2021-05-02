@@ -14,6 +14,8 @@ class UpdateCertManager(AWSAccount):
         resp = acmClient.list_certificates(
             CertificateStatuses=["ISSUED",],
         )
+
+        print("resp: ", resp)
         
         print("Found: ", len(resp["CertificateSummaryList"]),  " certificates")
         domain = sys.argv[1]
@@ -21,9 +23,10 @@ class UpdateCertManager(AWSAccount):
         
         certArn = None
         for cert in resp["CertificateSummaryList"]:
+            print("cert:", cert)
             if( cert["DomainName"] == ("*." + domain)):
                 certArn = cert["CertificateArn"]
-                break;
+                break
         
         if(certArn is None):
             print("No certificate found")
