@@ -12,11 +12,9 @@ class UpdateCertManager(AWSAccount):
         acmClient =self.getSession().client("acm")
     
         resp = acmClient.list_certificates(
-            CertificateStatuses=["ISSUED",],
+            CertificateStatuses=["ISSUED", "EXPIRED"],
         )
 
-        print("resp: ", resp)
-        
         print("Found: ", len(resp["CertificateSummaryList"]),  " certificates")
         domain = sys.argv[1]
         print("Adding *. and Looking for: ", domain)
