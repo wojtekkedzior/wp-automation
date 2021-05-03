@@ -14,7 +14,7 @@ echo "domain: " $domain
 echo "email: " $email
 
 
-if [[ $skipCert_flag == false ]] ; then
+if [[ -z $skipCert_flag || $skipCert_flag == false ]] ; then
     echo 2 | \
         certbot certonly \
             --config-dir /opt/certbot/config \
