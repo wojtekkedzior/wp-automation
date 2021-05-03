@@ -21,7 +21,6 @@ class UpdateCertManager(AWSAccount):
         
         certArn = None
         for cert in resp["CertificateSummaryList"]:
-            print("cert:", cert)
             if( cert["DomainName"] == ("*." + domain)):
                 certArn = cert["CertificateArn"]
                 break
@@ -30,7 +29,7 @@ class UpdateCertManager(AWSAccount):
             print("No certificate found")
             exit(1)
             
-        print(certArn)   
+        print("Certificate ARN: ", certArn)   
         
         with open('/opt/certbot/config/live/'+domain+'/cert.pem' ) as file:
             publicPem = file.read()
