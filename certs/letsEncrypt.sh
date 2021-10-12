@@ -37,9 +37,9 @@ fi
 python3 updateCertManager.py $domain && {
     # Upload certificate to EC2
     echo "Start copying keys..."
-    scp -oStrictHostKeyChecking=no  -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/cert.pem  ec2-user@backend.$domain:$domain
-    scp -oStrictHostKeyChecking=no  -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/fullchain.pem  ec2-user@backend.$domain:$domain
-    scp -oStrictHostKeyChecking=no  -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/privkey.pem ec2-user@backend.$domain:$domain
+    scp -oStrictHostKeyChecking=no  -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/cert.pem  ec2-user@backend.$domain:
+    scp -oStrictHostKeyChecking=no  -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/fullchain.pem  ec2-user@backend.$domain:
+    scp -oStrictHostKeyChecking=no  -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/privkey.pem ec2-user@backend.$domain: 
     echo "Finished copying keys."                        
     # Restart httpd
     ssh -oStrictHostKeyChecking=no -i $AWS_SSH_KEY ec2-user@backend.$domain "sudo service httpd restart"
