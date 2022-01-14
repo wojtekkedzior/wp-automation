@@ -34,7 +34,6 @@ class DNSChallenge(AWSAccount):
         return "_acme-challenge." + domain
     
     def _requestToRoute53(self, action):
-        print("Setting a challenge value: ", challenge)
         
         resp = self.route53Client.change_resource_record_sets(
                HostedZoneId=self._findHostedZone(),
@@ -46,8 +45,6 @@ class DNSChallenge(AWSAccount):
                             'ResourceRecordSet': {
                                 'Name': self._getChallengeURL(),
                                 'Type': 'TXT',
-                                'SetIdentifier': 'string',
-                                'Weight': 1,
                                 'TTL': 1,
                                 'ResourceRecords': [
                                     {
@@ -59,7 +56,6 @@ class DNSChallenge(AWSAccount):
                     ]
                 }
             )
-
         
     def handleChallenge(self):
         self._requestToRoute53('UPSERT')
@@ -70,9 +66,7 @@ class DNSChallenge(AWSAccount):
                        HostedZoneId=self._findHostedZone(),
                        RecordName=self._getChallengeURL(),
                        RecordType='TXT'               
-                    )
-                
-                print(resp)
+                    ) 
                 
                 if (resp['ResponseCode'] == 'NOERROR' and "\"" + challenge +"\"" in resp['RecordData']):
                     break
@@ -82,31 +76,8 @@ class DNSChallenge(AWSAccount):
             
             time.sleep(5)
         
-#         while True:
-#             print("trying to resolve query")
-#             try:
-#                 dnsTxtRecord = dns.resolver.query(self._getChallengeURL(),"TXT").response.answer[0][0].to_text()
-#                 print("resolver output: ", dnsTxtRecord)
-#                 if(("\"" + challenge +"\"") == dnsTxtRecord) :
-#                     print("Records match. Challenge: ", "\"" + challenge +"\"" , " dnsTXT: ", dnsTxtRecord)
-#                     break
-#                 print("TXT record resolved, but does not have the expected value:. ", dnsTxtRecord)
-#             except dns.resolver.NXDOMAIN:
-#                     print ("No such domain") 
-#             except dns.resolver.Timeout:
-#                 print("Waiting for the TXT record to resolve: ", self._getChallengeURL(), " ", RuntimeError)
-#             except dns.exception.DNSException:
-#                 print ("Unhandled exception") 
-#             
-#             time.sleep(5)
-
-#         print("TXT record contains: ", dnsTxtRecord, "Waiting for a minute (5 to be exact) to give ACME enough time to query the challenge and validate it.")    
-        # The Challenge TXT record is there and resolved locally, so now need to wait for ACME to hit it.  We won't knot when that will happen so this is a best-guess value.
-        # Without a timeout here ACME won't have enough time to validate the challenge and the request will thus fail.  The danger here is that we may end up hitting some timeouts.        
-        
-        print("waiting...")
-        time.sleep(1860)    
-        
+        print("Route53 is resolving correctly. waiting 2 minutes...")
+        time.sleep(120)
 
     def cleanup(self):
         self._requestToRoute53('DELETE')
@@ -130,16 +101,15 @@ if __name__ == "__main__":
 
     # This is a limitation of Let's encrypt that it  does not include the root domain when asking for a wild card certificate.  This means we need to request two domains,
     #  but the challenge TXT record is set on the root.  
-    if (args.d[0] == "*") :
-        domain = args.d[2:]
-    else :
-        domain = args.d
+    # if (args.d[0] == "*") :
+    #     domain = args.d[2:]
+    # else :
+    #     domain = args.d
+
+    domain = "*."+args.d
         
     challenge = args.c;
-
     dnsChallenge = DNSChallenge(domain, challenge)
-#    debugging 
-#     dnsChallenge.handleChallenge()
     
     if(args.cleanup) :
         dnsChallenge.cleanup()
