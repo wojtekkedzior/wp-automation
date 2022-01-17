@@ -120,3 +120,10 @@ if __name__ == "__main__":
         dnsChallenge.cleanup()
     else:
         dnsChallenge.handleChallenge()
+        
+# Note to self: --dry-run is broken.  It always times out even if you use lots of delays, where as the main prod end-point is happy with just a few 30 seconds delays.
+# I even managed to get multiple certs (for different domains) without any specific delays, just the one where I'm polling Route53.  Although having to delays in
+# when using the main end-point can also result in errors. I can handle 2 minutes per certificate as long as they work!
+# i'm also not sure about the usage of --domains "$domain,*.$domain" because this causes two seperate challanges but they are on the same hosted Zone.  In the 'prod'
+# endpoint  when u use -d twice, then the same challange is placed on the one hosted zone and therefore resolved really quickly. Something about certbot is weird
+        
