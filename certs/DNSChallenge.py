@@ -13,11 +13,13 @@ class DNSChallenge(AWSAccount):
 
     domain = ""
     challenge=""
+    delay = None
     route53Client = None
     
-    def __init__(self, domain, challenge):
+    def __init__(self, domain, challenge, delay):
         self.domain = domain
         self.challenge = challenge
+        self.delay = delay
         self.route53Client = self.getSession().client("route53")
     
     def _findHostedZone(self):
@@ -34,7 +36,6 @@ class DNSChallenge(AWSAccount):
         return "_acme-challenge." + domain
     
     def _requestToRoute53(self, action):
-        
         resp = self.route53Client.change_resource_record_sets(
                HostedZoneId=self._findHostedZone(),
                 ChangeBatch={
@@ -58,8 +59,9 @@ class DNSChallenge(AWSAccount):
             )
         
     def handleChallenge(self):
+        print("handling ", challenge, "for: ", domain)
+        time.sleep(10)
         self._requestToRoute53('UPSERT')
-        
         while True:
             try:
                 resp = self.route53Client.test_dns_answer(
@@ -68,20 +70,24 @@ class DNSChallenge(AWSAccount):
                        RecordType='TXT'               
                     ) 
                 
+                print("TXT record resolved to: ", resp['RecordData'])
                 if (resp['ResponseCode'] == 'NOERROR' and "\"" + challenge +"\"" in resp['RecordData']):
                     break
                 
             except self.route53Client.exceptions.NoSuchHostedZone:
                   print("TXT record resolved, but does not have the expected value:. ", dnsTxtRecord)
-            
+
+            print("sleeping...")
             time.sleep(5)
         
-        print("Route53 is resolving correctly. waiting 2 minutes...")
-        time.sleep(120)
+        print("Route53 is resolving correctly. waiting ", delay)
+        time.sleep(10)
+        print("Wait finished")
 
     def cleanup(self):
+        time.sleep(delay)
         self._requestToRoute53('DELETE')
-
+        time.sleep(delay)
             
 def parseArgs() :
     description = ""
@@ -91,7 +97,6 @@ def parseArgs() :
     parser.add_argument( "-d", metavar="Domain", help="The domain", required=True,)
     parser.add_argument( "-c", metavar="Challenge", help="The Challenge", required=True,)
     parser.add_argument( "--cleanup", action="store_true", help="Weather to attempt to clean up the challenge. ",)
-    parser.add_argument('--skip-certificates', action="store_true", help='Skip creation of certificates and just upload existing ones')
 
     global args
     args = parser.parse_args()       
@@ -99,17 +104,17 @@ def parseArgs() :
 if __name__ == "__main__":
     parseArgs()
 
-    # This is a limitation of Let's encrypt that it  does not include the root domain when asking for a wild card certificate.  This means we need to request two domains,
-    #  but the challenge TXT record is set on the root.  
-    # if (args.d[0] == "*") :
-    #     domain = args.d[2:]
-    # else :
-    #     domain = args.d
+    domain = args.d
+    challenge = args.c
 
-    domain = "*."+args.d
-        
-    challenge = args.c;
-    dnsChallenge = DNSChallenge(domain, challenge)
+    # The lookup with a .cz domain needs more time between challanges.
+    if (domain[-3:] == ".cz") :
+        delay = 600
+    else:
+        delay = 30
+
+    print("starting chellenge ", challenge, "for: ", domain)
+    dnsChallenge = DNSChallenge(domain, challenge, delay)
     
     if(args.cleanup) :
         dnsChallenge.cleanup()

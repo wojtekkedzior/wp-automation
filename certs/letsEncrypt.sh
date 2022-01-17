@@ -20,7 +20,9 @@ if [[ -z $skipCert_flag ]] ; then
             --logs-dir /opt/certbot/logs \
             --work-dir /opt/certbot/work  \
             --agree-tos  \
-            --domains "*.$domain" \
+            --cert-name "$domain" \
+            -d "$domain" \
+            -d "*.$domain" \
             -m $email \
             --manual \
             --manual-auth-hook ./authenticator.sh \
@@ -34,20 +36,28 @@ if [[ -z $skipCert_flag ]] ; then
             }
 fi
 
-python3 updateCertManager.py $domain && {
-    # Upload certificate to EC2
-     echo "Start copying keys..."
-     scp -oStrictHostKeyChecking=no  -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/cert.pem  ec2-user@backend.$domain:$domain
-     scp -oStrictHostKeyChecking=no  -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/fullchain.pem  ec2-user@backend.$domain:$domain
-     scp -oStrictHostKeyChecking=no  -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/privkey.pem ec2-user@backend.$domain:$domain
-    echo "Finished copying keys."                        
-    # Restart httpd
-     ssh -oStrictHostKeyChecking=no -i $AWS_SSH_KEY ec2-user@backend.$domain "sudo service httpd restart"
-     ssh -oStrictHostKeyChecking=no -i $AWS_SSH_KEY ec2-user@backend.$domain "sudo service httpd status"
-} || {
-    echo "Something went wrong"
-    exit 1
-}
+echo "Start copying keys..."
+scp -oStrictHostKeyChecking=no  -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/cert.pem  ec2-user@backend.$domain:$domain
+scp -oStrictHostKeyChecking=no  -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/fullchain.pem  ec2-user@backend.$domain:$domain
+scp -oStrictHostKeyChecking=no  -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/privkey.pem ec2-user@backend.$domain:$domain
+echo "Finished copying keys."                        
+ssh -oStrictHostKeyChecking=no -i $AWS_SSH_KEY ec2-user@backend.$domain "sudo service httpd restart"
+ssh -oStrictHostKeyChecking=no -i $AWS_SSH_KEY ec2-user@backend.$domain "sudo service httpd status"
+
+# python3 updateCertManager.py $domain && {
+#     # Upload certificate to EC2
+#      echo "Start copying keys..."
+#      scp -oStrictHostKeyChecking=no  -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/cert.pem  ec2-user@backend.$domain:$domain
+#      scp -oStrictHostKeyChecking=no  -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/fullchain.pem  ec2-user@backend.$domain:$domain
+#      scp -oStrictHostKeyChecking=no  -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/privkey.pem ec2-user@backend.$domain:$domain
+#     echo "Finished copying keys."                        
+#     # Restart httpd
+#      ssh -oStrictHostKeyChecking=no -i $AWS_SSH_KEY ec2-user@backend.$domain "sudo service httpd restart"
+#      ssh -oStrictHostKeyChecking=no -i $AWS_SSH_KEY ec2-user@backend.$domain "sudo service httpd status"
+# } || {
+#     echo "Something went wrong"
+#     exit 1
+# }
             
 #TODO have to do this before we do anything!
 #  sudo systemd-resolve --flush-caches
