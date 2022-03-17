@@ -111,7 +111,7 @@ if __name__ == "__main__":
     if (domain[-3:] == ".cz") :
         delay = 600
     else:
-        delay = 30
+        delay = 60
 
     print("starting chellenge ", challenge, "for: ", domain)
     dnsChallenge = DNSChallenge(domain, challenge, delay)

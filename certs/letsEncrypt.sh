@@ -25,8 +25,8 @@ if [[ -z $skipCert_flag ]] ; then
             -d "*.$domain" \
             -m $email \
             --manual \
-            --manual-auth-hook ./authenticator.sh \
-            --manual-cleanup-hook ./cleanup.sh \
+            --manual-auth-hook /home/wojtek/git/wp-automation/certs/authenticator.sh \
+            --manual-cleanup-hook /home/wojtek/git/wp-automation/certs/cleanup.sh \
             --manual-public-ip-logging-ok \
             --preferred-challenges dns && {
                 echo "cert created"
@@ -37,12 +37,13 @@ if [[ -z $skipCert_flag ]] ; then
 fi
 
 echo "Start copying keys..."
-scp -oStrictHostKeyChecking=no  -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/cert.pem  ec2-user@backend.$domain:$domain
+scp -oStrictHostKeyChecking=no -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/cert.pem  ec2-user@backend.$domain:$domain
 scp -oStrictHostKeyChecking=no  -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/fullchain.pem  ec2-user@backend.$domain:$domain
 scp -oStrictHostKeyChecking=no  -i $AWS_SSH_KEY /opt/certbot/config/live/$domain/privkey.pem ec2-user@backend.$domain:$domain
 echo "Finished copying keys."                        
 ssh -oStrictHostKeyChecking=no -i $AWS_SSH_KEY ec2-user@backend.$domain "sudo service httpd restart"
 ssh -oStrictHostKeyChecking=no -i $AWS_SSH_KEY ec2-user@backend.$domain "sudo service httpd status"
+echo "Finished restarting"
 
 # python3 updateCertManager.py $domain && {
 #     # Upload certificate to EC2
