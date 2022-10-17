@@ -22,10 +22,9 @@ def lambda_handler(event, context):
     for part in b.walk():
         ctype = part.get_content_type()
         if ctype == 'application/pdf':
-            print("exec1")
             body = part.get_payload(decode=True)  # decode
             break
 
-    o = s3.Object("erawan-menu", key+'.pdf')
+    o = s3.Object("erawan-menu", key+'.pdf') # TODO this needs to be renamed to menu.pdf
     o.put(Body=body)
     return "yay"
