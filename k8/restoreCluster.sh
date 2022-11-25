@@ -80,7 +80,8 @@ kubectl create -f  local-volume-provisioner.generated.yaml
 #curl https://docs.projectcalico.org/manifests/calico-typha.yaml -o calico.yaml
 #k apply -f calico.yaml 
 
-sleep 60
+#It takes a while for the local-volume-provisioner to find all the local volumes
+sleep 20
 
 #kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/baremetal/deploy.yaml
 #istio 
@@ -98,6 +99,13 @@ sleep 60
 
 #install pulsar 2.9.2
 helm upgrade --install pulsar apache/pulsar --values=new-values.yaml --timeout 10m --set initialize=true
+
+# update the HA proxy with the ClusterIPs
+sleep 10
+sudo sed -i "/setenv GRAFANA_IP/c\\\tsetenv GRAFANA_IP $(kubectl get svc pulsar-grafana -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
+sudo sed -i "/setenv PROXY_IP/c\\\tsetenv PROXY_IP $(kubectl get svc pulsar-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
+
+sudo service haproxy restart
 
 #kubectl  exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants create wojtekt"
 #kubectl  exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces create wojtekt/wojtekns"
