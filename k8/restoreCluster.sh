@@ -93,8 +93,8 @@ kubectl apply -f node-exporter/kubernetes-node-exporter/
 # I had to download this file and update the pod selector beucase the damnn thing was trying to deploy on the cp which results in evictions
 kubectl apply -f tigera-operator.yaml
 
+kubectl create -f https://docs.projectcalico.org/archive/v3.15/manifests/tigera-operator.yaml
 #kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
-
 kubectl apply -f custom-resources.yaml
 
 # Update the workers
@@ -130,9 +130,31 @@ sleep 10
 #kubectl label namespace istio-ingress istio-injection=enabled
 #helm install istio-ingress istio/gateway -n istio-ingress --wait
 
+<<<<<<< HEAD
 # install pulsar
 #pulsar210
 pulsar292
+=======
+#install pulsar 2.9.2
+helm upgrade --install pulsar apache/pulsar --values=new-values.yaml --timeout 10m --set initialize=true
+>>>>>>> 3a76b1f3535a58e4c64385891725dcddbc5d1fb8
+
+# Update the HA proxy with the ClusterIPs
+sleep 10
+sudo sed -i "/setenv GRAFANA_IP/c\\\tsetenv GRAFANA_IP $(kubectl get svc pulsar-grafana -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
+sudo sed -i "/setenv PROXY_IP/c\\\tsetenv PROXY_IP $(kubectl get svc pulsar-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
+sudo service haproxy restart
+
+# Enable node metrics in the pulasr grafana
+kubectl get configmap pulsar-prometheus -o yaml > temp-prom-cf.yaml
+sed -i '7i \    \- job_name: '\''nodes'\''' temp-prom-cf.yaml
+sed -i '8i \      \static_configs:' temp-prom-cf.yaml
+sed -i "9i \      \- targets: ['$(kubectl get svc node-exporter -o json | jq -r '.spec.clusterIP'):9100']" temp-prom-cf.yaml
+kubectl apply -f temp-prom-cf.yaml
+rm temp-prom-cf.yaml
+kubectl delete pod --selector=component=prometheus
+
+
 
 #kubectl  exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants create wojtekt"
 #kubectl  exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces create wojtekt/wojtekns"
