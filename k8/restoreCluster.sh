@@ -14,10 +14,12 @@ function startWorker() {
     echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk1"
     echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk2"
     echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk3"
+#    echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk4"
 
     # tmpfs
     echo w | ssh -tt "w@${host}" "sudo mount -t tmpfs -o rw,size=2G tmpfs /mnt/fast-disks/disk2"
     echo w | ssh -tt "w@${host}" "sudo mount -t tmpfs -o rw,size=2G tmpfs /mnt/fast-disks/disk3"
+#    echo w | ssh -tt "w@${host}" "sudo mount -t tmpfs -o rw,size=2G tmpfs /mnt/fast-disks/disk4"
 
     # normal (ext4) volumes 
     echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdb"
@@ -51,9 +53,9 @@ function pulsar292() {
 }
 
 function pulsar210() {
-    echo "Installing pulsar 2.10"	
-    helm upgrade --install prometheus  prometheus-community/kube-prometheus-stack 
-    
+    echo "Installing pulsar 2.10"       
+    helm upgrade --install prometheus  prometheus-community/kube-prometheus-stack
+
     helm upgrade --install pulsar apache/pulsar --values=210values.yaml --timeout 10m --set initialize=true --version=3.0.0
 
     #add charts https://github.com/apache/pulsar-helm-chart
@@ -65,6 +67,14 @@ function pulsar210() {
 
 }
 
+function hazelcast() {
+    #helm upgrade --install my-release hazelcast/hazelcast  --set cluster.memberCount=3
+    helm upgrade --install my-release hazelcast/hazelcast -f hazelcast-values.yaml
+
+    sleep 5
+    sudo sed -i "/setenv HAZELCAST_IP/c\\\tsetenv HAZELCAST_IP $(kubectl get svc my-release-hazelcast -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
+    sudo service haproxy restart
+}
 
 yes | sudo kubeadm reset
 sudo rm -R /etc/cni/net.d
@@ -92,8 +102,6 @@ kubectl apply -f node-exporter/kubernetes-node-exporter/
 #kubectl create -f https://docs.projectcalico.org/archive/v3.15/manifests/tigera-operator.yaml
 # I had to download this file and update the pod selector beucase the damnn thing was trying to deploy on the cp which results in evictions
 kubectl apply -f tigera-operator.yaml
-
-kubectl create -f https://docs.projectcalico.org/archive/v3.15/manifests/tigera-operator.yaml
 #kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
 kubectl apply -f custom-resources.yaml
 
@@ -106,14 +114,7 @@ startWorker 192.168.122.67 # worker-4-large
 #install local volume provisioner
 kubectl create -f  local-volume-provisioner.generated.yaml
 
-#helm upgrade --install my-release hazelcast/hazelcast  --set cluster.memberCount=3
-helm upgrade --install my-release hazelcast/hazelcast -f hazelcast-values.yaml
-
-sleep 5
-sudo sed -i "/setenv HAZELCAST_IP/c\\\tsetenv HAZELCAST_IP $(kubectl get svc my-release-hazelcast -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
-sudo service haproxy restart
-
-#after a PC restart you need to add callido
+#after a PC restart you need to add callico
 #curl https://docs.projectcalico.org/manifests/calico-typha.yaml -o calico.yaml
 #k apply -f calico.yaml 
 
@@ -130,36 +131,10 @@ sleep 10
 #kubectl label namespace istio-ingress istio-injection=enabled
 #helm install istio-ingress istio/gateway -n istio-ingress --wait
 
-<<<<<<< HEAD
 # install pulsar
 #pulsar210
 pulsar292
-=======
-#install pulsar 2.9.2
-helm upgrade --install pulsar apache/pulsar --values=new-values.yaml --timeout 10m --set initialize=true
->>>>>>> 3a76b1f3535a58e4c64385891725dcddbc5d1fb8
 
-# Update the HA proxy with the ClusterIPs
-sleep 10
-sudo sed -i "/setenv GRAFANA_IP/c\\\tsetenv GRAFANA_IP $(kubectl get svc pulsar-grafana -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
-sudo sed -i "/setenv PROXY_IP/c\\\tsetenv PROXY_IP $(kubectl get svc pulsar-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
-sudo service haproxy restart
+sleep 3
 
-# Enable node metrics in the pulasr grafana
-kubectl get configmap pulsar-prometheus -o yaml > temp-prom-cf.yaml
-sed -i '7i \    \- job_name: '\''nodes'\''' temp-prom-cf.yaml
-sed -i '8i \      \static_configs:' temp-prom-cf.yaml
-sed -i "9i \      \- targets: ['$(kubectl get svc node-exporter -o json | jq -r '.spec.clusterIP'):9100']" temp-prom-cf.yaml
-kubectl apply -f temp-prom-cf.yaml
-rm temp-prom-cf.yaml
-kubectl delete pod --selector=component=prometheus
-
-
-
-#kubectl  exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants create wojtekt"
-#kubectl  exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces create wojtekt/wojtekns"
-#kubectl  exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/wojtektopic -p 1"
-#kubectl  exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-perf produce persistent://wojtekt/wojtekns/wojtektopic --rate 5000 --size 5120 --test-duration 15"
-
-#/pulsar/bin/pulsar-perf produce persistent://wojtekt/wojtekns/wojtektopic --rate 30000 --size 65536
-#/pulsar/bin/pulsar-perf consume persistent://wojtekt/wojtekns/wojtektopic
+hazelcast
