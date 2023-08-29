@@ -53,9 +53,9 @@ function pulsar292() {
 }
 
 function pulsar210() {
-    echo "Installing pulsar 2.10"       
-    helm upgrade --install prometheus  prometheus-community/kube-prometheus-stack
-
+    echo "Installing pulsar 2.10"	
+    helm upgrade --install prometheus  prometheus-community/kube-prometheus-stack 
+    
     helm upgrade --install pulsar apache/pulsar --values=210values.yaml --timeout 10m --set initialize=true --version=3.0.0
 
     #add charts https://github.com/apache/pulsar-helm-chart
@@ -63,8 +63,6 @@ function pulsar210() {
 
     sudo sed -i "/setenv GRAFANA_IP/c\\\tsetenv GRAFANA_IP $(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
     sudo sed -i "/setenv PROXY_IP/c\\\tsetenv PROXY_IP $(kubectl get svc pulsar-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
-    sudo service haproxy restart
-
 }
 
 function hazelcast() {
@@ -73,7 +71,6 @@ function hazelcast() {
 
     sleep 5
     sudo sed -i "/setenv HAZELCAST_IP/c\\\tsetenv HAZELCAST_IP $(kubectl get svc my-release-hazelcast -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
-    sudo service haproxy restart
 }
 
 yes | sudo kubeadm reset
@@ -138,3 +135,5 @@ pulsar292
 sleep 3
 
 hazelcast
+
+sudo service haproxy restart
