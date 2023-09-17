@@ -1,0 +1,131 @@
+## Pulsar: Broker cluster
+## templates/broker-statefulset.yaml
+##
+broker:
+  # use a component name that matches your grafana configuration
+  # so the metrics are correctly rendered in grafana dashboard
+  component: broker
+  replicaCount: 2
+  # If using Prometheus-Operator enable this PodMonitor to discover broker scrape targets
+  # Prometheus-Operator does not add scrape targets based on k8s annotations
+  podMonitor:
+    enabled: false
+    interval: 10s
+    scrapeTimeout: 10s
+  # True includes annotation for statefulset that contains hash of corresponding configmap, which will cause pods to restart on configmap change
+  restartPodsOnConfigMapChange: false
+  ports:
+    http: 8080
+    https: 8443
+    pulsar: 6650
+    pulsarssl: 6651
+  nodeSelector:
+    # eks.amazonaws.com/nodegroup: brokers
+    # cloud.google.com/gke-nodepool: default-pool
+  probe:
+    liveness:
+      enabled: true
+      failureThreshold: 10
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+    readiness:
+      enabled: true
+      failureThreshold: 10
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+    startup:
+      enabled: false
+      failureThreshold: 30
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      timeoutSeconds: 5
+  affinity:
+    anti_affinity: false
+    type: preferredDuringSchedulingIgnoredDuringExecution
+  annotations: {}
+  tolerations: []
+#  tolerations:
+#    - key: "key1"
+#      operator: "Equal"
+#      value: "broker"
+#      effect: "NoSchedule"
+#    - key: "key2"
+#      operator: "Equal"
+#      value: "broker"
+#      effect: "NoExecute"
+  gracePeriod: 30
+  resources:
+    requests:
+      memory: 3500Mi
+      cpu: 1.5 
+  extraVolumes: []
+  extraVolumeMounts: []
+  ## Broker configmap
+  ## templates/broker-configmap.yaml
+  ##
+  configData:
+    PULSAR_MEM: >
+      -Xms100m -Xmx300m -XX:MaxDirectMemorySize=3200m
+    PULSAR_GC: >
+      -XX:+UseG1GC
+      -XX:MaxGCPauseMillis=10
+      -Dio.netty.leakDetectionLevel=disabled
+      -Dio.netty.recycler.linkCapacity=1024
+      -XX:+ParallelRefProcEnabled
+      -XX:+UnlockExperimentalVMOptions
+      -XX:+DoEscapeAnalysis
+      -XX:ParallelGCThreads=4
+      -XX:ConcGCThreads=4
+      -XX:G1NewSizePercent=50
+      -XX:+DisableExplicitGC
+      -XX:-ResizePLAB
+      -XX:+ExitOnOutOfMemoryError
+      -XX:+PerfDisableSharedMem
+    managedLedgerDefaultEnsembleSize: "2"
+    managedLedgerDefaultWriteQuorum: "1"
+    managedLedgerDefaultAckQuorum: "1"
+    managedLedgerMaxLedgerRolloverTimeMinutes: "3"
+    managedLedgerMinLedgerRolloverTimeMinutes: "1"
+    managedLedgerCursorRolloverTimeInSeconds: "60"
+#    systemTopicEnabled: "true"
+#    topicLevelPoliciesEnabled: "true"
+    bookkeeperNumberOfChannelsPerBookie: "32"
+    loadBalancerAutoBundleSplitEnabled: "true"
+    bookkeeperClientTimeoutInSeconds: "180"
+    #loadBalancerResourceQuotaUpdateIntervalMinutes: "2"
+    #    loadBalancerNamespaceBundleMaxTopics: "5"
+    #    loadBalancerBrokerMaxTopics: "20"
+    # loadBalancerSheddingIntervalMinutes: "1"
+    #loadBalancerSheddingGracePeriodMinutes: "2"
+    #loadBalancerReportUpdateThresholdPercentage: "1"
+    #loadBalancerReportUpdateMaxIntervalMinutes: "1"
+    #loadBalancerResourceQuotaUpdateIntervalMinutes: "1"
+      # loadBalancerNamespaceBundleMaxMsgRate: "100"
+      #loadBalancerSheddingIntervalMinutes: "2"
+      #loadBalancerSheddingEnabled: "true"
+      #loadManagerClassName: "org.apache.pulsar.broker.loadbalance.impl.ModularLoadManagerImpl"  
+      #loadBalancerLoadSheddingStrategy: "org.apache.pulsar.broker.loadbalance.impl.ThresholdShedder"
+      #loadBalancerBrokerThresholdShedderPercentage: "10"
+      #loadBalancerBundleUnloadMinThroughputThreshold: "10"
+      #loadBalancerBandwithOutResourceWeight: "1"
+      #loadBalancerBandwithInResourceWeight: "1"
+      #loadBalancerHistoryResourcePercentage: "2"
+      #    lowerBoundarySheddingEnabled: "true"
+  ## Broker service
+  ## templates/broker-service.yaml
+  ##
+  service:
+    annotations: {}
+  ## Broker PodDisruptionBudget
+  ## templates/broker-pdb.yaml
+  ##
+  pdb:
+    usePolicy: true
+    maxUnavailable: 1
+  ### Broker service account
+  ## templates/broker-service-account.yaml
+  service_account:
+    annotations: {}
+

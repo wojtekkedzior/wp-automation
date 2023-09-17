@@ -1,0 +1,137 @@
+## Pulsar: Proxy Cluster
+## templates/proxy-statefulset.yaml
+##
+proxy:
+  # use a component name that matches your grafana configuration
+  # so the metrics are correctly rendered in grafana dashboard
+  component: proxy
+  replicaCount: 3
+  # If using Prometheus-Operator enable this PodMonitor to discover proxy scrape targets
+  # Prometheus-Operator does not add scrape targets based on k8s annotations
+  podMonitor:
+    enabled: false
+    interval: 10s
+    scrapeTimeout: 10s
+  # True includes annotation for statefulset that contains hash of corresponding configmap, which will cause pods to restart on configmap change
+  restartPodsOnConfigMapChange: false
+#  nodeSelector:
+#    eks.amazonaws.com/nodegroup: proxy
+  probe:
+    liveness:
+      enabled: true
+      failureThreshold: 10
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+    readiness:
+      enabled: true
+      failureThreshold: 10
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+    startup:
+      enabled: false
+      failureThreshold: 30
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      timeoutSeconds: 5
+  affinity:
+    anti_affinity: false
+    # Set the anti affinity type. Valid values:
+    # requiredDuringSchedulingIgnoredDuringExecution - rules must be met for pod to be scheduled (hard) requires at least one node per replica
+    # preferredDuringSchedulingIgnoredDuringExecution - scheduler will try to enforce but not guranentee
+    type: requiredDuringSchedulingIgnoredDuringExecution
+  annotations: {}
+  tolerations: []
+#  tolerations:
+#    - key: "key1"
+#      operator: "Equal"
+#      value: "proxy"
+#      effect: "NoSchedule"
+#    - key: "key2"
+#      operator: "Equal"
+#      value: "proxy"
+#      effect: "NoExecute"  
+  gracePeriod: 30
+  resources:
+    requests:
+      memory: 2000Mi
+      cpu: 1
+  # extraVolumes and extraVolumeMounts allows you to mount other volumes
+  # Example Use Case: mount ssl certificates
+  # extraVolumes:
+  #   - name: ca-certs
+  #     secret:
+  #       defaultMode: 420
+  #       secretName: ca-certs
+  # extraVolumeMounts:
+  #   - name: ca-certs
+  #     mountPath: /certs
+  #     readOnly: true
+  extraVolumes: []
+  extraVolumeMounts: []
+  ## Proxy configmap
+  ## templates/proxy-configmap.yaml
+  ##
+  configData:
+    PULSAR_MEM: >
+      -Xms128m -Xmx200m -XX:MaxDirectMemorySize=1800m
+    PULSAR_GC: >
+      -XX:+UseG1GC
+      -XX:MaxGCPauseMillis=10
+      -Dio.netty.leakDetectionLevel=disabled
+      -Dio.netty.recycler.linkCapacity=1024
+      -XX:+ParallelRefProcEnabled
+      -XX:+UnlockExperimentalVMOptions
+      -XX:+DoEscapeAnalysis
+      -XX:ParallelGCThreads=4
+      -XX:ConcGCThreads=4
+      -XX:G1NewSizePercent=50
+      -XX:+DisableExplicitGC
+      -XX:-ResizePLAB
+      -XX:+ExitOnOutOfMemoryError
+      -XX:+PerfDisableSharedMem   
+    maxConcurrentInboundConnections: "30"
+    # httpNumThreads: "4
+  ## Proxy service
+  ## templates/proxy-service.yaml
+  ##
+  ports:
+    http: 80
+    https: 443
+    pulsar: 6650
+    pulsarssl: 6651
+  service:
+    annotations: {
+      service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    }
+    type: NodePort
+  ## Proxy ingress
+  ## templates/proxy-ingress.yaml
+  ##
+  ingress:
+    enabled: false
+    annotations: {
+#      kubernetes.io/ingress.class: nlb,
+#      alb.ingress.kubernetes.io/scheme: internal,
+#      alb.ingress.kubernetes.io/target-type: ip,
+#      alb.ingress.kubernetes.io/certificate-arn: (( .acm.CertificateArn )),
+#      alb.ingress.kubernetes.io/security-groups: (( .vpc.PublicLoadBalancerSecurityGroupId )),
+#      alb.ingress.kubernetes.io/healthcheck-path: '/login',
+#      alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-FS-1-2-Res-2020-10,
+    }
+    tls:
+      enabled: false
+
+      ## Optional. Leave it blank if your Ingress Controller can provide a default certificate.
+      secretName: ""
+
+    hostname: ""
+    path: "/"
+  ## Proxy PodDisruptionBudget
+  ## templates/proxy-pdb.yaml
+  ##
+  pdb:
+    usePolicy: true
+    maxUnavailable: 1
+
