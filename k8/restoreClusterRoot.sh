@@ -88,7 +88,11 @@ function pulsar292() {
 
 function pulsar210() {
     helm upgrade --install prometheus  prometheus-community/kube-prometheus-stack --version=50.3.0 --values prom-values.yaml
-    
+   
+    sleep 3
+    kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type merge --patch='{ "spec":{ "podMonitorSelector":{ "matchLabels":{ "release": "pulsar"}}}}'
+    kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type json  --patch='[{"op": "replace", "path": "/spec/logLevel", "value": "debug"}]'
+
     echo "Installing pulsar 2.10"	
     #helm upgrade --install pulsar apache/pulsar --values=210values.yaml --timeout 10m --set initialize=true --version=3.0.0
     helm upgrade --install pulsar /home/w/wp-automation/k8/pulsar3/pulsar-helm-chart/charts/pulsar --version=3.0.0 --values=/home/w/wp-automation/k8/pulsar3/pulsar-helm-chart/charts/pulsar/values.yaml
@@ -97,11 +101,48 @@ function pulsar210() {
     # streamnative/apache-pulsar-grafana-dashboard-k8s
 
     sleep 5
+    kubectl patch podmonitor pulsar-broker --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=plite1"}]'
+    kubectl patch podmonitor pulsar-proxy --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=plite1"}]'
 
     sudo sed -i "/setenv GRAFANA_IP/c\\\tsetenv GRAFANA_IP $(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
     sudo sed -i "/setenv PROXY_IP/c\\\tsetenv PROXY_IP $(kubectl get svc pulsar-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
 
     sudo service haproxy restart
+
+    while [ $(kubectl get po pulsar-proxy-0 -o json | jq -r .status.phase) != "Running" ];
+    do
+      echo "not ready"
+      sleep 5
+    done
+
+    echo "proxy is up"
+
+    bash -c "source pulsar-setup.sh; singleCluster"
+
+    proxyIp=$(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')
+    grafanaPort=80
+
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-go-runtime.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper-compaction.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper-read-use.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper-read-cache.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-broker-cache.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-broker-cache-by-broker.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-jvm.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-load-balancing.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-messaging.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-namespace.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-node.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-offload.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-ovewview.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-overview-by-broker.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-proxy.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-pulsar-heartbeat.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-tenant.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-topic.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-zookeeper.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-sockets-by-components.json http://$proxyIp:$grafanaPort/api/dashboards/import
 }
 
 
