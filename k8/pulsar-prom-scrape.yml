@@ -1,0 +1,80 @@
+- job_name: podMonitor/default/pulsar-proxy/1
+  honor_labels: false
+  kubernetes_sd_configs:
+  - role: pod
+    namespaces:
+      names:
+      - default
+  scrape_interval: 10s
+  scrape_timeout: 10s
+  metrics_path: /metrics
+  scheme: http
+  relabel_configs:
+  - source_labels:
+    - job
+    target_label: __tmp_prometheus_job_name
+  - action: drop
+    source_labels:
+    - __meta_kubernetes_pod_phase
+    regex: (Failed|Succeeded)
+  - action: keep
+    source_labels:
+    - __meta_kubernetes_pod_label_app
+    - __meta_kubernetes_pod_labelpresent_app
+    regex: (pulsar);true
+  - action: keep
+    source_labels:
+    - __meta_kubernetes_pod_label_component
+    - __meta_kubernetes_pod_labelpresent_component
+    regex: (proxy);true
+  - action: keep
+    source_labels:
+    - __meta_kubernetes_pod_label_release
+    - __meta_kubernetes_pod_labelpresent_release
+    regex: (pulsar);true
+  - action: keep
+    source_labels:
+    - __meta_kubernetes_pod_container_port_name
+    regex: http
+  - source_labels:
+    - __meta_kubernetes_namespace
+    target_label: namespace
+  - source_labels:
+    - __meta_kubernetes_pod_container_name
+    target_label: container
+  - source_labels:
+    - __meta_kubernetes_pod_name
+    target_label: pod
+  - target_label: job
+    replacement: default/pulsar-proxy
+  - source_labels:
+    - __meta_kubernetes_pod_label_proxy
+    target_label: job
+    regex: (.+)
+    replacement: ${1}
+  - target_label: endpoint
+    replacement: http
+  - regex: __meta_kubernetes_pod_label_(.+)
+    action: labelmap
+  - source_labels:
+    - __meta_kubernetes_namespace
+    target_label: kubernetes_namespace
+    action: replace
+  - source_labels:
+    - __meta_kubernetes_pod_label_component
+    target_label: job
+    action: replace
+  - source_labels:
+    - __meta_kubernetes_pod_name
+    target_label: kubernetes_pod_name
+    action: replace
+  - source_labels:
+    - __address__
+    target_label: __tmp_hash
+    modulus: 1
+    action: hashmod
+  - source_labels:
+    - __tmp_hash
+    regex: $(SHARD)
+    action: keep
+  metric_relabel_configs: []
