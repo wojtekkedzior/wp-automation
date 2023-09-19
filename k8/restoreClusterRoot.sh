@@ -95,7 +95,7 @@ function pulsar210() {
 
     echo "Installing pulsar 2.10"	
     #helm upgrade --install pulsar apache/pulsar --values=210values.yaml --timeout 10m --set initialize=true --version=3.0.0
-    helm upgrade --install pulsar /home/w/wp-automation/k8/pulsar3/pulsar-helm-chart/charts/pulsar --version=3.0.0 --values=/home/w/wp-automation/k8/pulsar3/pulsar-helm-chart/charts/pulsar/values.yaml
+    helm upgrade --install pulsar /home/w/wp-automation/k8/pulsar3/charts/pulsar --version=3.0.0 --values=/home/w/wp-automation/k8/pulsar3/charts/pulsar/values.yaml
 
     #add charts https://github.com/apache/pulsar-helm-chart
     # streamnative/apache-pulsar-grafana-dashboard-k8s
