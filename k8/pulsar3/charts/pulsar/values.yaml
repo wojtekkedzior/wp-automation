@@ -424,7 +424,7 @@ bookkeeper:
       # requests:
         # memory: 4Gi
         # cpu: 2
-  replicaCount: 2
+  replicaCount: 3
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: Parallel
@@ -472,8 +472,8 @@ bookkeeper:
   gracePeriod: 30
   resources:
     requests:
-      memory: 7Gi
-      cpu: 1
+      memory: 4Gi
+      cpu: 0.5
   extraVolumes: []
   extraVolumeMounts: []
   # Ensures 2.10.0 non-root docker image works correctly.
@@ -500,7 +500,7 @@ bookkeeper:
           mountPath: /pulsar/data/bookkeeper/journal1
     ledgers:
       name: ledgers
-      size: 19Gi
+      size: 95Gi
       local_storage: true
       storageClassName: fast-disks
       useMultiVolumes: false
@@ -525,7 +525,7 @@ bookkeeper:
     PULSAR_MEM: >
       -Xms128m
       -Xmx1000m
-      -XX:MaxDirectMemorySize=6000m
+      -XX:MaxDirectMemorySize=3000m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10
@@ -540,11 +540,12 @@ bookkeeper:
       -XX:+ExitOnOutOfMemoryError
       -XX:+PerfDisableSharedMem
     # configure the memory settings based on jvm memory settings
-    dbStorage_writeCacheMaxSizeMb: "5000"
+    dbStorage_writeCacheMaxSizeMb: "2800"
     dbStorage_rocksDB_blockSize: "262144"
     dbStorage_readAheadCacheMaxSizeMb: "32"
     dbStorage_rocksDB_writeBufferSizeMB: "8"
     dbStorage_rocksDB_blockCacheSize: "8388608"
+    writeBufferSizeBytes: "262144"
   ## Add a custom command to the start up process of the bookie pods (e.g. update-ca-certificates, jvm commands, etc)
   additionalCommand:
   ## Bookkeeper Service
@@ -641,7 +642,7 @@ broker:
   # use a component name that matches your grafana configuration
   # so the metrics are correctly rendered in grafana dashboard
   component: broker
-  replicaCount: 2
+  replicaCount: 4
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -693,7 +694,7 @@ broker:
   resources:
     requests:
       memory: 1500Mi
-      cpu: 1
+      cpu: 2
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
@@ -737,6 +738,7 @@ broker:
     managedLedgerDefaultEnsembleSize: "1"
     managedLedgerDefaultWriteQuorum: "1"
     managedLedgerDefaultAckQuorum: "1"
+    maxUnackedMessagesPerConsumer: "10000"
   ## Add a custom command to the start up process of the broker pods (e.g. update-ca-certificates, jvm commands, etc)
   additionalCommand:
   ## Broker service
@@ -775,7 +777,7 @@ proxy:
   # use a component name that matches your grafana configuration
   # so the metrics are correctly rendered in grafana dashboard
   component: proxy
-  replicaCount: 3
+  replicaCount: 2
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -963,7 +965,7 @@ toolset:
   resources:
     requests:
       memory: 256Mi
-      cpu: 0.1
+      cpu: 0.2
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
