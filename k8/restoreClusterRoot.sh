@@ -96,6 +96,7 @@ function pulsar3() {
                  --set initilize=true \
                  --version=3.0.0
 
+    # the metrics for the brokers and proxies is at /metrics/cluster=<cluster-name>
     sleep 5
     kubectl patch podmonitor pulsar-broker --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=pulsar"}]'
     kubectl patch podmonitor pulsar-proxy --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=pulsar"}]'
@@ -110,6 +111,7 @@ function pulsar3() {
 
     #add charts https://github.com/apache/pulsar-helm-chart
     # streamnative/apache-pulsar-grafana-dashboard-k8s
+    sleep 5
     curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-go-runtime.json http://$proxyIp:$grafanaPort/api/dashboards/import
     curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper.json http://$proxyIp:$grafanaPort/api/dashboards/import
     curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper-compaction.json http://$proxyIp:$grafanaPort/api/dashboards/import
