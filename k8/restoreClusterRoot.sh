@@ -39,10 +39,6 @@ function startWorker() {
 }
 
 function pulsar292() {
-    #install pulsar 2.9.2
-    #helm upgrade --install pulsar apache/pulsar --values=new-values.yaml --timeout 10m --set initialize=true
-#   helm upgrade --install pulsar apache/pulsar --values=new-values.yaml --timeout 10m --set initialize=true --version=2.9.2
-
     kubectl apply -f kube-state-metrics-configs//kube-state-metrics-configs/
     kubectl apply -f node-exporter/kubernetes-node-exporter/
 
@@ -86,19 +82,19 @@ function pulsar292() {
     bash -c "source pulsar-setup.sh; singleCluster"
 }
 
-function pulsar210() {
-    helm upgrade --install prometheus  prometheus-community/kube-prometheus-stack --version=50.3.0 --values prom-values.yaml
-   
-    sleep 3
-    kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type merge --patch='{ "spec":{ "podMonitorSelector":{ "matchLabels":{ "release": "pulsar"}}}}'
-    kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type json  --patch='[{"op": "replace", "path": "/spec/logLevel", "value": "debug"}]'
-
-    echo "Installing pulsar 2.10"	
+function pulsar3() {
+    echo "Installing Pulsar 3.0.0"	
     #helm upgrade --install pulsar apache/pulsar --values=210values.yaml --timeout 10m --set initialize=true --version=3.0.0
-    helm upgrade --install pulsar /home/w/wp-automation/k8/pulsar3/charts/pulsar --version=3.0.0 --values=/home/w/wp-automation/k8/pulsar3/charts/pulsar/values.yaml
-
-    #add charts https://github.com/apache/pulsar-helm-chart
-    # streamnative/apache-pulsar-grafana-dashboard-k8s
+    helm upgrade --install pulsar pulsar3/charts/pulsar \
+                 --values=pulsar3/charts/pulsar/bookies.yaml \
+                 --values=pulsar3/charts/pulsar/broker.yaml \
+                 --values=pulsar3/charts/pulsar/proxy.yaml \
+                 --values=pulsar3/charts/pulsar/toolset.yaml \
+                 --values=pulsar3/charts/pulsar/values.yaml \
+                 --values=pulsar3/charts/pulsar/values.yaml
+                --timeout 10m \
+                --set initilize=true \
+                --version=3.0.0
 
     sleep 5
     kubectl patch podmonitor pulsar-broker --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=plite1"}]'
@@ -109,19 +105,11 @@ function pulsar210() {
 
     sudo service haproxy restart
 
-    while [ $(kubectl get po pulsar-proxy-0 -o json | jq -r .status.phase) != "Running" ];
-    do
-      echo "not ready"
-      sleep 20
-    done
-
-    echo "proxy is up"
-
-    bash -c "source pulsar-setup.sh; singleCluster"
-
     proxyIp=$(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')
     grafanaPort=80
 
+    #add charts https://github.com/apache/pulsar-helm-chart
+    # streamnative/apache-pulsar-grafana-dashboard-k8s
     curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-go-runtime.json http://$proxyIp:$grafanaPort/api/dashboards/import
     curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper.json http://$proxyIp:$grafanaPort/api/dashboards/import
     curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper-compaction.json http://$proxyIp:$grafanaPort/api/dashboards/import
@@ -145,40 +133,34 @@ function pulsar210() {
     curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-sockets-by-components.json http://$proxyIp:$grafanaPort/api/dashboards/import
 }
 
+function singleCluster() {
+    pulsar3
+
+    while [ $(kubectl get po pulsar-proxy-0 -o json | jq -r .status.phase) != "Running" ];
+    do
+      echo "not ready"
+      sleep 20
+    done
+
+    echo "proxy is up"
+
+    bash -c "source pulsar-setup.sh; singleCluster"
+}
 
 function multiCluster() {
-    helm upgrade --install prometheus  prometheus-community/kube-prometheus-stack --version=47.6.1 --values ~/prom-values.yaml
-    
-    helm upgrade --install my-zookeeper bitnami/zookeeper  --values zk-values.yaml
+    pulsar3
 
     #helm repo add bitnami https://charts.bitnami.com/bitnami
-    helm upgrade --install plite1 apache/pulsar \
-    --values=pulsar-mc/plite1-values.yaml\
-    --timeout 10m \
-    --set initilize=true \
-    --version=2.9.2
+    helm upgrade --install my-zookeeper bitnami/zookeeper  --values zk-values.yaml
 
-    # Update the HA proxy with the ClusterIPs
-    sleep 5
-    sudo sed -i "/setenv GRAFANA_IP/c\\\tsetenv GRAFANA_IP $(kubectl get svc plite1-pulsar-grafana -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
-    sudo sed -i "/setenv PROXY_IP/c\\\tsetenv PROXY_IP $(kubectl get svc plite1-pulsar-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
-
-    # Enable node metrics in the pulasr grafana
-    kubectl get configmap plite1-pulsar-prometheus -o yaml > temp-prom-cf.yaml
-    sed -i '7i \    \- job_name: '\''nodes'\''' temp-prom-cf.yaml
-    sed -i '8i \      \static_configs:' temp-prom-cf.yaml
-    sed -i "9i \      \- targets: ['$(kubectl get svc prometheus-prometheus-node-exporter -o json | jq -r '.spec.clusterIP'):9100']" temp-prom-cf.yaml
-    kubectl apply -f temp-prom-cf.yaml
-    rm temp-prom-cf.yaml
-    kubectl delete pod --selector=component=prometheus
-
-    # ====================== plite2==============
-    # ===========================================
+    # --------------------------------------------
+    # ------------------ plite2 ------------------
+    # --------------------------------------------
     helm upgrade --install plite2 apache/pulsar \
-    --values=pulsar-mc/plite2-values.yaml\
-    --timeout 10m \
-    --set initilize=true \
-    --version=2.9.2
+                 --values=pulsar-mc/plite2-values.yaml\
+                 --timeout 10m \
+                 --set initilize=true \
+                 --version=3.0.0
 
     # Update the HA proxy with the ClusterIPs
     sleep 5
@@ -266,12 +248,20 @@ sleep 10
 #kubectl label namespace istio-ingress istio-injection=enabled
 #helm install istio-ingress istio/gateway -n istio-ingress --wait
 
+helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --version=50.3.0 --values prom-values.yaml
+sleep 3   
+
+kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type merge --patch='{ "spec":{ "podMonitorSelector":{ "matchLabels":{ "release": "pulsar"}}}}'
+kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type json  --patch='[{"op": "replace", "path": "/spec/logLevel", "value": "debug"}]'
+
+singleCluster
+
+# multiCluster
+
+
 # install pulsar
-pulsar210
+# pulsar210
 #pulsar292
-
-#multiCluster
-
 
 #hazelcast
 
