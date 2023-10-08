@@ -38,7 +38,7 @@ clusterDomain: cluster.local
 initialize: false
 
 ## Set cluster name
-clusterName: plite1
+#clusterName: plite1
 
 ## add custom labels to components of cluster
 # labels:
@@ -144,7 +144,7 @@ extra:
 
 # default image tag for pulsar images
 # uses chart's appVersion when unspecified
-defaultPulsarImageTag:
+defaultPulsarImageTag: 3.1.0
 
 ## Images
 ##
@@ -424,7 +424,7 @@ bookkeeper:
       # requests:
         # memory: 4Gi
         # cpu: 2
-  replicaCount: 3
+  replicaCount: 4
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: Parallel
@@ -461,7 +461,7 @@ bookkeeper:
       periodSeconds: 30
       timeoutSeconds: 5
   affinity:
-    anti_affinity: true
+    anti_affinity: false
     anti_affinity_topology_key: kubernetes.io/hostname
     # Set the anti affinity type. Valid values:
     # requiredDuringSchedulingIgnoredDuringExecution - rules must be met for pod to be scheduled (hard) requires at least one node per replica
@@ -472,8 +472,8 @@ bookkeeper:
   gracePeriod: 30
   resources:
     requests:
-      memory: 4Gi
-      cpu: 0.5
+      memory: 1Gi
+      cpu: 0.3
   extraVolumes: []
   extraVolumeMounts: []
   # Ensures 2.10.0 non-root docker image works correctly.
@@ -491,12 +491,12 @@ bookkeeper:
       useMultiVolumes: false
       multiVolumes:
         - name: journal0
-          size: 10Gi
-          # storageClassName: existent-storage-class
+          size: 19Gi
+          storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal0
         - name: journal1
-          size: 10Gi
-          # storageClassName: existent-storage-class
+          size: 19Gi
+          storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal1
     ledgers:
       name: ledgers
@@ -506,12 +506,12 @@ bookkeeper:
       useMultiVolumes: false
       multiVolumes:
         - name: ledgers0
-          size: 10Gi
-          # storageClassName: existent-storage-class
+          size: 97Gi
+          storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers0
         - name: ledgers1
-          size: 10Gi
-          # storageClassName: existent-storage-class
+          size: 97Gi
+          storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers1
     useSingleCommonVolume: false
     common:
@@ -524,8 +524,8 @@ bookkeeper:
     # we use `bin/pulsar` for starting bookie daemons
     PULSAR_MEM: >
       -Xms128m
-      -Xmx1000m
-      -XX:MaxDirectMemorySize=3000m
+      -Xmx200m
+      -XX:MaxDirectMemorySize=800m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10
@@ -540,12 +540,13 @@ bookkeeper:
       -XX:+ExitOnOutOfMemoryError
       -XX:+PerfDisableSharedMem
     # configure the memory settings based on jvm memory settings
-    dbStorage_writeCacheMaxSizeMb: "2800"
+    dbStorage_writeCacheMaxSizeMb: "500"
     dbStorage_rocksDB_blockSize: "262144"
     dbStorage_readAheadCacheMaxSizeMb: "32"
     dbStorage_rocksDB_writeBufferSizeMB: "8"
     dbStorage_rocksDB_blockCacheSize: "8388608"
     writeBufferSizeBytes: "262144"
+    journalWriteBufferSizeKB: "512"
   ## Add a custom command to the start up process of the bookie pods (e.g. update-ca-certificates, jvm commands, etc)
   additionalCommand:
   ## Bookkeeper Service
@@ -642,7 +643,7 @@ broker:
   # use a component name that matches your grafana configuration
   # so the metrics are correctly rendered in grafana dashboard
   component: broker
-  replicaCount: 4
+  replicaCount: 2
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -694,7 +695,7 @@ broker:
   resources:
     requests:
       memory: 1500Mi
-      cpu: 2
+      cpu: 0.5
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
@@ -823,8 +824,8 @@ proxy:
   gracePeriod: 30
   resources:
     requests:
-      memory: 2000Mi
-      cpu: 1
+      memory: 1000Mi
+      cpu: 0.5
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
@@ -849,7 +850,7 @@ proxy:
   ##
   configData:
     PULSAR_MEM: >
-      -Xms64m -Xmx200m -XX:MaxDirectMemorySize=1800m
+      -Xms64m -Xmx200m -XX:MaxDirectMemorySize=800m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10

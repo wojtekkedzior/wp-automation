@@ -112,7 +112,7 @@ function pulsar210() {
     while [ $(kubectl get po pulsar-proxy-0 -o json | jq -r .status.phase) != "Running" ];
     do
       echo "not ready"
-      sleep 5
+      sleep 20
     done
 
     echo "proxy is up"
@@ -189,7 +189,7 @@ function multiCluster() {
     while [ $(kubectl get po plite2-pulsar-proxy-0 -o json | jq -r .status.phase) != "Running" ];
     do
       echo "not ready"
-      sleep 5
+      sleep 20
     done
 
     echo "proxy is up"
