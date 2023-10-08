@@ -92,13 +92,13 @@ function pulsar3() {
                  --values=pulsar3/charts/pulsar/toolset.yaml \
                  --values=pulsar3/charts/pulsar/values.yaml \
                  --values=pulsar3/charts/pulsar/values.yaml \
-                 -- timeout 10m \
+                 --timeout 10m \
                  --set initilize=true \
                  --version=3.0.0
 
     sleep 5
-    kubectl patch podmonitor pulsar-broker --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=plite1"}]'
-    kubectl patch podmonitor pulsar-proxy --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=plite1"}]'
+    kubectl patch podmonitor pulsar-broker --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=pulsar"}]'
+    kubectl patch podmonitor pulsar-proxy --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=pulsar"}]'
 
     sudo sed -i "/setenv GRAFANA_IP/c\\\tsetenv GRAFANA_IP $(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
     sudo sed -i "/setenv PROXY_IP/c\\\tsetenv PROXY_IP $(kubectl get svc pulsar-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
