@@ -91,10 +91,10 @@ function pulsar3() {
                  --values=pulsar3/charts/pulsar/proxy.yaml \
                  --values=pulsar3/charts/pulsar/toolset.yaml \
                  --values=pulsar3/charts/pulsar/values.yaml \
-                 --values=pulsar3/charts/pulsar/values.yaml
-                --timeout 10m \
-                --set initilize=true \
-                --version=3.0.0
+                 --values=pulsar3/charts/pulsar/values.yaml \
+                 -- timeout 10m \
+                 --set initilize=true \
+                 --version=3.0.0
 
     sleep 5
     kubectl patch podmonitor pulsar-broker --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=plite1"}]'
