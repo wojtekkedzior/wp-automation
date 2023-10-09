@@ -155,6 +155,7 @@ function singleCluster() {
 function multiCluster() {
     pulsar3
 
+    # install a standalone version of zookeeper. This is known as the 'configurationStore' when it comes to working with geo-replication. Make sure to  change the client.port to something other than 2181 as that port is already used by the other zookeepers
     #helm repo add bitnami https://charts.bitnami.com/bitnami
     helm upgrade --install my-zookeeper bitnami/zookeeper  --values zk-values.yaml
 
@@ -181,7 +182,7 @@ function multiCluster() {
 
     echo "proxy is up"
 
-    # bash -c "source pulsar-setup.sh; multiCluster"
+    bash -c "source pulsar-setup.sh; multiCluster"
 }
 
 function hazelcast() {
