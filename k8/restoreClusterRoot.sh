@@ -259,9 +259,9 @@ sleep 3
 kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type merge --patch='{ "spec":{ "podMonitorSelector":{ "matchLabels":{ "release": "pulsar"}}}}'
 kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type json  --patch='[{"op": "replace", "path": "/spec/logLevel", "value": "debug"}]'
 
-singleCluster
+# singleCluster
 
-# multiCluster
+multiCluster
 
 
 # install pulsar
