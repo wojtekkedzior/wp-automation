@@ -181,7 +181,7 @@ function multiCluster() {
 
     echo "proxy is up"
 
-    bash -c "source pulsar-setup.sh; multiCluster"
+    # bash -c "source pulsar-setup.sh; multiCluster"
 }
 
 function hazelcast() {
