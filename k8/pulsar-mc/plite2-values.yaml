@@ -121,7 +121,7 @@ components:
   # broker
   broker: true
   # functions
-  functions: true
+  functions: false
   # proxy
   proxy: true
   # toolset
@@ -426,7 +426,7 @@ bookkeeper:
       # requests:
         # memory: 4Gi
         # cpu: 2
-  replicaCount: 4
+  replicaCount: 2
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: Parallel
@@ -474,7 +474,7 @@ bookkeeper:
   gracePeriod: 30
   resources:
     requests:
-      memory: 1Gi
+      memory: 0.5Gi
       cpu: 0.3
   extraVolumes: []
   extraVolumeMounts: []
@@ -527,7 +527,7 @@ bookkeeper:
     PULSAR_MEM: >
       -Xms128m
       -Xmx200m
-      -XX:MaxDirectMemorySize=800m
+      -XX:MaxDirectMemorySize=300m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10
@@ -542,13 +542,13 @@ bookkeeper:
       -XX:+ExitOnOutOfMemoryError
       -XX:+PerfDisableSharedMem
     # configure the memory settings based on jvm memory settings
-    dbStorage_writeCacheMaxSizeMb: "500"
+    dbStorage_writeCacheMaxSizeMb: "100"
     dbStorage_rocksDB_blockSize: "262144"
     dbStorage_readAheadCacheMaxSizeMb: "32"
     dbStorage_rocksDB_writeBufferSizeMB: "8"
-    dbStorage_rocksDB_blockCacheSize: "8388608"
-    writeBufferSizeBytes: "262144"
-    journalWriteBufferSizeKB: "512"
+    # dbStorage_rocksDB_blockCacheSize: "8388608"
+    # writeBufferSizeBytes: "262144"
+    # journalWriteBufferSizeKB: "512"
   ## Add a custom command to the start up process of the bookie pods (e.g. update-ca-certificates, jvm commands, etc)
   additionalCommand:
   ## Bookkeeper Service
@@ -696,7 +696,7 @@ broker:
   gracePeriod: 30
   resources:
     requests:
-      memory: 1500Mi
+      memory: 500Mi
       cpu: 0.5
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
@@ -722,7 +722,7 @@ broker:
   ##
   configData:
     PULSAR_MEM: >
-      -Xms128m -Xmx300m -XX:MaxDirectMemorySize=1200m
+      -Xms128m -Xmx200m -XX:MaxDirectMemorySize=300m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10
@@ -826,7 +826,7 @@ proxy:
   gracePeriod: 30
   resources:
     requests:
-      memory: 1000Mi
+      memory: 500Mi
       cpu: 0.5
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
@@ -852,7 +852,7 @@ proxy:
   ##
   configData:
     PULSAR_MEM: >
-      -Xms64m -Xmx200m -XX:MaxDirectMemorySize=800m
+      -Xms64m -Xmx200m -XX:MaxDirectMemorySize=300m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10
