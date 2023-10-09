@@ -13,14 +13,14 @@ function multiCluster() {
   # what is is the value.yaml for each Pulsar cluster eg clusterName: plite-1.
   kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin clusters create --broker-url pulsar://plite2-pulsar-broker.default.svc.cluster.local:6650 --url http://plite2-pulsar-broker.default.svc.cluster.local:8080 plite2"
   sleep 5
-  kubectl exec -i plite2-pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin clusters create --broker-url pulsar://pulsar-broker.default.svc.cluster.local:6650 --url http://pulsar-broker.default.svc.cluster.local:8080 pulsar"
+  kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin clusters create --broker-url pulsar://pulsar-broker.default.svc.cluster.local:6650 --url http://pulsar-broker.default.svc.cluster.local:8080 pulsar"
   echo "cluster are married"
   sleep 3  
   # check whether the clusters are showing up correctly
   kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin clusters list"  
   sleep 3
   echo "in between cluster listing"
-  kubectl exec -i plite2-pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin clusters list"
+  kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin clusters list"
   
   echo "setting up cluster on plite2" 
 
@@ -41,7 +41,7 @@ function multiCluster() {
   # on plite2: 
   kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants    create wojtekt --admin-roles my-admin-role --allowed-clusters pulsar,plite2"
   kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces create wojtekt/wojtekns --bundles 4"
-  # kubectl exec -i plite2-pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics     create-partitioned-topic wojtekt/wojtekns/wojtektopic1 -p 2"
+  # kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics     create-partitioned-topic wojtekt/wojtekns/wojtektopic1 -p 2"
 
   kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/mercury -p 2"
   kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/venus -p 2"
