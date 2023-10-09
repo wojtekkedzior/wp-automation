@@ -1,8 +1,8 @@
 #/bin/bash
 
 function createTestTopics() {
-  local cluster = $1
-  local partitions = $2
+  local cluster=$1
+  local partitions=$2
 
   kubectl exec -i ${cluster} -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/mercury -p ${partitions}"
   kubectl exec -i ${cluster} -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/venus   -p ${partitions}"
