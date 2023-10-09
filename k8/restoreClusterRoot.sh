@@ -170,11 +170,11 @@ function multiCluster() {
 
     # Update the HA proxy with the ClusterIPs
     sleep 5
-    sudo sed -i "/setenv PROXY_IP_2/c\\\tsetenv PROXY_IP_2 $(kubectl get svc plite2-pulsar-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
+    sudo sed -i "/setenv PROXY_IP_2/c\\\tsetenv PROXY_IP_2 $(kubectl get svc plite2-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
 
     sudo service haproxy restart
 
-    while [ $(kubectl get po plite2-pulsar-proxy-0 -o json | jq -r .status.phase) != "Running" ];
+    while [ $(kubectl get po plite2-proxy-0 -o json | jq -r .status.phase) != "Running" ];
     do
       echo "not ready"
       sleep 20
@@ -233,16 +233,12 @@ startWorker 192.168.122.67 # worker-4-large
 
 #install local volume provisioner
 kubectl create -f  local-volume-provisioner.generated.yaml
-
-#helm upgrade --install prometheus  prometheus-community/kube-prometheus-stack --version=47.6.1 --values ~/prom-values.yaml 
-# helm upgrade --install prometheus  prometheus-community/kube-prometheus-stack
+#It takes a while for the local-volume-provisioner to find all the local volumes
+sleep 10
 
 #after a PC restart you need to add callico
 #curl https://docs.projectcalico.org/manifests/calico-typha.yaml -o calico.yaml
 #k apply -f calico.yaml 
-
-#It takes a while for the local-volume-provisioner to find all the local volumes
-sleep 10
 
 #kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/baremetal/deploy.yaml
 #istio 
