@@ -43,11 +43,11 @@ function pulsar292() {
     kubectl apply -f node-exporter/kubernetes-node-exporter/
 
     helm upgrade --install pulsar apache/pulsar \
-    --values=pulsar/bookies.yaml \
-    --values=pulsar/broker.yaml \
-    --values=pulsar/proxy.yaml \
-    --values=pulsar/toolset.yaml \
-    --values=pulsar/values.yaml \
+    --values=pulsar-single/bookies.yaml \
+    --values=pulsar-single/broker.yaml \
+    --values=pulsar-single/proxy.yaml \
+    --values=pulsar-single/toolset.yaml \
+    --values=pulsar-single/values.yaml \
     --timeout 10m \
     --set initilize=true \
     --version=2.9.2
@@ -110,7 +110,7 @@ function pulsar3() {
 
     #add charts https://github.com/apache/pulsar-helm-chart
     # streamnative/apache-pulsar-grafana-dashboard-k8s
-    sleep 5
+    sleep 20 # to allow grafana to come up
 
     proxyIp=$(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')
     grafanaPort=80
