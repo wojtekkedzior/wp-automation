@@ -86,12 +86,11 @@ function pulsar3() {
     echo "Installing Pulsar 3.0.0"	
     #helm upgrade --install pulsar apache/pulsar --values=210values.yaml --timeout 10m --set initialize=true --version=3.0.0
     helm upgrade --install pulsar pulsar3/charts/pulsar \
+                 --values=pulsar3/charts/pulsar/values.yaml \
                  --values=pulsar3/charts/pulsar/bookies.yaml \
                  --values=pulsar3/charts/pulsar/broker.yaml \
                  --values=pulsar3/charts/pulsar/proxy.yaml \
                  --values=pulsar3/charts/pulsar/toolset.yaml \
-                 --values=pulsar3/charts/pulsar/values.yaml \
-                 --values=pulsar3/charts/pulsar/values.yaml \
                  --timeout 10m \
                  --set initilize=true \
                  --version=3.0.0
@@ -106,12 +105,13 @@ function pulsar3() {
 
     sudo service haproxy restart
 
-    proxyIp=$(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')
-    grafanaPort=80
-
     #add charts https://github.com/apache/pulsar-helm-chart
     # streamnative/apache-pulsar-grafana-dashboard-k8s
     sleep 5
+
+    proxyIp=$(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')
+    grafanaPort=80
+
     curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-go-runtime.json http://$proxyIp:$grafanaPort/api/dashboards/import
     curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper.json http://$proxyIp:$grafanaPort/api/dashboards/import
     curl -X POST -u "admin:prom-operator" -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper-compaction.json http://$proxyIp:$grafanaPort/api/dashboards/import
