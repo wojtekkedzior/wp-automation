@@ -85,12 +85,15 @@ function pulsar292() {
 function pulsar3() {
     echo "Installing Pulsar 3.0.0"	
     #helm upgrade --install pulsar apache/pulsar --values=210values.yaml --timeout 10m --set initialize=true --version=3.0.0
+
+    # don';t use these as they are for an older version on pulsar. we need to simple remove these from the values values and shove them in their seperate files
+                #      --values=pulsar3/charts/pulsar/bookies.yaml \
+                #  --values=pulsar3/charts/pulsar/broker.yaml \
+                #  --values=pulsar3/charts/pulsar/proxy.yaml \
+                #  --values=pulsar3/charts/pulsar/toolset.yaml \
+
     helm upgrade --install pulsar pulsar3/charts/pulsar \
                  --values=pulsar3/charts/pulsar/values.yaml \
-                 --values=pulsar3/charts/pulsar/bookies.yaml \
-                 --values=pulsar3/charts/pulsar/broker.yaml \
-                 --values=pulsar3/charts/pulsar/proxy.yaml \
-                 --values=pulsar3/charts/pulsar/toolset.yaml \
                  --timeout 10m \
                  --set initilize=true \
                  --version=3.0.0
