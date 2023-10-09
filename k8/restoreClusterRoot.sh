@@ -170,7 +170,7 @@ function multiCluster() {
 
     # Update the HA proxy with the ClusterIPs
     sleep 5
-    sudo sed -i "/setenv PROXY_IP_2/c\\\tsetenv PROXY_IP_2 $(kubectl get svc plite2-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
+    sudo sed -i "/setenv PROXY_2_IP/c\\\tsetenv PROXY_2_IP $(kubectl get svc plite2-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
 
     sudo service haproxy restart
 
