@@ -131,3 +131,6 @@ dmypy.json
 .pyre/
 menu/email
 menu/lambda.zip
+
+
+initout.txt
