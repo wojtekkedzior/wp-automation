@@ -16,16 +16,8 @@ function multiCluster() {
   # Note that the --zookeeper parameter refers to the zookeeper for the plite1 cluster
   kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar initialize-cluster-metadata --cluster pulsar --zookeeper pulsar-zookeeper.default.svc.cluster.local:2181 --configuration-store my-zookeeper.default.svc.cluster.local:2185  --web-service-url http://pulsar-broker.default.svc.cluster.local:8080 --broker-service-url pulsar://pulsar-broker.default.svc.cluster.local:6650"
   
-  # kubectl exec -i plite1-pulsar-toolset-0  -- /bin/bash -c 
-  #   "/pulsar/bin/pulsar initialize-cluster-metadata 
-  #   --cluster pulsar 
-  #   --zookeeper plite1-pulsar-zookeeper.default.svc.cluster.local:2181
-  #   --configuration-store my-zookeeper.default.svc.cluster.local:2185 
-  #   --web-service-url http://plite1-pulsar-broker.default.svc.cluster.local:8080
-  #   --broker-service-url pulsar://plite1-pulsar-broker.default.svc.cluster.local:6650"
-
-
-  sleep 30
+  # todo might not be needed any more as the there is already a wait-for the proxies after the cluster has been installed
+  # sleep 30
   echo "global cluster is done."
 
   # the word 'create' is confusing here as the Pulsar clusters have already been created. These steps rather make each cluster aware of each other.  From plite1 add plite-2 and from plite2 add plite-1. #note that the cluster name used here must match
@@ -53,11 +45,6 @@ function multiCluster() {
 
   createTestTopics "pulsar-toolset-0" 2
 
-  # kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/mercury -p 2"
-  # kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/venus   -p 2"
-  # kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/earth   -p 2"
-  # kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/mars    -p 2"
-
   echo "cluster on plite2 is ready"
   # on plite2: 
   kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants    create wojtekt --admin-roles my-admin-role --allowed-clusters pulsar,plite2"
@@ -65,10 +52,6 @@ function multiCluster() {
   # kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics     create-partitioned-topic wojtekt/wojtekns/wojtektopic1 -p 2"
 
   createTestTopics "plite2-toolset-0" 2
-  # kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/mercury -p 2"
-  # kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/venus   -p 2"
-  # kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/earth   -p 2"
-  # kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/mars    -p 2"
 
   echo  "topics set up"
 }
@@ -76,12 +59,14 @@ function multiCluster() {
 function singleCluster {
   echo "installing a single pulsar cluster..."  
  
-  sleep 40
+  # todo might not be needed any more as the there is already a wait-for the proxies after the cluster has been installed
+  # sleep 40
 
   kubectl  exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants create wojtekt"
   kubectl  exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces create wojtekt/wojtekns"
-  #  kubectl  exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/wojtektopic -p 4"
   #  kubectl  exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces set-retention wojtekt/wojtekns --size 2M --time 1m"
+
+  createTestTopics "pulsar-toolset-0" 8
 
   kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/mercury -p 8"
   kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/venus   -p 8"
@@ -90,13 +75,3 @@ function singleCluster {
 
   echo "single pulsar cluster installed" 
 }
-
-
-
-
-#kubectl  exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-perf produce persistent://wojtekt/wojtekns/wojtektopic --rate 5000 --size 5120 --test-duration 15"
-
-#kubectl  exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-perf consume persistent://wojtekt/wojtekns/wojtektopic & /pulsar/bin/pulsar-perf produce persistent://wojtekt/wojtekns/wojtektopic --rate 100000 --size 5120"
-
-#   /pulsar/bin/pulsar-perf produce wojtekt/wojtekns/wojtektopic --rate 1 --size 1024
-#   /pulsar/bin/pulsar-perf consume persistent://wojtekt/wojtekns/wojtektopic

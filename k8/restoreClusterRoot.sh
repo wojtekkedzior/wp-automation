@@ -144,7 +144,7 @@ function singleCluster() {
     while [ $(kubectl get po pulsar-proxy-0 -o json | jq -r .status.phase) != "Running" ];
     do
       echo "not ready"
-      sleep 20
+      sleep 5
     done
 
     echo "proxy is up"
