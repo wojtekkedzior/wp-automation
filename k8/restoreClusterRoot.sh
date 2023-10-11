@@ -34,7 +34,7 @@ function startWorker() {
     echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdg && sudo mount /dev/sdg /mnt/fast-disks/disk6"
     echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdh && sudo mount /dev/sdh /mnt/fast-disks/disk7"
     echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdi && sudo mount /dev/sdi /mnt/fast-disks/disk8"
-    echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdi && sudo mount /dev/sdi /mnt/fast-disks/disk9"
+    echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdj && sudo mount /dev/sdj /mnt/fast-disks/disk9"
 
     #in case we need to clean out some customer iamges
 #    ssh -tt "w@${host}" "yes | docker system prune --all"
