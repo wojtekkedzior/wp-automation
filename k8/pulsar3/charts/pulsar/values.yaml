@@ -472,8 +472,8 @@ bookkeeper:
   gracePeriod: 30
   resources:
     requests:
-      memory: 1Gi
-      cpu: 0.5
+      memory: 2Gi
+      cpu: 1
   extraVolumes: []
   extraVolumeMounts: []
   # Ensures 2.10.0 non-root docker image works correctly.
@@ -533,7 +533,7 @@ bookkeeper:
     PULSAR_MEM: >
       -Xms128m
       -Xmx200m
-      -XX:MaxDirectMemorySize=800m
+      -XX:MaxDirectMemorySize=1800m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10
@@ -550,7 +550,7 @@ bookkeeper:
     # configure the memory settings based on jvm memory settings
     dbStorage_writeCacheMaxSizeMb: "600"
     dbStorage_rocksDB_blockSize: "262144"
-    dbStorage_readAheadCacheMaxSizeMb: "32"
+    dbStorage_readAheadCacheMaxSizeMb: "1000"
     dbStorage_rocksDB_writeBufferSizeMB: "8"
     dbStorage_rocksDB_blockCacheSize: "8388608"
     writeBufferSizeBytes: "262144"
