@@ -473,7 +473,7 @@ bookkeeper:
   resources:
     requests:
       memory: 1Gi
-      cpu: 1
+      cpu: 0.5
   extraVolumes: []
   extraVolumeMounts: []
   # Ensures 2.10.0 non-root docker image works correctly.
@@ -502,10 +502,6 @@ bookkeeper:
           size: 19Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal2
-        - name: journal3
-          size: 19Gi
-          storageClassName: fast-disks
-          mountPath: /pulsar/data/bookkeeper/journal3
     ledgers:
       name: ledgers
       size: 95Gi
@@ -525,10 +521,6 @@ bookkeeper:
           size: 97Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers2
-        - name: ledgers3
-          size: 97Gi
-          storageClassName: fast-disks
-          mountPath: /pulsar/data/bookkeeper/ledgers3
     useSingleCommonVolume: false
     common:
       name: common
