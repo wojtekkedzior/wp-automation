@@ -16,6 +16,8 @@ function multiCluster() {
   # Note that the --zookeeper parameter refers to the zookeeper for the plite1 cluster
   kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar initialize-cluster-metadata --cluster pulsar --zookeeper pulsar-zookeeper.default.svc.cluster.local:2181 --configuration-store my-zookeeper.default.svc.cluster.local:2185  --web-service-url http://pulsar-broker.default.svc.cluster.local:8080 --broker-service-url pulsar://pulsar-broker.default.svc.cluster.local:6650"
   
+  #TODO: does an initialize-cluster-metadata need to be called for the second cluster too? 
+
   # todo might not be needed any more as the there is already a wait-for the proxies after the cluster has been installed
   # sleep 30
   echo "global cluster is done."
@@ -67,11 +69,6 @@ function singleCluster {
   #  kubectl  exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces set-retention wojtekt/wojtekns --size 2M --time 1m"
 
   createTestTopics "pulsar-toolset-0" 8
-
-  kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/mercury -p 8"
-  kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/venus   -p 8"
-  kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/earth   -p 8"
-  kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/mars    -p 8"
 
   echo "single pulsar cluster installed" 
 }
