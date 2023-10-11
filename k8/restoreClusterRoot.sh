@@ -9,7 +9,7 @@ function startWorker() {
 #   This is not set on the workers. (? why not?)
 #   ssh "w@${host}" 'rm .kube/config'
     echo w | ssh -tt "w@${host}" "sudo ${joinCmd}"
-    echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks /mnt/fast-disks/disk1 /mnt/fast-disks/disk2 /mnt/fast-disks/disk3 /mnt/fast-disks/disk4 /mnt/fast-disks/disk5 /mnt/fast-disks/disk6 /mnt/fast-disks/disk7 /mnt/fast-disks/disk8"
+    echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks /mnt/fast-disks/disk1 /mnt/fast-disks/disk2 /mnt/fast-disks/disk3 /mnt/fast-disks/disk4 /mnt/fast-disks/disk5 /mnt/fast-disks/disk6 /mnt/fast-disks/disk7 /mnt/fast-disks/disk8 /mnt/fast-disks/disk9"
 
     echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk1"
     echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk2"
@@ -19,6 +19,7 @@ function startWorker() {
     echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk6"
     echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk7"
     echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk8"
+    echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk9"
 
     # tmpfs
     #echo w | ssh -tt "w@${host}" "sudo mount -t tmpfs -o rw,size=2G tmpfs /mnt/fast-disks/disk2"
@@ -33,6 +34,7 @@ function startWorker() {
     echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdg && sudo mount /dev/sdg /mnt/fast-disks/disk6"
     echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdh && sudo mount /dev/sdh /mnt/fast-disks/disk7"
     echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdi && sudo mount /dev/sdi /mnt/fast-disks/disk8"
+    echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdi && sudo mount /dev/sdi /mnt/fast-disks/disk9"
 
     #in case we need to clean out some customer iamges
 #    ssh -tt "w@${host}" "yes | docker system prune --all"
