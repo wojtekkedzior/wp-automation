@@ -424,7 +424,7 @@ bookkeeper:
       # requests:
         # memory: 4Gi
         # cpu: 2
-  replicaCount: 6
+  replicaCount: 3
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: Parallel
@@ -473,7 +473,7 @@ bookkeeper:
   resources:
     requests:
       memory: 1
-      cpu: 0.5
+      cpu: 1
   extraVolumes: []
   extraVolumeMounts: []
   # Ensures 2.10.0 non-root docker image works correctly.
@@ -502,6 +502,18 @@ bookkeeper:
           size: 19Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal2
+        - name: journal3
+          size: 19Gi
+          storageClassName: fast-disks
+          mountPath: /pulsar/data/bookkeeper/journal3
+        - name: journal4
+          size: 19Gi
+          storageClassName: fast-disks
+          mountPath: /pulsar/data/bookkeeper/journal4
+        - name: journal5
+          size: 19Gi
+          storageClassName: fast-disks
+          mountPath: /pulsar/data/bookkeeper/journal5
     ledgers:
       name: ledgers
       size: 19Gi
@@ -521,6 +533,18 @@ bookkeeper:
           size: 19Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers2
+        - name: ledgers3
+          size: 19Gi
+          storageClassName: fast-disks
+          mountPath: /pulsar/data/bookkeeper/ledgers3
+        - name: ledgers4
+          size: 19Gi
+          storageClassName: fast-disks
+          mountPath: /pulsar/data/bookkeeper/ledgers4
+        - name: ledgers5
+          size: 19Gi
+          storageClassName: fast-disks
+          mountPath: /pulsar/data/bookkeeper/ledgers5
     useSingleCommonVolume: false
     common:
       name: common
@@ -651,7 +675,7 @@ broker:
   # use a component name that matches your grafana configuration
   # so the metrics are correctly rendered in grafana dashboard
   component: broker
-  replicaCount: 3
+  replicaCount: 4
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -703,7 +727,7 @@ broker:
   resources:
     requests:
       memory: 2500Mi
-      cpu: 1.5
+      cpu: 2
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
