@@ -2,15 +2,19 @@
 
 function create() {
     path=$1
-    for i in {1..2}
+    workers_from=$2
+    workers_to=$3
+    index=$4
+
+    for i in `eval echo {$workers_from..$workers_to}`;
     do
-        for j in {1..2}
+        for j in `eval echo {1..$index}`;
         do
             echo "$path/worker-$i-$j.qcow2"
             qemu-img create "$path/worker-$i-$j.qcow2" 100G -f qcow2 -o preallocation=full
         done
 
-        for j in {3..8}
+        for j in `eval echo {$index..15}`;
         do
             echo "$path/worker-$i-$j.qcow2"
             qemu-img create "$path/worker-$i-$j.qcow2" 20G -f qcow2 -o preallocation=full
@@ -18,4 +22,4 @@ function create() {
     done
 }
 
-create $1
+create $1 $2 $3 $4
