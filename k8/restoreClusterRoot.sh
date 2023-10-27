@@ -75,9 +75,8 @@ function pulsar292() {
 
 function pulsar3() {
     echo "Installing Pulsar 3.0.0"	
-    #helm upgrade --install pulsar apache/pulsar --values=210values.yaml --timeout 10m --set initialize=true --version=3.0.0
 
-    # don';t use these as they are for an older version on pulsar. we need to simple remove these from the values values and shove them in their seperate files
+    # don't use these as they are for an older version on pulsar. we need to simple remove these from the values values and shove them in their seperate files
                 #      --values=pulsar3/charts/pulsar/bookies.yaml \
                 #  --values=pulsar3/charts/pulsar/broker.yaml \
                 #  --values=pulsar3/charts/pulsar/proxy.yaml \
@@ -134,7 +133,7 @@ function singleCluster() {
 
     while [ $(kubectl get po pulsar-proxy-0 -o json | jq -r .status.phase) != "Running" ];
     do
-      echo "not ready"
+      echo "proxy not ready. waiting..."
       sleep 5
     done
 
@@ -167,7 +166,7 @@ function multiCluster() {
 
     while [ $(kubectl get po plite2-proxy-0 -o json | jq -r .status.phase) != "Running" ];
     do
-      echo "not ready"
+      echo "proxy not ready. waiting..."
       sleep 20
     done
 
@@ -194,8 +193,6 @@ sudo cp -i /etc/kubernetes/admin.conf /home/w/.kube/config
 #sudo chown w:w /home/w/.kube/config
 sudo chown $(id -u):$(id -g) /home/w/.kube/config
 
-#kubectl apply -f custom-resources.yaml
-
 #ssh-keygen -t rsa -b 2048
 #echo w | ssh-copy-id w@192.168.122.19
 #echo w | ssh-copy-id w@192.168.122.74
@@ -204,10 +201,7 @@ sudo chown $(id -u):$(id -g) /home/w/.kube/config
 #kubectl create -f  local-volume-provisioner.generated.yaml
 #kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
 #kubectl apply -f kube-state-metrics-configs//kube-state-metrics-configs/
-#kubectl apply -f node-exporter/kubernetes-node-exporter/
 #helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-
-#helm install node-exporter prometheus-community/prometheus-node-exporter
 
 # use a calico version from around Jan 22 because later versions change the PDB api from v1beta to v1
 #kubectl create -f https://docs.projectcalico.org/archive/v3.15/manifests/tigera-operator.yaml
@@ -231,33 +225,11 @@ sleep 10
 #curl https://docs.projectcalico.org/manifests/calico-typha.yaml -o calico.yaml
 #k apply -f calico.yaml 
 
-#kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/baremetal/deploy.yaml
-#istio 
-#kubectl create namespace istio-system
-#helm install istio-base istio/base -n istio-system
-#helm install istiod istio/istiod -n istio-system --wait
-
-#kubectl create namespace istio-ingress
-#kubectl label namespace istio-ingress istio-injection=enabled
-#helm install istio-ingress istio/gateway -n istio-ingress --wait
-
 helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --version=50.3.0 --values prom-values.yaml
 sleep 3   
 
 kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type merge --patch='{ "spec":{ "podMonitorSelector":{ "matchLabels":{ "release": "pulsar"}}}}'
 kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type json  --patch='[{"op": "replace", "path": "/spec/logLevel", "value": "debug"}]'
 
-# singleCluster or multiCluster
+# singleCluster or multiCluster or hazelcast
 $1
-
-# singleCluster
-# multiCluster
-
-
-# install pulsar
-# pulsar210
-#pulsar292
-
-#hazelcast
-
-
