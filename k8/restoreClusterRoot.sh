@@ -10,8 +10,7 @@ function startWorker() {
 #   ssh "w@${host}" 'rm .kube/config'
     echo w | ssh -tt "w@${host}" "sudo ${joinCmd}"
 
-    # prepare folders and unmount if already mounted
-
+    # prepare folders, unmount if already mounted, format and (re)mount
     index=1
     echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks"
     for disk in {b..p}
@@ -27,7 +26,7 @@ function startWorker() {
     # echo w | ssh -tt "w@${host}" "sudo mount -t tmpfs -o rw,size=2G tmpfs /mnt/fast-disks/disk3"
 
     # in case we need to clean out some customer iamges
-    ssh -tt "w@${host}" "yes | docker system prune --all"
+    ssh -tt "w@${host}" "yes | sudo docker system prune --all"
 }
 
 function pulsar292() {
@@ -248,8 +247,10 @@ sleep 3
 kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type merge --patch='{ "spec":{ "podMonitorSelector":{ "matchLabels":{ "release": "pulsar"}}}}'
 kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type json  --patch='[{"op": "replace", "path": "/spec/logLevel", "value": "debug"}]'
 
-singleCluster
+# singleCluster or multiCluster
+$1
 
+# singleCluster
 # multiCluster
 
 
