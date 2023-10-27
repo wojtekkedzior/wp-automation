@@ -26,7 +26,7 @@ function startWorker() {
     # echo w | ssh -tt "w@${host}" "sudo mount -t tmpfs -o rw,size=2G tmpfs /mnt/fast-disks/disk3"
 
     # in case we need to clean out some customer iamges
-    ssh -tt "w@${host}" "yes | sudo docker system prune --all"
+    # echo w | ssh -tt "w@${host}" "yes | sudo docker system prune --all"
 }
 
 function pulsar292() {
