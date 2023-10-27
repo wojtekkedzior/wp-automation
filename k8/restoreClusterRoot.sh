@@ -9,61 +9,25 @@ function startWorker() {
 #   This is not set on the workers. (? why not?)
 #   ssh "w@${host}" 'rm .kube/config'
     echo w | ssh -tt "w@${host}" "sudo ${joinCmd}"
-    # echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks /mnt/fast-disks/disk1 /mnt/fast-disks/disk2 /mnt/fast-disks/disk3 /mnt/fast-disks/disk4 /mnt/fast-disks/disk5 /mnt/fast-disks/disk6 /mnt/fast-disks/disk7 /mnt/fast-disks/disk8 /mnt/fast-disks/disk9 /mnt/fast-disks/disk10 /mnt/fast-disks/disk11 /mnt/fast-disks/disk12 /mnt/fast-disks/disk13 /mnt/fast-disks/disk14 /mnt/fast-disks/disk15"
-    echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks"
-    
-    for disk in {1..15}
-    do
-        echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks/disk${disk}"
-        echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk${disk}"
-    done
+
+    # prepare folders and unmount if already mounted
 
     index=1
+    echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks"
     for disk in {b..p}
     do
+        echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks/disk${index}"
+        echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk${index}"
         echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sd${disk} && sudo mount /dev/sd${disk} /mnt/fast-disks/disk${index}"
         (( index++ ))
     done
 
-    # echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk1"
-    # echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk2"
-    # echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk3"
-    # echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk4"
-    # echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk5"
-    # echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk6"
-    # echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk7"
-    # echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk8"
-    # echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk9"
-    # echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk10"
-    # echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk11"
-    # echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk12"
-    # echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk13"
-    # echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk14"
-    # echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk15"
-
     # tmpfs
-    #echo w | ssh -tt "w@${host}" "sudo mount -t tmpfs -o rw,size=2G tmpfs /mnt/fast-disks/disk2"
-    #echo w | ssh -tt "w@${host}" "sudo mount -t tmpfs -o rw,size=2G tmpfs /mnt/fast-disks/disk3"
+    # echo w | ssh -tt "w@${host}" "sudo mount -t tmpfs -o rw,size=2G tmpfs /mnt/fast-disks/disk2"
+    # echo w | ssh -tt "w@${host}" "sudo mount -t tmpfs -o rw,size=2G tmpfs /mnt/fast-disks/disk3"
 
-    # normal (ext4) volumes 
-    # echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdb && sudo mount /dev/sdb /mnt/fast-disks/disk1"
-    # echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdc && sudo mount /dev/sdc /mnt/fast-disks/disk2"
-    # echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdd && sudo mount /dev/sdd /mnt/fast-disks/disk3"
-    # echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sde && sudo mount /dev/sde /mnt/fast-disks/disk4"
-    # echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdf && sudo mount /dev/sdf /mnt/fast-disks/disk5"
-    # echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdg && sudo mount /dev/sdg /mnt/fast-disks/disk6"
-    # echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdh && sudo mount /dev/sdh /mnt/fast-disks/disk7"
-    # echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdi && sudo mount /dev/sdi /mnt/fast-disks/disk8"
-    # echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdj && sudo mount /dev/sdj /mnt/fast-disks/disk9"
-    # echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdk && sudo mount /dev/sdk /mnt/fast-disks/disk10"
-    # echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdl && sudo mount /dev/sdl /mnt/fast-disks/disk11"
-    # echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdm && sudo mount /dev/sdm /mnt/fast-disks/disk12"
-    # echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdn && sudo mount /dev/sdn /mnt/fast-disks/disk13"
-    # echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdo && sudo mount /dev/sdo /mnt/fast-disks/disk14"
-    # echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sdp && sudo mount /dev/sdp /mnt/fast-disks/disk15"
-
-    #in case we need to clean out some customer iamges
-#    ssh -tt "w@${host}" "yes | docker system prune --all"
+    # in case we need to clean out some customer iamges
+    ssh -tt "w@${host}" "yes | docker system prune --all"
 }
 
 function pulsar292() {
