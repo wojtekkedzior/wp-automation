@@ -3,6 +3,10 @@ bookkeeper:
   metadata:
     ## Set the resources used for running `bin/bookkeeper shell initnewcluster`
     ##
+    resources:
+      # requests:
+        # memory: 4Gi
+        # cpu: 2
   replicaCount: 3
   updateStrategy:
     type: RollingUpdate
@@ -60,6 +64,7 @@ bookkeeper:
     fsGroup: 0
     fsGroupChangePolicy: "OnRootMismatch"
   volumes:
+    # use a persistent volume or emptyDir
     persistence: true
     journal:
       name: journal
