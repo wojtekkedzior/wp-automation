@@ -68,7 +68,6 @@ function pulsar292() {
     done
 
     echo "proxy is up"
-
     bash -c "source pulsar-setup.sh; singleCluster"
 }
 
@@ -137,7 +136,6 @@ function singleCluster() {
     done
 
     echo "proxy is up"
-
     bash -c "source pulsar-setup.sh; singleCluster"
 }
 
@@ -182,31 +180,18 @@ function hazelcast() {
     sudo sed -i "/setenv HAZELCAST_IP/c\\\tsetenv HAZELCAST_IP $(kubectl get svc my-release-hazelcast -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
 }
 
-yes | sudo kubeadm reset
+yes | sudo kubeadm reset && 
 sudo rm -R /etc/cni/net.d
 rm /home/w/.kube/config
-
 sudo kubeadm init --pod-network-cidr=192.168.122.0/18 | tee initout.txt
-
 sudo cp -i /etc/kubernetes/admin.conf /home/w/.kube/config
-#sudo chown w:w /home/w/.kube/config
 sudo chown $(id -u):$(id -g) /home/w/.kube/config
 
 #ssh-keygen -t rsa -b 2048
 #echo w | ssh-copy-id w@192.168.122.19
-#echo w | ssh-copy-id w@192.168.122.74
-
-#kubectl apply -f calico.yaml 
-#kubectl create -f  local-volume-provisioner.generated.yaml
-#kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
-#kubectl apply -f kube-state-metrics-configs//kube-state-metrics-configs/
-#helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 
 # use a calico version from around Jan 22 because later versions change the PDB api from v1beta to v1
-#kubectl create -f https://docs.projectcalico.org/archive/v3.15/manifests/tigera-operator.yaml
-# I had to download this file and update the pod selector beucase the damnn thing was trying to deploy on the cp which results in evictions
 kubectl apply -f tigera-operator.yaml
-#kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
 kubectl apply -f calico-custom-resources.yaml
 
 # Update the workers
@@ -215,14 +200,9 @@ startWorker 192.168.122.19 # worker-2-large
 startWorker 192.168.122.72 # worker-3-large
 startWorker 192.168.122.67 # worker-4-large
 
-#install local volume provisioner
+#install local volume provisioner and give it some time to start and identify the nodes' volumes
 kubectl create -f  local-volume-provisioner.generated.yaml
-#It takes a while for the local-volume-provisioner to find all the local volumes
-sleep 10
-
-#after a PC restart you need to add callico
-#curl https://docs.projectcalico.org/manifests/calico-typha.yaml -o calico.yaml
-#k apply -f calico.yaml 
+sleep 5
 
 helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --version=50.3.0 --values prom-values.yaml
 sleep 3   
