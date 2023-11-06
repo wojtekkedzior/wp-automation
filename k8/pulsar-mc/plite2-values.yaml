@@ -743,7 +743,7 @@ broker:
     managedLedgerDefaultAckQuorum: "1"
     maxUnackedMessagesPerConsumer: "10000"
     enableReplicatedSubscriptions: "true"
-    brokerDeduplicationEnabled: "true"
+    # brokerDeduplicationEnabled: "true"
   ## Add a custom command to the start up process of the broker pods (e.g. update-ca-certificates, jvm commands, etc)
   additionalCommand:
   ## Broker service
