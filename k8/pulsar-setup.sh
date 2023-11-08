@@ -51,9 +51,7 @@ function multiCluster() {
   echo "cluster on plite2 is ready"
 
   createTestTopics "pulsar-toolset-0" 2
-  sleep 5
   kubectl exec -i "pulsar-toolset-0" -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create wojtekt/wojtekns/sun"
-  sleep 5
   echo "cluster "pulsar" is ready"
 
   # createTestTopics "plite2-toolset-0" 2
