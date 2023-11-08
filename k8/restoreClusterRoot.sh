@@ -101,6 +101,7 @@ function pulsar3() {
     proxyIp=$(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')
     grafanaPort=80
     creds="admin:prom-operator"
+    headers="Content-Type: application/json" # todo, this needs to be wrapped in quotes
 
     curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-go-runtime.json             http://$proxyIp:$grafanaPort/api/dashboards/import
     curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper.json             http://$proxyIp:$grafanaPort/api/dashboards/import
