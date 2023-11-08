@@ -697,7 +697,7 @@ broker:
   resources:
     requests:
       memory: 500Mi
-      cpu: 0.5
+      cpu: 0.3
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
@@ -829,7 +829,7 @@ proxy:
   resources:
     requests:
       memory: 500Mi
-      cpu: 0.5
+      cpu: 0.3
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:

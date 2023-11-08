@@ -2,7 +2,7 @@ broker:
   # use a component name that matches your grafana configuration
   # so the metrics are correctly rendered in grafana dashboard
   component: broker
-  replicaCount: 4
+  replicaCount: 2
   autoscaling:
     enabled: false
     minReplicas: 1
