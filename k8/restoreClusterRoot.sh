@@ -101,29 +101,28 @@ function pulsar3() {
     proxyIp=$(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')
     grafanaPort=80
     creds="admin:prom-operator"
-    headers="Content-Type: application/json"
 
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-go-runtime.json             http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper.json             http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper-compaction.json  http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper-read-use.json    http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper-read-cache.json  http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-broker-cache.json           http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-broker-cache-by-broker.json http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-jvm.json                    http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-load-balancing.json         http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-messaging.json              http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-namespace.json              http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-node.json                   http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-offload.json                http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-ovewview.json               http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-overview-by-broker.json     http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-proxy.json                  http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-pulsar-heartbeat.json       http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-tenant.json                 http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-topic.json                  http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-zookeeper.json              http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H ${headers} -d @/home/w/wp-automation/k8/dashboards/ds/datastax-sockets-by-components.json  http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-go-runtime.json             http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper.json             http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper-compaction.json  http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper-read-use.json    http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper-read-cache.json  http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-broker-cache.json           http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-broker-cache-by-broker.json http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-jvm.json                    http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-load-balancing.json         http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-messaging.json              http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-namespace.json              http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-node.json                   http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-offload.json                http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-ovewview.json               http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-overview-by-broker.json     http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-proxy.json                  http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-pulsar-heartbeat.json       http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-tenant.json                 http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-topic.json                  http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-zookeeper.json              http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "Content-Type: application/json" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-sockets-by-components.json  http://$proxyIp:$grafanaPort/api/dashboards/import
 }
 
 function singleCluster() {
