@@ -44,7 +44,9 @@ function multiCluster() {
   # kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/wojtektopic1 -p 2"
 
   createTestTopics "pulsar-toolset-0" 2
+  sleep 5
   kubectl exec -i "pulsar-toolset-0" -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create wojtekt/wojtekns/sun"
+  sleep 5
   echo "cluster "pulsar" is ready"
 
   # on plite2: 
@@ -54,7 +56,7 @@ function multiCluster() {
   # kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics     create-partitioned-topic wojtekt/wojtekns/wojtektopic1 -p 2"
 
   createTestTopics "plite2-toolset-0" 2
-  kubectl exec -i "plite2-toolset-0" -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create wojtekt/wojtekns/sun"
+  # kubectl exec -i "plite2-toolset-0" -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create wojtekt/wojtekns/sun"
   echo "cluster on plite2 is ready"
 }
 
