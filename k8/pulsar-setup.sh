@@ -56,14 +56,16 @@ function multiCluster() {
   # createTestTopics "plite2-toolset-0" 2
   # kubectl exec -i "plite2-toolset-0" -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create wojtekt/wojtekns/sun"
 
-  sleep 5 # TODO without these delays this topic doesn't get created in the primary cluster, which is very weird because it's present in the plite2.
-  createTestTopics "pulsar-toolset-0" 2
-  # try creating the tenant and namespace in plite, delay for 5 and then create all the topics on the primary.  They should all be replicated to the back up
-  kubectl exec -i "pulsar-toolset-0" -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create wojtekt/wojtekns/sun"
-  sleep 5 
+  # sleep 5 # TODO without these delays this topic doesn't get created in the primary cluster, which is very weird because it's present in the plite2.
+  # createTestTopics "pulsar-toolset-0" 2
+  # # try creating the tenant and namespace in plite, delay for 5 and then create all the topics on the primary.  They should all be replicated to the back up
+  # kubectl exec -i "pulsar-toolset-0" -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create wojtekt/wojtekns/sun"
+  # sleep 5 
 
-  kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics list wojtekt/wojtekns"
-  kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics list wojtekt/wojtekns"
+  # echo "topics in primary"
+  # kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics list wojtekt/wojtekns"
+  # echo "topics in backup"
+  # kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics list wojtekt/wojtekns"
 
   # TODO remove subscription auto-create
 }
@@ -82,3 +84,11 @@ function singleCluster {
 
   echo "single pulsar cluster installed" 
 }
+
+
+
+
+# kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics terminate wojtekt/wojtekns/sun "
+# kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics delete  wojtekt/wojtekns/sun "
+
+# kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics terminate wojtekt/wojtekns/sun"
