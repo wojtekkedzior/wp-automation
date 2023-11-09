@@ -43,16 +43,17 @@ function multiCluster() {
   # the tenant, namespace and topics all need to be created on both Pulsar clusters.  No idea what happens if you increase the number of partitions on the primary cluster, but don't apply that change on the replication cluster.  It's possible 
   # that Pulsar will create the new partitions and just normal topics, which will not be accessible when trying to consume from the partitioned topic. 
   kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants    create wojtekt --admin-roles my-admin-role --allowed-clusters pulsar,plite2"
-  kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces create wojtekt/wojtekns --bundles 4"
-  kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces set-clusters wojtekt/wojtekns --clusters pulsar,plite2"
-  echo "cluster "pulsar" is ready"
+  # kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces create wojtekt/wojtekns --bundles 4"
+  # kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces set-clusters wojtekt/wojtekns --clusters pulsar,plite2"
+  # echo "cluster "pulsar" is ready"
 
-  kubectl exec -i "pulsar-toolset-0" -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create wojtekt/wojtekns/sun"
-   sleep 5 
+  # sleep 5
+  # kubectl exec -i "pulsar-toolset-0" -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create wojtekt/wojtekns/sun"
+  # sleep 5 
 
   # on plite2: 
   # echo "setting up cluster on plite2" 
-  # kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants    create wojtekt --admin-roles my-admin-role --allowed-clusters pulsar,plite2"
+  kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants    create wojtekt --admin-roles my-admin-role --allowed-clusters pulsar,plite2"
   # kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces create wojtekt/wojtekns --bundles 4"
   # echo "cluster on plite2 is ready"
 
