@@ -5,13 +5,9 @@ function createTestTopics() {
   local partitions=$2
 
   kubectl exec -i ${cluster} -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/mercury -p ${partitions}"
-  sleep 3
   kubectl exec -i ${cluster} -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/venus   -p ${partitions}"
-  sleep 3
   kubectl exec -i ${cluster} -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/earth   -p ${partitions}"
-  sleep 3
   kubectl exec -i ${cluster} -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic wojtekt/wojtekns/mars    -p ${partitions}"
-  sleep 3
 }
 
 function multiCluster() {
@@ -64,7 +60,7 @@ function multiCluster() {
   createTestTopics "pulsar-toolset-0" 2
   # # try creating the tenant and namespace in plite, delay for 5 and then create all the topics on the primary.  They should all be replicated to the back up
   # kubectl exec -i "pulsar-toolset-0" -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create wojtekt/wojtekns/sun"
-  sleep 10
+  sleep 3
 
   echo "topics in primary"
   kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics list wojtekt/wojtekns"
