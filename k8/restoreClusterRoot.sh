@@ -195,10 +195,14 @@ kubectl apply -f tigera-operator.yaml
 kubectl apply -f calico-custom-resources.yaml
 
 # Update the workers
-startWorker 192.168.122.74 # worker-1-large
-startWorker 192.168.122.19 # worker-2-large
-startWorker 192.168.122.72 # worker-3-large
-startWorker 192.168.122.67 # worker-4-large
+# startWorker 192.168.122.74 # worker-1-large
+# startWorker 192.168.122.19 # worker-2-large
+# startWorker 192.168.122.72 # worker-3-large
+# startWorker 192.168.122.67 # worker-4-large
+startWorker 192.168.122.221 # worker-1-large
+startWorker 192.168.122.252 # worker-2-large
+startWorker 192.168.122.244 # worker-3-large
+startWorker 192.168.122.171 # worker-4-large
 
 #install local volume provisioner and give it some time to start and identify the nodes' volumes
 kubectl create -f  local-volume-provisioner.generated.yaml
