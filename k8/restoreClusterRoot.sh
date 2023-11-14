@@ -64,7 +64,7 @@ function pulsar292() {
     while [ $(kubectl get po pulsar-proxy-0 -o json | jq -r .status.phase) != "Running" ];
     do
       echo "not ready"
-      sleep 5
+      sleep 1
     done
 
     echo "proxy is up"
@@ -85,7 +85,7 @@ function pulsar3() {
                  --version=3.0.0
 
     # the metrics for the brokers and proxies is at /metrics/cluster=<cluster-name>
-    sleep 5
+    sleep 1
     kubectl patch podmonitor pulsar-broker --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=pulsar"}]'
     kubectl patch podmonitor pulsar-proxy  --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=pulsar"}]'
 
@@ -96,7 +96,7 @@ function pulsar3() {
 
     #add charts https://github.com/apache/pulsar-helm-chart
     # streamnative/apache-pulsar-grafana-dashboard-k8s
-    sleep 20 # to allow grafana to come up
+    sleep 10 # to allow grafana to come up
 
     proxyIp=$(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')
     grafanaPort=80
@@ -132,7 +132,7 @@ function singleCluster() {
     while [ $(kubectl get po pulsar-proxy-0 -o json | jq -r .status.phase) != "Running" ];
     do
       echo "proxy not ready. waiting..."
-      sleep 5
+      sleep 1
     done
 
     echo "proxy is up"
@@ -156,7 +156,7 @@ function multiCluster() {
                  --version=3.0.0
 
     # Update the HA proxy with the ClusterIPs
-    sleep 5
+    sleep 3
     sudo sed -i "/setenv PROXY_2_IP/c\\\tsetenv PROXY_2_IP $(kubectl get svc plite2-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
 
     sudo service haproxy restart
@@ -164,7 +164,7 @@ function multiCluster() {
     while [ $(kubectl get po plite2-proxy-0 -o json | jq -r .status.phase) != "Running" ];
     do
       echo "proxy not ready. waiting..."
-      sleep 20
+      sleep 2
     done
 
     echo "proxy is up"
@@ -176,7 +176,7 @@ function hazelcast() {
     #helm upgrade --install my-release hazelcast/hazelcast  --set cluster.memberCount=3
     helm upgrade --install my-release hazelcast/hazelcast -f hazelcast-values.yaml
 
-    sleep 5
+    sleep 2
     sudo sed -i "/setenv HAZELCAST_IP/c\\\tsetenv HAZELCAST_IP $(kubectl get svc my-release-hazelcast -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
 }
 
@@ -206,10 +206,10 @@ startWorker 192.168.100.171 # worker-4-large
 
 #install local volume provisioner and give it some time to start and identify the nodes' volumes
 kubectl create -f  local-volume-provisioner.generated.yaml
-sleep 5
+# sleep 1
 
 helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --version=50.3.0 --values prom-values.yaml
-sleep 3   
+# sleep 3   
 
 kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type merge --patch='{ "spec":{ "podMonitorSelector":{ "matchLabels":{ "release": "pulsar"}}}}'
 kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type json  --patch='[{"op": "replace", "path": "/spec/logLevel", "value": "debug"}]'

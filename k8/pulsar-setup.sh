@@ -25,13 +25,13 @@ function multiCluster() {
   # the word 'create' is confusing here as the Pulsar clusters have already been created. These steps rather make each cluster aware of each other.  From plite1 add plite-2 and from plite2 add plite-1. #note that the cluster name used here must match
   # what is is the value.yaml for each Pulsar cluster eg clusterName: plite-1.
   kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin clusters create --broker-url pulsar://plite2-broker.default.svc.cluster.local:6650 --url http://plite2-broker.default.svc.cluster.local:8080 plite2"
-  sleep 5
+  # sleep 5
   kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin clusters create --broker-url pulsar://pulsar-broker.default.svc.cluster.local:6650 --url http://pulsar-broker.default.svc.cluster.local:8080 pulsar"
   echo "cluster are married"
-  sleep 3  
+  # sleep 3  
   # check whether the clusters are showing up correctly
   kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin clusters list"  
-  sleep 3
+  # sleep 3
   echo "in between cluster listing"
   kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin clusters list"
 
