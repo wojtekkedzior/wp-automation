@@ -64,12 +64,12 @@ function multiCluster() {
   createTestTopics "pulsar-toolset-0" 2
   # # try creating the tenant and namespace in plite, delay for 5 and then create all the topics on the primary.  They should all be replicated to the back up
   # kubectl exec -i "pulsar-toolset-0" -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create wojtekt/wojtekns/sun"
-  # sleep 5 
+  sleep 10
 
-  # echo "topics in primary"
-  # kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics list wojtekt/wojtekns"
-  # echo "topics in backup"
-  # kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics list wojtekt/wojtekns"
+  echo "topics in primary"
+  kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics list wojtekt/wojtekns"
+  echo "topics in backup"
+  kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics list wojtekt/wojtekns"
 
   # TODO remove subscription auto-create
 }
