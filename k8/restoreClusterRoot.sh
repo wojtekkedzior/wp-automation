@@ -88,7 +88,7 @@ function pulsar3() {
                  --version=3.0.0
 
     # the metrics for the brokers and proxies is at /metrics/cluster=<cluster-name>
-    sleep 1
+    # sleep 1
     kubectl patch podmonitor pulsar-broker --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=pulsar"}]'
     kubectl patch podmonitor pulsar-proxy  --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=pulsar"}]'
 
@@ -135,7 +135,7 @@ function singleCluster() {
     while [ $(kubectl get po pulsar-proxy-0 -o json | jq -r .status.phase) != "Running" ];
     do
       echo "proxy not ready. waiting..."
-      sleep 3
+      sleep 5
     done
 
     echo "proxy is up"
@@ -164,10 +164,11 @@ function multiCluster() {
 
     sudo service haproxy restart
 
+    # with two clusters, we need to wait for the second proxie to come up so that we can create resources on the back up cluster
     while [ $(kubectl get po plite2-proxy-0 -o json | jq -r .status.phase) != "Running" ];
     do
       echo "proxy not ready. waiting..."
-      sleep 3
+      sleep 5
     done
 
     echo "proxy is up"
