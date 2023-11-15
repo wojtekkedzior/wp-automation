@@ -209,8 +209,8 @@ kubectl apply -f tigera-operator.yaml
 kubectl apply -f calico-custom-resources.yaml
 
 # remove output from prio builds
-rm out-[1-3] 
-rm out-log-[1-3]
+rm out-[1-4] 
+rm out-log-[1-4]
 
 time startWorker 1 192.168.100.221 >> out-log-1 &   # worker-1-large
 time startWorker 2 192.168.100.252 >> out-log-2 &   # worker-2-large
