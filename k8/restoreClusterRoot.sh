@@ -215,4 +215,4 @@ kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type merge --pa
 kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type json  --patch='[{"op": "replace", "path": "/spec/logLevel", "value": "debug"}]'
 
 # singleCluster or multiCluster or hazelcast
-$1
+time $1
