@@ -1,7 +1,8 @@
 #/bin/bash
 
 function startWorker() {
-    host=$1
+    workerId=$1
+    host=$2
     joinCmd=$(tail -2 initout.txt)
 
     echo w | ssh -tt "w@${host}" 'yes | sudo kubeadm reset'
@@ -27,6 +28,8 @@ function startWorker() {
 
     # in case we need to clean out some customer iamges
     # echo w | ssh -tt "w@${host}" "yes | sudo docker system prune --all"
+
+    echo 1 > out-$workerId
 }
 
 # deprecated.  I've moved over to v3, but keeping this for reference.
@@ -180,6 +183,17 @@ function hazelcast() {
     sudo sed -i "/setenv HAZELCAST_IP/c\\\tsetenv HAZELCAST_IP $(kubectl get svc my-release-hazelcast -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
 }
 
+checkWorkerUp() {
+    workerId=$1
+    while [ ! -f "out-$workerId" ]
+    do
+        echo "waiting for worker $workerId"
+        sleep 2
+    done
+
+    echo "completion status for worker $workerId is present"
+}
+
 yes | sudo kubeadm reset && 
 sudo rm -R /etc/cni/net.d
 rm /home/w/.kube/config
@@ -194,15 +208,20 @@ sudo chown $(id -u):$(id -g) /home/w/.kube/config
 kubectl apply -f tigera-operator.yaml
 kubectl apply -f calico-custom-resources.yaml
 
-# Update the workers
-# startWorker 192.168.122.74 # worker-1-large
-# startWorker 192.168.122.19 # worker-2-large
-# startWorker 192.168.122.72 # worker-3-large
-# startWorker 192.168.122.67 # worker-4-large
-startWorker 192.168.100.221 # worker-1-large
-startWorker 192.168.100.252 # worker-2-large
-startWorker 192.168.100.244 # worker-3-large
-startWorker 192.168.100.171 # worker-4-large
+# remove output from prio builds
+rm out-[1-3] 
+rm out-log-[1-3]
+
+startWorker 1 192.168.100.221 >> out-log-1 &   # worker-1-large
+startWorker 2 192.168.100.252 >> out-log-2 &   # worker-2-large
+startWorker 3 192.168.100.244 >> out-log-3 &   # worker-3-large
+startWorker 4 192.168.100.171 >> out-log-4 &   # worker-4-large
+
+# block on checking whether the first worker is up. Generally, all the workers will come up at around the same time.
+checkWorkerUp 1
+checkWorkerUp 2
+checkWorkerUp 3
+checkWorkerUp 4
 
 #install local volume provisioner and give it some time to start and identify the nodes' volumes
 kubectl create -f  local-volume-provisioner.generated.yaml

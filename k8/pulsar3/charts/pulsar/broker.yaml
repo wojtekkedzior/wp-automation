@@ -96,6 +96,9 @@ broker:
     managedLedgerDefaultWriteQuorum: "2"
     managedLedgerDefaultAckQuorum: "1"
     enableReplicatedSubscriptions: "true"
+    replicatedSubscriptionsSnapshotTimeoutSeconds: "180"
+    replicatedSubscriptionsSnapshotFrequencyMillis: "10000"
+
     # brokerDeduplicationEnabled: "true"
     # maxUnackedMessagesPerConsumer: "10000"
   ## Add a custom command to the start up process of the broker pods (e.g. update-ca-certificates, jvm commands, etc)
