@@ -99,7 +99,7 @@ function pulsar3() {
 
     #add charts https://github.com/apache/pulsar-helm-chart
     # streamnative/apache-pulsar-grafana-dashboard-k8s
-    sleep 10 # to allow grafana to come up
+    sleep 5 # to allow grafana to come up
 
     proxyIp=$(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')
     grafanaPort=80
@@ -137,8 +137,6 @@ function singleCluster() {
       echo "proxy not ready. waiting..."
       sleep 5
     done
-
-    echo "proxy is up"
     bash -c "source pulsar-setup.sh; singleCluster"
 }
 
@@ -149,9 +147,7 @@ function multiCluster() {
     #helm repo add bitnami https://charts.bitnami.com/bitnami
     helm upgrade --install my-zookeeper bitnami/zookeeper  --values zk-values.yaml
 
-    # --------------------------------------------
     # ------------------ plite2 ------------------
-    # --------------------------------------------
     helm upgrade --install plite2 apache/pulsar \
                  --values=pulsar-mc/plite2-values.yaml\
                  --timeout 10m \
@@ -159,7 +155,6 @@ function multiCluster() {
                  --version=3.0.0
 
     # Update the HA proxy with the ClusterIPs
-    # sleep 3
     sudo sed -i "/setenv PROXY_2_IP/c\\\tsetenv PROXY_2_IP $(kubectl get svc plite2-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
 
     sudo service haproxy restart
@@ -170,16 +165,11 @@ function multiCluster() {
       echo "proxy not ready. waiting..."
       sleep 5
     done
-
-    echo "proxy is up"
-
     bash -c "source pulsar-setup.sh; multiCluster"
 }
 
 function hazelcast() {
-    #helm upgrade --install my-release hazelcast/hazelcast  --set cluster.memberCount=3
-    helm upgrade --install my-release hazelcast/hazelcast -f hazelcast-values.yaml
-
+    helm upgrade --install my-release hazelcast/hazelcast -f hazelcast-values.yaml #--set cluster.memberCount=3
     sleep 2
     sudo sed -i "/setenv HAZELCAST_IP/c\\\tsetenv HAZELCAST_IP $(kubectl get svc my-release-hazelcast -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
 }
@@ -189,10 +179,10 @@ checkWorkerUp() {
     while [ ! -f "out-$workerId" ]
     do
         echo "waiting for worker $workerId"
-        sleep 5
+        sleep 1
     done
 
-    echo "completion status for worker $workerId is present"
+    echo "Worker $workerId is alive"
 }
 
 yes | sudo kubeadm reset && 
@@ -202,16 +192,12 @@ sudo kubeadm init --pod-network-cidr=192.168.122.0/18 | tee initout.txt
 sudo cp -i /etc/kubernetes/admin.conf /home/w/.kube/config
 sudo chown $(id -u):$(id -g) /home/w/.kube/config
 
-#ssh-keygen -t rsa -b 2048
-#echo w | ssh-copy-id w@192.168.122.19
-
 # use a calico version from around Jan 22 because later versions change the PDB api from v1beta to v1
 kubectl apply -f tigera-operator.yaml
 kubectl apply -f calico-custom-resources.yaml
 
-# remove output from prio builds
-rm out-[1-4] 
-rm out-log-[1-4]
+# remove output from prior runs
+rm out-[1-4] out-log-[1-4]
 
 time startWorker 1 192.168.100.221 >> out-log-1 &   # worker-1-large
 time startWorker 2 192.168.100.252 >> out-log-2 &   # worker-2-large
@@ -226,13 +212,11 @@ checkWorkerUp 4
 
 #install local volume provisioner and give it some time to start and identify the nodes' volumes
 kubectl create -f  local-volume-provisioner.generated.yaml
-# sleep 1
 
 helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --version=50.3.0 --values prom-values.yaml
-# sleep 3   
 
 kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type merge --patch='{ "spec":{ "podMonitorSelector":{ "matchLabels":{ "release": "pulsar"}}}}'
 kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type json  --patch='[{"op": "replace", "path": "/spec/logLevel", "value": "debug"}]'
 
 # singleCluster or multiCluster or hazelcast
-time $1
+$1
