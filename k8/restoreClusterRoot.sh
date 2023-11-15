@@ -188,7 +188,7 @@ checkWorkerUp() {
     while [ ! -f "out-$workerId" ]
     do
         echo "waiting for worker $workerId"
-        sleep 2
+        sleep 5
     done
 
     echo "completion status for worker $workerId is present"
