@@ -174,7 +174,7 @@ function hazelcast() {
     sudo sed -i "/setenv HAZELCAST_IP/c\\\tsetenv HAZELCAST_IP $(kubectl get svc my-release-hazelcast -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
 }
 
-function checkIfWorkersAreUp() {
+function waitForWorkers() {
     for workerId in {1..4}
     do
         while [ ! -f "out-$workerId" ]
@@ -206,7 +206,7 @@ time startWorker 3 192.168.100.244 >> out-log-3 &   # worker-3-large
 time startWorker 4 192.168.100.171 >> out-log-4 &   # worker-4-large
 
 # block on checking whether the first worker is up. All the workers should come up at around the same time.
-checkIfWorkersAreUp
+waitForWorkers
 
 #install local volume provisioner and give it some time to start and identify the nodes' volumes
 kubectl create -f local-volume-provisioner.generated.yaml
