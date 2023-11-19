@@ -101,32 +101,32 @@ function pulsar3() {
     # streamnative/apache-pulsar-grafana-dashboard-k8s
     sleep 5 # to allow grafana to come up
 
-    proxyIp=$(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')
+    grafanaSvcIp=$(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')
     grafanaPort=80
     creds="admin:prom-operator"
     headers="Content-Type: application/json"
 
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-go-runtime.json             http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper.json             http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper-compaction.json  http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper-read-use.json    http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper-read-cache.json  http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-broker-cache.json           http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-broker-cache-by-broker.json http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-jvm.json                    http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-load-balancing.json         http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-messaging.json              http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-namespace.json              http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-node.json                   http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-offload.json                http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-ovewview.json               http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-overview-by-broker.json     http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-proxy.json                  http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-pulsar-heartbeat.json       http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-tenant.json                 http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-topic.json                  http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-zookeeper.json              http://$proxyIp:$grafanaPort/api/dashboards/import
-    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-sockets-by-components.json  http://$proxyIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-go-runtime.json             http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper.json             http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper-compaction.json  http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper-read-use.json    http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper-read-cache.json  http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-broker-cache.json           http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-broker-cache-by-broker.json http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-jvm.json                    http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-load-balancing.json         http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-messaging.json              http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-namespace.json              http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-node.json                   http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-offload.json                http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-ovewview.json               http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-overview-by-broker.json     http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-proxy.json                  http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-pulsar-heartbeat.json       http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-tenant.json                 http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-topic.json                  http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-zookeeper.json              http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+    curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-sockets-by-components.json  http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
 }
 
 function singleCluster() {
@@ -174,15 +174,16 @@ function hazelcast() {
     sudo sed -i "/setenv HAZELCAST_IP/c\\\tsetenv HAZELCAST_IP $(kubectl get svc my-release-hazelcast -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
 }
 
-checkWorkerUp() {
-    workerId=$1
-    while [ ! -f "out-$workerId" ]
+function checkIfWorkersAreUp() {
+    for workerId in {1..4}
     do
-        echo "waiting for worker $workerId"
-        sleep 1
+        while [ ! -f "out-$workerId" ]
+        do
+            echo "waiting for worker $workerId"
+            sleep 1
+        done
+        echo "Worker $workerId is alive"
     done
-
-    echo "Worker $workerId is alive"
 }
 
 yes | sudo kubeadm reset && 
@@ -204,14 +205,11 @@ time startWorker 2 192.168.100.252 >> out-log-2 &   # worker-2-large
 time startWorker 3 192.168.100.244 >> out-log-3 &   # worker-3-large
 time startWorker 4 192.168.100.171 >> out-log-4 &   # worker-4-large
 
-# block on checking whether the first worker is up. Generally, all the workers will come up at around the same time.
-checkWorkerUp 1
-checkWorkerUp 2
-checkWorkerUp 3
-checkWorkerUp 4
+# block on checking whether the first worker is up. All the workers should come up at around the same time.
+checkIfWorkersAreUp
 
 #install local volume provisioner and give it some time to start and identify the nodes' volumes
-kubectl create -f  local-volume-provisioner.generated.yaml
+kubectl create -f local-volume-provisioner.generated.yaml
 
 helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --version=50.3.0 --values prom-values.yaml
 
