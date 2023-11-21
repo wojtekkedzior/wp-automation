@@ -55,7 +55,7 @@ function multiCluster() {
   kubectl exec -i pulsar-toolset-0 -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create wojtekt/wojtekns/sun"
 
 
-  kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-subscription -s sun wojtekt/wojtekns/sun"
+  kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-subscription -s sub wojtekt/wojtekns/sun"
 
 
   echo "topics in primary"
