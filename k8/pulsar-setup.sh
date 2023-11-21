@@ -15,7 +15,10 @@ function multiCluster() {
   # initialize the cluster metadata from the first Pulsar cluster which is plite1 in this case. This populates the configuration store and lists the plit2 Pulsar cluster as the geo-replication destination. 
   # Note that the --zookeeper parameter refers to the zookeeper for the plite1 cluster
   kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar initialize-cluster-metadata --cluster pulsar --zookeeper pulsar-zookeeper.default.svc.cluster.local:2181 --configuration-store my-zookeeper.default.svc.cluster.local:2185  --web-service-url http://pulsar-broker.default.svc.cluster.local:8080 --broker-service-url pulsar://pulsar-broker.default.svc.cluster.local:6650"
-  
+
+  kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar initialize-cluster-metadata --cluster plite2 --zookeeper plite2-zookeeper.default.svc.cluster.local:2181 --configuration-store my-zookeeper.default.svc.cluster.local:2185  --web-service-url http://plite2-broker.default.svc.cluster.local:8080 --broker-service-url pulsar://plite2-broker.default.svc.cluster.local:6650"
+
+
   #TODO: does an initialize-cluster-metadata need to be called for the second cluster too? 
 
   # todo might not be needed any more as the there is already a wait-for the proxies after the cluster has been installed
@@ -54,9 +57,7 @@ function multiCluster() {
   createTestTopics "pulsar-toolset-0" 2
   kubectl exec -i pulsar-toolset-0 -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create wojtekt/wojtekns/sun"
 
-
-  kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-subscription -s sub wojtekt/wojtekns/sun"
-
+  # kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-subscription -s sub wojtekt/wojtekns/sun"
 
   echo "topics in primary"
   kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics list wojtekt/wojtekns"
