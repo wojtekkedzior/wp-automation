@@ -48,7 +48,7 @@ function multiCluster() {
   kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants    create wojtekt --admin-roles my-admin-role --allowed-clusters pulsar,plite2"
   kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces create wojtekt/wojtekns --bundles 4"
   kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces set-clusters wojtekt/wojtekns --clusters pulsar,plite2"
-  kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces remove-auto-subscription-creation wojtekt/wojtekns"
+  # kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces remove-auto-subscription-creation wojtekt/wojtekns"
   echo "cluster plite2 is ready"
 
   createTestTopics "pulsar-toolset-0" 2
