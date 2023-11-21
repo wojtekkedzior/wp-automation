@@ -51,6 +51,8 @@ function multiCluster() {
   # echo "setting up cluster on plite2" 
   kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants    create wojtekt --admin-roles my-admin-role --allowed-clusters pulsar,plite2"
   kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces create wojtekt/wojtekns --bundles 4"
+  kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces set-clusters wojtekt/wojtekns --clusters pulsar,plite2"
+
   # echo "cluster on plite2 is ready"
 
   # createTestTopics "plite2-toolset-0" 2
@@ -58,7 +60,7 @@ function multiCluster() {
   # sleep 5 # TODO without these delays this topic doesn't get created in the primary cluster, which is very weird because it's present in the plite2.
   createTestTopics "pulsar-toolset-0" 2
   kubectl exec -i pulsar-toolset-0 -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create wojtekt/wojtekns/sun"
-  kubectl exec -i pulsar-toolset-0 -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces set-clusters wojtekt/wojtekns --clusters pulsar,plite2"
+  # kubectl exec -i pulsar-toolset-0 -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces set-clusters wojtekt/wojtekns --clusters pulsar,plite2"
 
   # # try creating the tenant and namespace in plite, delay for 5 and then create all the topics on the primary.  They should all be replicated to the back up
   # kubectl exec -i "pulsar-toolset-0" -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create wojtekt/wojtekns/sun"
