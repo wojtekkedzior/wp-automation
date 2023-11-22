@@ -30,7 +30,7 @@ namespaceCreate: false
 ## clusterDomain as defined for your k8s cluster
 clusterDomain: cluster.local
 
-nameOverride: backup
+# nameOverride: backup
 
 ###
 ### Global Settings
@@ -40,7 +40,7 @@ nameOverride: backup
 initialize: false
 
 ## Set cluster name
-clusterName: plite2
+clusterName: backup
 
 ## add custom labels to components of cluster
 # labels:

@@ -77,7 +77,7 @@ function pulsar292() {
 function pulsar3() {
     echo "Installing Pulsar 3.0.0"	
 
-    helm upgrade --install pulsar pulsar3/charts/pulsar \
+    helm upgrade --install primary pulsar3/charts/pulsar \
                  --values=pulsar3/charts/pulsar/bookies.yaml \
                  --values=pulsar3/charts/pulsar/broker.yaml \
                  --values=pulsar3/charts/pulsar/proxy.yaml \
@@ -148,7 +148,7 @@ function multiCluster() {
     helm upgrade --install my-zookeeper bitnami/zookeeper  --values zk-values.yaml
 
     # ------------------ plite2 ------------------
-    helm upgrade --install plite2 apache/pulsar \
+    helm upgrade --install backup apache/pulsar \
                  --values=pulsar-mc/plite2-values.yaml\
                  --timeout 10m \
                  --set initilize=true \

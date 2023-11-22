@@ -7,7 +7,7 @@ clusterDomain: cluster.local
 initialize: false
 
 ## Set cluster name
-clusterName: primary
+# clusterName: primary
 
 ## add custom labels to components of cluster
 # labels:
