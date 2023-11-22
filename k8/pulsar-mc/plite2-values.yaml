@@ -30,7 +30,7 @@ namespaceCreate: false
 ## clusterDomain as defined for your k8s cluster
 clusterDomain: cluster.local
 
-nameOverride: plite2
+nameOverride: backup
 
 ###
 ### Global Settings
