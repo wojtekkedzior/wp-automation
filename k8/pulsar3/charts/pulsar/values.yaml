@@ -8,6 +8,7 @@ initialize: false
 
 ## Set cluster name
 # clusterName: primary
+nameOverride: primary
 
 ## add custom labels to components of cluster
 # labels:
