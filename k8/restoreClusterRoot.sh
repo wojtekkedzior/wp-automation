@@ -155,12 +155,12 @@ function multiCluster() {
                  --version=3.0.0
 
     # Update the HA proxy with the ClusterIPs
-    sudo sed -i "/setenv PROXY_2_IP/c\\\tsetenv PROXY_2_IP $(kubectl get svc plite2-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
+    sudo sed -i "/setenv PROXY_2_IP/c\\\tsetenv PROXY_2_IP $(kubectl get svc backup-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
 
     sudo service haproxy restart
 
     # with two clusters, we need to wait for the second proxie to come up so that we can create resources on the back up cluster
-    while [ $(kubectl get po plite2-proxy-0 -o json | jq -r .status.phase) != "Running" ];
+    while [ $(kubectl get po backup-proxy-0 -o json | jq -r .status.phase) != "Running" ];
     do
       echo "proxy not ready. waiting..."
       sleep 5
