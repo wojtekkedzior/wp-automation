@@ -38,14 +38,14 @@ function pulsar292() {
     kubectl apply -f node-exporter/kubernetes-node-exporter/
 
     helm upgrade --install pulsar apache/pulsar \
-    --values=pulsar-single/bookies.yaml \
-    --values=pulsar-single/broker.yaml \
-    --values=pulsar-single/proxy.yaml \
-    --values=pulsar-single/toolset.yaml \
-    --values=pulsar-single/values.yaml \
-    --timeout 10m \
-    --set initilize=true \
-    --version=2.9.2
+                 --values=pulsar-single/bookies.yaml \
+                 --values=pulsar-single/broker.yaml \
+                 --values=pulsar-single/proxy.yaml \
+                 --values=pulsar-single/toolset.yaml \
+                 --values=pulsar-single/values.yaml \
+                 --timeout 10m \
+                 --set initilize=true \
+                 --version=2.9.2
 
     # Update the HA proxy with the ClusterIPs
     sleep 5

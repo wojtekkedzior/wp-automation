@@ -18,7 +18,7 @@ function multiCluster() {
 
   kubectl exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar initialize-cluster-metadata --cluster backup --zookeeper backup-zookeeper.default.svc.cluster.local:2181 --configuration-store my-zookeeper.default.svc.cluster.local:2185  --web-service-url http://backup-broker.default.svc.cluster.local:8080 --broker-service-url pulsar://backup-broker.default.svc.cluster.local:6650"
 
-  sleep 3
+  # sleep 3
   #TODO: does an initialize-cluster-metadata need to be called for the second cluster too? 
 
   # todo might not be needed any more as the there is already a wait-for the proxies after the cluster has been installed
@@ -32,7 +32,7 @@ function multiCluster() {
   kubectl exec -i backup-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin clusters create --broker-url pulsar://primary-broker.default.svc.cluster.local:6650 --url http://primary-broker.default.svc.cluster.local:8080 primary"
   echo "cluster are married"
 
-  sleep 3
+  # sleep 3
 
   
   # sleep 3  
@@ -45,14 +45,14 @@ function multiCluster() {
   echo "setting up cluster named "backup"" 
   # the tenant, namespace and topics all need to be created on both Pulsar clusters.  No idea what happens if you increase the number of partitions on the primary cluster, but don't apply that change on the replication cluster.  It's possible 
   # that Pulsar will create the new partitions and just normal topics, which will not be accessible when trying to consume from the partitioned topic. 
-  kubectl exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants    create wojtekt --admin-roles my-admin-role --allowed-clusters primary,backup"
+  kubectl exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants    create t --admin-roles my-admin-role --allowed-clusters primary,backup"
   kubectl exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces create t/ns --bundles 4"
   kubectl exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces set-clusters t/ns --clusters primary,backup"
   echo "cluster "primary" is ready"
 
   # on backup: 
   echo "setting up cluster backup" 
-  kubectl exec -i backup-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants    create wojtekt --admin-roles my-admin-role --allowed-clusters primary,backup"
+  kubectl exec -i backup-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants    create t --admin-roles my-admin-role --allowed-clusters primary,backup"
   kubectl exec -i backup-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces create t/ns --bundles 4"
   kubectl exec -i backup-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces set-clusters t/ns --clusters primary,backup"
   # kubectl exec -i backup-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces remove-auto-subscription-creation t/ns"
@@ -77,7 +77,7 @@ function singleCluster {
   # todo might not be needed any more as the there is already a wait-for the proxies after the cluster has been installed
   # sleep 40
 
-  kubectl  exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants create wojtekt"
+  kubectl  exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants create t"
   kubectl  exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces create t/ns"
   #  kubectl  exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces set-retention t/ns --size 2M --time 1m"
 
