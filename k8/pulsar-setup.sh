@@ -33,7 +33,6 @@ function multiCluster() {
   # echo "cluster are married"
 
   # sleep 3
-
   
   # sleep 3  
   # check whether the clusters are showing up correctly
