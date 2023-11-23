@@ -38,23 +38,23 @@ function pulsar292() {
     kubectl apply -f node-exporter/kubernetes-node-exporter/
 
     helm upgrade --install pulsar apache/pulsar \
-    --values=pulsar-single/bookies.yaml \
-    --values=pulsar-single/broker.yaml \
-    --values=pulsar-single/proxy.yaml \
-    --values=pulsar-single/toolset.yaml \
-    --values=pulsar-single/values.yaml \
-    --timeout 10m \
-    --set initilize=true \
-    --version=2.9.2
+                 --values=pulsar-single/bookies.yaml \
+                 --values=pulsar-single/broker.yaml \
+                 --values=pulsar-single/proxy.yaml \
+                 --values=pulsar-single/toolset.yaml \
+                 --values=pulsar-single/values.yaml \
+                 --timeout 10m \
+                 --set initilize=true \
+                 --version=2.9.2
 
     # Update the HA proxy with the ClusterIPs
     sleep 5
-    sudo sed -i "/setenv GRAFANA_IP/c\\\tsetenv GRAFANA_IP $(kubectl get svc pulsar-grafana -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
-    sudo sed -i "/setenv PROXY_IP/c\\\tsetenv PROXY_IP $(kubectl get svc pulsar-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
+    sudo sed -i "/setenv GRAFANA_IP/c\\\tsetenv GRAFANA_IP $(kubectl get svc primary-grafana -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
+    sudo sed -i "/setenv PROXY_IP/c\\\tsetenv PROXY_IP $(kubectl get svc primary-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
     sudo service haproxy restart
 
     # Enable node metrics in the pulasr grafana
-    kubectl get configmap pulsar-prometheus -o yaml > temp-prom-cf.yaml
+    kubectl get configmap primary-prometheus -o yaml > temp-prom-cf.yaml
     sed -i '7i \    \- job_name: '\''nodes'\''' temp-prom-cf.yaml
     sed -i '8i \      \static_configs:' temp-prom-cf.yaml
     sed -i "9i \      \- targets: ['$(kubectl get svc node-exporter-prometheus-node-exporter -o json | jq -r '.spec.clusterIP'):9100']" temp-prom-cf.yaml
@@ -64,7 +64,7 @@ function pulsar292() {
 
     sudo service haproxy restart
 
-    while [ $(kubectl get po pulsar-proxy-0 -o json | jq -r .status.phase) != "Running" ];
+    while [ $(kubectl get po primary-proxy-0 -o json | jq -r .status.phase) != "Running" ];
     do
       echo "not ready"
       sleep 1
@@ -77,7 +77,7 @@ function pulsar292() {
 function pulsar3() {
     echo "Installing Pulsar 3.0.0"	
 
-    helm upgrade --install pulsar pulsar3/charts/pulsar \
+    helm upgrade --install primary pulsar3/charts/pulsar \
                  --values=pulsar3/charts/pulsar/bookies.yaml \
                  --values=pulsar3/charts/pulsar/broker.yaml \
                  --values=pulsar3/charts/pulsar/proxy.yaml \
@@ -89,11 +89,11 @@ function pulsar3() {
 
     # the metrics for the brokers and proxies is at /metrics/cluster=<cluster-name>
     # sleep 1
-    kubectl patch podmonitor pulsar-broker --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=pulsar"}]'
-    kubectl patch podmonitor pulsar-proxy  --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=pulsar"}]'
+    kubectl patch podmonitor primary-broker --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=pulsar"}]'
+    kubectl patch podmonitor primary-proxy  --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=pulsar"}]'
 
     sudo sed -i "/setenv GRAFANA_IP/c\\\tsetenv GRAFANA_IP $(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
-    sudo sed -i "/setenv PROXY_IP/c\\\tsetenv PROXY_IP $(kubectl get svc pulsar-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
+    sudo sed -i "/setenv PROXY_IP/c\\\tsetenv PROXY_IP $(kubectl get svc primary-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
 
     sudo service haproxy restart
 
@@ -132,7 +132,7 @@ function pulsar3() {
 function singleCluster() {
     pulsar3
 
-    while [ $(kubectl get po pulsar-proxy-0 -o json | jq -r .status.phase) != "Running" ];
+    while [ $(kubectl get po primary-proxy-0 -o json | jq -r .status.phase) != "Running" ];
     do
       echo "proxy not ready. waiting..."
       sleep 5
@@ -148,19 +148,19 @@ function multiCluster() {
     helm upgrade --install my-zookeeper bitnami/zookeeper  --values zk-values.yaml
 
     # ------------------ plite2 ------------------
-    helm upgrade --install plite2 apache/pulsar \
+    helm upgrade --install backup apache/pulsar \
                  --values=pulsar-mc/plite2-values.yaml\
                  --timeout 10m \
                  --set initilize=true \
                  --version=3.0.0
 
     # Update the HA proxy with the ClusterIPs
-    sudo sed -i "/setenv PROXY_2_IP/c\\\tsetenv PROXY_2_IP $(kubectl get svc plite2-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
+    sudo sed -i "/setenv PROXY_2_IP/c\\\tsetenv PROXY_2_IP $(kubectl get svc backup-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
 
     sudo service haproxy restart
 
     # with two clusters, we need to wait for the second proxie to come up so that we can create resources on the back up cluster
-    while [ $(kubectl get po plite2-proxy-0 -o json | jq -r .status.phase) != "Running" ];
+    while [ $(kubectl get po backup-proxy-0 -o json | jq -r .status.phase) != "Running" ];
     do
       echo "proxy not ready. waiting..."
       sleep 5
