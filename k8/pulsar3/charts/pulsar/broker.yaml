@@ -95,9 +95,9 @@ broker:
     managedLedgerDefaultEnsembleSize: "2"
     managedLedgerDefaultWriteQuorum: "2"
     managedLedgerDefaultAckQuorum: "1"
-    # enableReplicatedSubscriptions: "true"
-    # replicatedSubscriptionsSnapshotTimeoutSeconds: "180"
-    # replicatedSubscriptionsSnapshotFrequencyMillis: "1000"
+    enableReplicatedSubscriptions: "true"
+    replicatedSubscriptionsSnapshotTimeoutSeconds: "180"
+    replicatedSubscriptionsSnapshotFrequencyMillis: "1000"
 
     # brokerDeduplicationEnabled: "true"
     # maxUnackedMessagesPerConsumer: "10000"

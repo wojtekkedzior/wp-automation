@@ -742,7 +742,7 @@ broker:
     managedLedgerDefaultWriteQuorum: "1"
     managedLedgerDefaultAckQuorum: "1"
     maxUnackedMessagesPerConsumer: "10000"
-    # enableReplicatedSubscriptions: "true"
+    enableReplicatedSubscriptions: "true"
     # allowAutoSubscriptionCreation: "false"
     PULSAR_LOG_LEVEL: "debug"
     PULSAR_LOG_ROOT_LEVEL: "debug"
