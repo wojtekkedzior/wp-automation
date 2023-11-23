@@ -88,7 +88,6 @@ function pulsar3() {
                  --version=3.0.0
 
     # the metrics for the brokers and proxies is at /metrics/cluster=<cluster-name>
-    # sleep 1
     kubectl patch podmonitor primary-broker --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=pulsar"}]'
     kubectl patch podmonitor primary-proxy  --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=pulsar"}]'
 
@@ -174,15 +173,16 @@ function hazelcast() {
     sudo sed -i "/setenv HAZELCAST_IP/c\\\tsetenv HAZELCAST_IP $(kubectl get svc my-release-hazelcast -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
 }
 
+# cascade the wait-for workers. The first loop will take the longs and the last 2 will be really quick as those two workers should be ready at about the same time as the first two.
 function waitForWorkers() {
     for workerId in {1..4}
     do
-        while [ ! -f "out-$workerId" ]
+        while [ ! -f "out-${workerId}" ]
         do
-            echo "waiting for worker $workerId"
-            sleep 1
+            echo "waiting for worker ${workerId}"
+            sleep 3
         done
-        echo "Worker $workerId is alive"
+        echo "Worker ${workerId} is alive"
     done
 }
 
