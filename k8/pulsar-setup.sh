@@ -45,14 +45,14 @@ function multiCluster() {
   echo "setting up cluster named "backup"" 
   # the tenant, namespace and topics all need to be created on both Pulsar clusters.  No idea what happens if you increase the number of partitions on the primary cluster, but don't apply that change on the replication cluster.  It's possible 
   # that Pulsar will create the new partitions and just normal topics, which will not be accessible when trying to consume from the partitioned topic. 
-  kubectl exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants    create t --admin-roles my-admin-role --allowed-clusters primary,backup"
+  kubectl exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin    tenants create t    --admin-roles my-admin-role --allowed-clusters primary,backup"
   kubectl exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces create t/ns --bundles 4"
   kubectl exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces set-clusters t/ns --clusters primary,backup"
   echo "cluster "primary" is ready"
 
   # on backup: 
   echo "setting up cluster backup" 
-  kubectl exec -i backup-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants    create t --admin-roles my-admin-role --allowed-clusters primary,backup"
+  kubectl exec -i backup-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants    create t    --admin-roles my-admin-role --allowed-clusters primary,backup"
   kubectl exec -i backup-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces create t/ns --bundles 4"
   kubectl exec -i backup-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces set-clusters t/ns --clusters primary,backup"
   # kubectl exec -i backup-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces remove-auto-subscription-creation t/ns"
