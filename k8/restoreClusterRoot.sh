@@ -112,7 +112,7 @@ function pulsar3Config() {
 
     #add charts https://github.com/apache/pulsar-helm-chart
     # streamnative/apache-pulsar-grafana-dashboard-k8s
-    sleep 10 # to allow grafana to come up
+    sleep 20 # to allow grafana to come up. This really needs to be this high becuase grafana takes a while before it's ready.  Maybe repalce with a wait-for?
 
     grafanaSvcIp=$(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')
     grafanaPort=80
