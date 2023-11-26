@@ -55,8 +55,8 @@ bookkeeper:
   gracePeriod: 30
   resources:
     requests:
-      memory: 2
-      cpu: 1
+      memory: 1
+      cpu: 0.3
   extraVolumes: []
   extraVolumeMounts: []
   # Ensures 2.10.0 non-root docker image works correctly.
@@ -131,8 +131,8 @@ bookkeeper:
     # we use `bin/pulsar` for starting bookie daemons
     PULSAR_MEM: >
       -Xms128m
-      -Xmx500m
-      -XX:MaxDirectMemorySize=1500m
+      -Xmx200m
+      -XX:MaxDirectMemorySize=800m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10
@@ -147,7 +147,7 @@ bookkeeper:
       -XX:+ExitOnOutOfMemoryError
       -XX:+PerfDisableSharedMem
     # configure the memory settings based on jvm memory settings
-    dbStorage_writeCacheMaxSizeMb: "1000"
+    dbStorage_writeCacheMaxSizeMb: "400"
     dbStorage_rocksDB_blockSize: "262144"
     dbStorage_readAheadCacheMaxSizeMb: "200"
     dbStorage_rocksDB_writeBufferSizeMB: "8"

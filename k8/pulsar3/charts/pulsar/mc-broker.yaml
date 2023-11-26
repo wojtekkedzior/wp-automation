@@ -2,7 +2,7 @@ broker:
   # use a component name that matches your grafana configuration
   # so the metrics are correctly rendered in grafana dashboard
   component: broker
-  replicaCount: 3
+  replicaCount: 2
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -50,8 +50,8 @@ broker:
   gracePeriod: 30
   resources:
     requests:
-      memory: 3500Mi
-      cpu: 2
+      memory: 2500Mi
+      cpu: 1
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
@@ -76,7 +76,7 @@ broker:
   ##
   configData:
     PULSAR_MEM: >
-      -Xms128m -Xmx5000m -XX:MaxDirectMemorySize=2800m
+      -Xms128m -Xmx300m -XX:MaxDirectMemorySize=2200m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10
@@ -98,33 +98,7 @@ broker:
     enableReplicatedSubscriptions: "true"
     replicatedSubscriptionsSnapshotTimeoutSeconds: "180"
     replicatedSubscriptionsSnapshotFrequencyMillis: "1000"
-    managedLedgerMaxLedgerRolloverTimeMinutes: "3"
-    managedLedgerMinLedgerRolloverTimeMinutes: "1"
-    managedLedgerCursorRolloverTimeInSeconds: "60"
-#    systemTopicEnabled: "true"
-#    topicLevelPoliciesEnabled: "true"
-    bookkeeperNumberOfChannelsPerBookie: "32"
-    loadBalancerAutoBundleSplitEnabled: "true"
-    bookkeeperClientTimeoutInSeconds: "180"
-    # loadBalancerResourceQuotaUpdateIntervalMinutes: "2"
-    # loadBalancerNamespaceBundleMaxTopics: "5"
-    # loadBalancerBrokerMaxTopics: "20"
-    # loadBalancerSheddingIntervalMinutes: "1"
-    # loadBalancerSheddingGracePeriodMinutes: "2"
-    # loadBalancerReportUpdateThresholdPercentage: "1"
-    # loadBalancerReportUpdateMaxIntervalMinutes: "1"
-    # loadBalancerResourceQuotaUpdateIntervalMinutes: "1"
-    # loadBalancerNamespaceBundleMaxMsgRate: "100"
-    # loadBalancerSheddingIntervalMinutes: "2"
-    # loadBalancerSheddingEnabled: "true"
-    # loadManagerClassName: "org.apache.pulsar.broker.loadbalance.impl.ModularLoadManagerImpl"  
-    # loadBalancerLoadSheddingStrategy: "org.apache.pulsar.broker.loadbalance.impl.ThresholdShedder"
-    # loadBalancerBrokerThresholdShedderPercentage: "10"
-    # loadBalancerBundleUnloadMinThroughputThreshold: "10"
-    # loadBalancerBandwithOutResourceWeight: "1"
-    # loadBalancerBandwithInResourceWeight: "1"
-    # loadBalancerHistoryResourcePercentage: "2"
-    # lowerBoundarySheddingEnabled: "true"
+
     # brokerDeduplicationEnabled: "true"
     # maxUnackedMessagesPerConsumer: "10000"
   ## Add a custom command to the start up process of the broker pods (e.g. update-ca-certificates, jvm commands, etc)

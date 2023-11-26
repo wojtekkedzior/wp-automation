@@ -74,9 +74,20 @@ function pulsar292() {
     bash -c "source pulsar-setup.sh; singleCluster"
 }
 
-function pulsar3() {
-    echo "Installing Pulsar 3.0.0"	
+function pulsar3mc() {
+    helm upgrade --install primary pulsar3/charts/pulsar \
+                --values=pulsar3/charts/pulsar/mc-bookies.yaml \
+                --values=pulsar3/charts/pulsar/mc-broker.yaml \
+                --values=pulsar3/charts/pulsar/mc-proxy.yaml \
+                --values=pulsar3/charts/pulsar/toolset.yaml \
+                --values=pulsar3/charts/pulsar/values.yaml \
+                --timeout 10m \
+                --set initilize=true \
+                --version=3.0.0
+    pulsar3Config
+}
 
+function pulsar3() {
     helm upgrade --install primary pulsar3/charts/pulsar \
                  --values=pulsar3/charts/pulsar/bookies.yaml \
                  --values=pulsar3/charts/pulsar/broker.yaml \
@@ -86,7 +97,10 @@ function pulsar3() {
                  --timeout 10m \
                  --set initilize=true \
                  --version=3.0.0
+    pulsar3Config
+}
 
+function pulsar3Config() {
     # the metrics for the brokers and proxies is at /metrics/cluster=<cluster-name>
     kubectl patch podmonitor primary-broker --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=pulsar"}]'
     kubectl patch podmonitor primary-proxy  --type json --patch='[{"op": "replace", "path": "/spec/podMetricsEndpoints/0/path", "value": "/metrics/cluster=pulsar"}]'
@@ -140,11 +154,11 @@ function singleCluster() {
 }
 
 function multiCluster() {
-    pulsar3
+    pulsar3mc
 
     # install a standalone version of zookeeper. This is known as the 'configurationStore' when it comes to working with geo-replication. Make sure to  change the client.port to something other than 2181 as that port is already used by the other zookeepers
     #helm repo add bitnami https://charts.bitnami.com/bitnami
-    helm upgrade --install my-zookeeper bitnami/zookeeper  --values zk-values.yaml
+    helm upgrade --install my-zookeeper bitnami/zookeeper --values zk-values.yaml
 
     # ------------------ plite2 ------------------
     helm upgrade --install backup apache/pulsar \
