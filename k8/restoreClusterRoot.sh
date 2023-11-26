@@ -76,14 +76,14 @@ function pulsar292() {
 
 function pulsar3mc() {
     helm upgrade --install primary pulsar3/charts/pulsar \
-                --values=pulsar3/charts/pulsar/mc-bookies.yaml \
-                --values=pulsar3/charts/pulsar/mc-broker.yaml \
-                --values=pulsar3/charts/pulsar/mc-proxy.yaml \
-                --values=pulsar3/charts/pulsar/toolset.yaml \
-                --values=pulsar3/charts/pulsar/values.yaml \
-                --timeout 10m \
-                --set initilize=true \
-                --version=3.0.0
+                 --values=pulsar3/charts/pulsar/mc-bookies.yaml \
+                 --values=pulsar3/charts/pulsar/mc-broker.yaml \
+                 --values=pulsar3/charts/pulsar/mc-proxy.yaml \
+                 --values=pulsar3/charts/pulsar/toolset.yaml \
+                 --values=pulsar3/charts/pulsar/values.yaml \
+                 --timeout 10m \
+                 --set initilize=true \
+                 --version=3.0.0
     pulsar3Config
 }
 

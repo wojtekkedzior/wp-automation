@@ -17,7 +17,7 @@ function create() {
         for j in `eval echo {$index..15}`;
         do
             echo "$path/worker-$i-$j.qcow2"
-            qemu-img create "$path/worker-$i-$j.qcow2" 20G -f qcow2 -o preallocation=full
+            qemu-img create "$path/worker-$i-$j.qcow2" 10G -f qcow2 -o preallocation=full
         done
     done
 }
