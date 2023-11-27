@@ -27,8 +27,8 @@ metadata:
     {{- include "pulsar.standardLabels" . | nindent 4 }}
     component: {{ .Values.broker.component }}
 data:
-  PULSAR_LOG_LEVEL: "debug"
-  PULSAR_LOG_ROOT_LEVEL: "debug"
+  PULSAR_LOG_LEVEL: "info"
+  PULSAR_LOG_ROOT_LEVEL: "info"
   # Metadata settings
   zookeeperServers: "{{ template "pulsar.zookeeper.connect" . }}{{ .Values.metadataPrefix }}"
   {{- if .Values.pulsar_metadata.configurationStore }}

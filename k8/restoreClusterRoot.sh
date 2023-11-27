@@ -85,7 +85,7 @@ function pulsar3Config() {
 
     # now upload all of our dashboards
     for filename in dashboards/ds/*.json; do
-        curl -X POST -u ${creds} -H "Content-Type: application/json" -d @${filename}  http://$grafanaSvcIp/api/dashboards/import
+        curl -X POST -u ${creds} -H "Content-Type: application/json" -d @${filename} http://$grafanaSvcIp/api/dashboards/import
     done;
 }
 
