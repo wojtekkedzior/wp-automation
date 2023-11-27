@@ -112,8 +112,7 @@ function pulsar3Config() {
 
     #add charts https://github.com/apache/pulsar-helm-chart
     # streamnative/apache-pulsar-grafana-dashboard-k8s
-    curl -u admin:prom-operator http://$grafanaSvcIp:$grafanaPort/api/health
-    sleep 20
+    sleep 10
 
     # while [ $(kubectl get po -l app.kubernetes.io/name=grafana -o json | jq -r .items[0].status.phase) != "Running" ];
     # do
@@ -125,6 +124,10 @@ function pulsar3Config() {
     grafanaPort=80
     creds="admin:prom-operator"
     headers="Content-Type: application/json"
+
+      curl -u ${creds} http://$grafanaSvcIp:$grafanaPort/api/health
+
+      sleep 20
 
     curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-go-runtime.json             http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
     curl -u ${creds} http://$grafanaSvcIp:$grafanaPort/api/health
