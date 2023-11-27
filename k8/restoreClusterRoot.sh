@@ -118,6 +118,8 @@ function pulsar3Config() {
     creds="admin:prom-operator"
     headers="Content-Type: application/json"
 
+    curl -u ${creds} http://$grafanaSvcIp:$grafanaPort/api/health 
+
     while [ $(curl -s -u ${creds} http://$grafanaSvcIp:$grafanaPort/api/health | jq -r .database) != "ok" ];
     do
       echo "grafana not ready. waiting..."
