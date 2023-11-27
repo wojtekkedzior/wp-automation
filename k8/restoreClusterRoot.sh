@@ -118,17 +118,13 @@ function pulsar3Config() {
     creds="admin:prom-operator"
     headers="Content-Type: application/json"
 
-    curl -s -u ${creds} http://$grafanaSvcIp:$grafanaPort/api/health --max-time 3
-    gr=$?
-    echo $gr
+    gr=1
 
     while [ $gr != 0 ];
     do 
         curl -s -u ${creds} http://$grafanaSvcIp:$grafanaPort/api/health --max-time 3
         gr=$?
     done
-
-    curl -u ${creds} http://$grafanaSvcIp:$grafanaPort/api/health 
 
     while [ $(curl -s -u ${creds} http://$grafanaSvcIp:$grafanaPort/api/health | jq -r .database) != "ok" ];
     do
