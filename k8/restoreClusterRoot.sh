@@ -118,19 +118,14 @@ function pulsar3Config() {
     creds="admin:prom-operator"
     headers="Content-Type: application/json"
 
+    # The initial call to the health check will fail as grafana takes a wee-while to get started.
+    # Once its "status.phase" = Running, it's still not ready for the api invocation hence we wait for the healthcheck to be up before uploading the dashboards
     gr=1
-
     while [ $gr != 0 ];
     do 
-        curl -s -u ${creds} http://$grafanaSvcIp:$grafanaPort/api/health --max-time 3
+        curl -s -u ${creds} http://$grafanaSvcIp:$grafanaPort/api/health --max-time 1
         gr=$?
     done
-
-    # while [ $(curl -s -u ${creds} http://$grafanaSvcIp:$grafanaPort/api/health | jq -r .database) != "ok" ];
-    # do
-    #   echo "grafana not ready. waiting..."
-    #   sleep 5
-    # done
 
     curl -s -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-go-runtime.json             http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
     curl -s -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper.json             http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
