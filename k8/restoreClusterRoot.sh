@@ -72,7 +72,6 @@ function pulsar3Config() {
     # streamnative/apache-pulsar-grafana-dashboard-k8s
 
     grafanaSvcIp=$(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')
-    grafanaPort=80
     creds="admin:prom-operator"
     headers="Content-Type: application/json"
 
@@ -81,13 +80,13 @@ function pulsar3Config() {
     gr=1
     while [ ${gr} != 0 ];
     do 
-        curl -s -u ${creds} http://$grafanaSvcIp:$grafanaPort/api/health --connect-timeout 1
+        curl -s -u ${creds} http://$grafanaSvcIp/api/health --connect-timeout 1
         gr=$?
     done
 
     # now upload all of our dashboards
     for filename in dashboards/ds/*.json; do
-        curl -X POST -u ${creds} -H "${headers}" -d @${filename}  http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
+        curl -X POST -u ${creds} -H "${headers}" -d @${filename}  http://$grafanaSvcIp/api/dashboards/import
     done;
 }
 
@@ -180,4 +179,5 @@ kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type merge --pa
 kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type json  --patch='[{"op": "replace", "path": "/spec/logLevel", "value": "debug"}]'
 
 # singleCluster or multiCluster or hazelcast
+# TODO: need to add more params such as sc, mc, hz and by default install only k8
 $1
