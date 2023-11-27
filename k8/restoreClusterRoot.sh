@@ -73,7 +73,6 @@ function pulsar3Config() {
 
     grafanaSvcIp=$(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')
     creds="admin:prom-operator"
-    headers="Content-Type: application/json"
 
     # The initial call to the health check will fail as grafana takes a wee-while to get started.
     # Once its "status.phase" = Running, it's still not ready for the api invocation hence we wait for the healthcheck to be up before uploading the dashboards
@@ -86,7 +85,7 @@ function pulsar3Config() {
 
     # now upload all of our dashboards
     for filename in dashboards/ds/*.json; do
-        curl -X POST -u ${creds} -H "${headers}" -d @${filename}  http://$grafanaSvcIp/api/dashboards/import
+        curl -X POST -u ${creds} -H "Content-Type: application/json" -d @${filename}  http://$grafanaSvcIp/api/dashboards/import
     done;
 }
 
