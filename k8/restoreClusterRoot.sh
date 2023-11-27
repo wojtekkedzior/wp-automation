@@ -126,11 +126,11 @@ function pulsar3Config() {
         gr=$?
     done
 
-    while [ $(curl -s -u ${creds} http://$grafanaSvcIp:$grafanaPort/api/health | jq -r .database) != "ok" ];
-    do
-      echo "grafana not ready. waiting..."
-      sleep 5
-    done
+    # while [ $(curl -s -u ${creds} http://$grafanaSvcIp:$grafanaPort/api/health | jq -r .database) != "ok" ];
+    # do
+    #   echo "grafana not ready. waiting..."
+    #   sleep 5
+    # done
 
     curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-go-runtime.json             http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
     curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper.json             http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
