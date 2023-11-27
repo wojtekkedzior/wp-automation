@@ -124,6 +124,7 @@ function pulsar3Config() {
     do 
         curl -s -u ${creds} http://$grafanaSvcIp:$grafanaPort/api/health --max-time 3
         gr=$?
+        sleep 1
     done
 
     # while [ $(curl -s -u ${creds} http://$grafanaSvcIp:$grafanaPort/api/health | jq -r .database) != "ok" ];
