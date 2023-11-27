@@ -112,26 +112,19 @@ function pulsar3Config() {
 
     #add charts https://github.com/apache/pulsar-helm-chart
     # streamnative/apache-pulsar-grafana-dashboard-k8s
-    sleep 10
-
-    # while [ $(kubectl get po -l app.kubernetes.io/name=grafana -o json | jq -r .items[0].status.phase) != "Running" ];
-    # do
-    #   echo "grafana not ready. waiting..."
-    #   sleep 5
-    # done
 
     grafanaSvcIp=$(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')
     grafanaPort=80
     creds="admin:prom-operator"
     headers="Content-Type: application/json"
 
-      curl -u ${creds} http://$grafanaSvcIp:$grafanaPort/api/health
-
-      sleep 20
+    while [ $(curl -u ${creds} http://$grafanaSvcIp:$grafanaPort/api/health | jq -r .database) != "ok" ];
+    do
+      echo "grafana not ready. waiting..."
+      sleep 5
+    done
 
     curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-go-runtime.json             http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
-    curl -u ${creds} http://$grafanaSvcIp:$grafanaPort/api/health
-
     curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper.json             http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
     curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper-compaction.json  http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
     curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-bookkeeper-read-use.json    http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
@@ -141,15 +134,12 @@ function pulsar3Config() {
     curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-load-balancing.json         http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
     curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-messaging.json              http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
     curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-namespace.json              http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
-    curl -u ${creds}  http://$grafanaSvcIp:$grafanaPort/api/health
-
     curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-node.json                   http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
     curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-offload.json                http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
     curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-ovewview.json               http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
     curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-overview-by-broker.json     http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
     curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-pulsar-heartbeat.json       http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
     curl -X POST -u ${creds} -H "${headers}" -d @/home/w/wp-automation/k8/dashboards/ds/datastax-sockets-by-components.json  http://$grafanaSvcIp:$grafanaPort/api/dashboards/import
-    curl -u ${creds}  http://$grafanaSvcIp:$grafanaPort/api/health
 }
 
 function singleCluster() {
