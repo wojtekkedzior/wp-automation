@@ -112,12 +112,13 @@ function pulsar3Config() {
 
     #add charts https://github.com/apache/pulsar-helm-chart
     # streamnative/apache-pulsar-grafana-dashboard-k8s
+    sleep 30
 
-    while [ $(kubectl get po -l app.kubernetes.io/name=grafana -o json | jq -r .items[0].status.phase) != "Running" ];
-    do
-      echo "grafana not ready. waiting..."
-      sleep 5
-    done
+    # while [ $(kubectl get po -l app.kubernetes.io/name=grafana -o json | jq -r .items[0].status.phase) != "Running" ];
+    # do
+    #   echo "grafana not ready. waiting..."
+    #   sleep 5
+    # done
 
     grafanaSvcIp=$(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')
     grafanaPort=80
