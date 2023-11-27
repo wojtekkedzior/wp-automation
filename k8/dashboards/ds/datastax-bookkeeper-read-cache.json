@@ -920,7 +920,7 @@
             "list": []
         },
         "time": {
-            "from": "now-6h",
+            "from": "now-30m",
             "to": "now"
         },
         "timepicker": {},

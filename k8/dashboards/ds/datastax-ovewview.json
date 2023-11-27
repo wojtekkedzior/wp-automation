@@ -3307,7 +3307,7 @@
                 }
             }
         ],
-        "refresh": "1m",
+        "refresh": "5s",
         "schemaVersion": 38,
         "style": "dark",
         "tags": [
@@ -3317,7 +3317,7 @@
             "list": []
         },
         "time": {
-            "from": "now-12h",
+            "from": "now-30m",
             "to": "now"
         },
         "timepicker": {
