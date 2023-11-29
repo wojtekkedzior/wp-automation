@@ -100,7 +100,6 @@ function singleCluster() {
       sleep 5
     done
 
-    sleep 10
     bash -c "source pulsar-setup.sh; singleCluster"
 }
 
