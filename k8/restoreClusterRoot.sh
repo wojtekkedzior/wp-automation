@@ -100,7 +100,7 @@ function singleCluster() {
       sleep 5
     done
 
-    while [ $(curl -s "http://$(kubectl get svc primary-proxy -o json | jq -r '.spec.clusterIP'):8080/status.html)" != "OK" ];
+    while [ "$(curl -s http://$(kubectl get svc primary-proxy -o json | jq -r '.spec.clusterIP'):8080/status.html)" != "OK" ];
     do
         echo "proxy up, but not yet ready to work..."
         sleep 1
