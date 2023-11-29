@@ -68,40 +68,40 @@ bookkeeper:
     persistence: true
     journal:
       name: journal
-      size: 95Gi
+      size: 9Gi
       storageClassName: fast-disks
       selector: {}
       useMultiVolumes: true
       multiVolumes:
         - name: journal0
-          size: 95Gi
+          size: 9Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal0
         - name: journal1
-          size: 95Gi
+          size: 9Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal1
         - name: journal2
-          size: 95Gi
+          size: 9Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal2
     ledgers:
       name: ledgers
-      size: 95Gi
+      size: 9Gi
       local_storage: true
       storageClassName: fast-disks
       useMultiVolumes: true
       multiVolumes:
         - name: ledgers0
-          size: 95Gi
+          size: 9Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers0
         - name: ledgers1
-          size: 95Gi
+          size: 9Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers1
         - name: ledgers2
-          size: 95Gi
+          size: 9Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers2
     useSingleCommonVolume: false
