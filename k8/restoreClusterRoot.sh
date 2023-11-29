@@ -136,7 +136,7 @@ function hazelcast() {
 
 # cascade the wait-for workers. The first loop will take the longs and the last 2 will be really quick as those two workers should be ready at about the same time as the first two.
 function waitForWorkers() {
-    for workerId in {1..4}
+    for workerId in {1..2}
     do
         while [ ! -f "out-${workerId}" ]
         do
