@@ -100,6 +100,12 @@ function singleCluster() {
       sleep 5
     done
 
+    while [ $(curl -s http://10.107.121.173:8080/status.html) != "OK" ];
+    do
+        echo "proxy up, but not yet ready to work..."
+        sleep 1
+    done;
+
     bash -c "source pulsar-setup.sh; singleCluster"
 }
 
