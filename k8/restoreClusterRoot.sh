@@ -155,8 +155,11 @@ sudo cp -i /etc/kubernetes/admin.conf /home/w/.kube/config
 sudo chown $(id -u):$(id -g) /home/w/.kube/config
 
 # use a calico version from around Jan 22 because later versions change the PDB api from v1beta to v1
-kubectl apply -f tigera-operator.yaml
+# kubectl apply -f tigera-operator.yaml
+kubectl apply -f new-tigera-operator.yaml
 kubectl apply -f calico-custom-resources.yaml
+
+
 
 # remove output from prior runs
 rm out-[1-4] out-log-[1-4]
