@@ -99,6 +99,8 @@ function singleCluster() {
       echo "proxy not ready. waiting..."
       sleep 5
     done
+
+    sleep 10
     bash -c "source pulsar-setup.sh; singleCluster"
 }
 
