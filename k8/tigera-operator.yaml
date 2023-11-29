@@ -3749,8 +3749,8 @@ spec:
         name: tigera-operator
         k8s-app: tigera-operator
     spec:
-            #      nodeSelector:
-            # kubernetes.io/hostname: worker-2-large      
+      nodeSelector:
+        kubernetes.io/hostname: cp
       tolerations:
         - effect: NoExecute
           operator: Exists
