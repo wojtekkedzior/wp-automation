@@ -29,6 +29,8 @@ function startWorker() {
     # in case we need to clean out some customer iamges
     # echo w | ssh -tt "w@${host}" "yes | sudo docker system prune --all"
 
+    echo w | ssh -tt "w@${host}" "sudo systemctl restart containerd.service"
+
     echo 1 > out-$workerId
 }
 
@@ -153,6 +155,8 @@ rm /home/w/.kube/config
 sudo kubeadm init --pod-network-cidr=192.168.122.0/18 | tee initout.txt
 sudo cp -i /etc/kubernetes/admin.conf /home/w/.kube/config
 sudo chown $(id -u):$(id -g) /home/w/.kube/config
+
+sudo systemctl restart containerd.service 
 
 # use a calico version from around Jan 22 because later versions change the PDB api from v1beta to v1
 # kubectl apply -f tigera-operator.yaml
