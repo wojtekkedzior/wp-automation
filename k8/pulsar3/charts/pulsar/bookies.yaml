@@ -81,10 +81,6 @@ bookkeeper:
           size: 95Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal1
-        - name: journal2
-          size: 95Gi
-          storageClassName: fast-disks
-          mountPath: /pulsar/data/bookkeeper/journal2
     ledgers:
       name: ledgers
       size: 19Gi
@@ -100,10 +96,6 @@ bookkeeper:
           size: 95Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers1
-        - name: ledgers2
-          size: 95Gi
-          storageClassName: fast-disks
-          mountPath: /pulsar/data/bookkeeper/ledgers2
     useSingleCommonVolume: false
     common:
       name: common
