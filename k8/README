@@ -1,7 +1,29 @@
-resizing VM drives
 
- qemu-img resize disk.qcow2 --shrink -10G
- qemu-img info disk.qcow2
+
+
+# Promethus
+
+k get secret prometheus-prometheus-kube-prometheus-prometheus -o json | jq -r '.data."prometheus.yaml.gz"' | base64 -d | gunzip > secret.yaml
+
+prometheus operator - under the good
+https://prometheus-operator.dev/docs/operator/troubleshooting/
+https://observability.thomasriley.co.uk/prometheus/configuring-prometheus/using-service-monitors/
+
+k patch -n default Prometheus prometheus-kube-prometheus-prometheus -p='[{"op": "replace", "path": "/spec/logLevel", "value": "debug"}]' --type='json'
+k patch -n default Prometheus prometheus-kube-prometheus-prometheus --type merge --patch='{"spec": podMonitorSelector": {"matchLabels": {"release": "pulsar"}}}}'
+
+# grafana
+curl -X GET -u "admin:prom-operator" -H "Content-Type: application/json"  http://192.168.1.17:3003/api/dashboards/uid/XlS0CN-mk > my-overview.json
+
+### qemu
+
+# to create an image
+sudo qemu-img create t.qcow2 500G -f qcow2 -o preallocation=full
+
+# resizing VM drives
+
+qemu-img resize disk.qcow2 --shrink -10G
+qemu-img info disk.qcow2
 
 on the guest:
 
@@ -17,35 +39,13 @@ pvdisplay
 vgdisplay
 lvdisplay
 
+pvresize /dev/sda3
+
+#exapnd the partition
 lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
 resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
 
-
- https://linuxconfig.org/how-to-resize-a-qcow2-disk-image-on-linux
- https://packetpushers.net/ubuntu-extend-your-default-lvm-space/
+#refs
+https://linuxconfig.org/how-to-resize-a-qcow2-disk-image-on-linux
+https://packetpushers.net/ubuntu-extend-your-default-lvm-space/
 https://www.ibm.com/docs/en/linux-on-systems?topic=commands-qemu-image-command
-
-Promethus
-
-k get secret prometheus-prometheus-kube-prometheus-prometheus -o json | jq -r '.data."prometheus.yaml.gz"' | base64 -d | gunzip > secret.yaml
-
-
-
-
-prometheus operator - under the good
-https://prometheus-operator.dev/docs/operator/troubleshooting/
-https://observability.thomasriley.co.uk/prometheus/configuring-prometheus/using-service-monitors/
-
-k patch -n default Prometheus prometheus-kube-prometheus-prometheus -p='[{"op": "replace", "path": "/spec/logLevel", "value": "debug"}]' --type='json'
-k patch -n default Prometheus prometheus-kube-prometheus-prometheus --type merge --patch='{"spec": podMonitorSelector": {"matchLabels": {"release": "pulsar"}}}}'
-
-
-
-grafana
-curl -X GET -u "admin:prom-operator" -H "Content-Type: application/json"  http://192.168.1.17:3003/api/dashboards/uid/XlS0CN-mk > my-overview.json
-
-
-### qemu
-
-# to create an image
-sudo qemu-img create t.qcow2 500G -f qcow2 -o preallocation=full
