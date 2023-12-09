@@ -137,6 +137,15 @@ function multiCluster() {
     bash -c "source pulsar-setup.sh; multiCluster"
 }
 
+function vpa() {
+    #TODO
+}
+
+function hpa() {
+    #TODO
+    #TODO - include metrics server
+}
+
 function hazelcast() {
     helm upgrade --install my-release hazelcast/hazelcast -f hazelcast-values.yaml #--set cluster.memberCount=3
     sleep 2
@@ -192,5 +201,24 @@ kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type merge --pa
 kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type json  --patch='[{"op": "replace", "path": "/spec/logLevel", "value": "debug"}]'
 
 # singleCluster or multiCluster or hazelcast
-# TODO: need to add more params such as sc, mc, hz and by default install only k8
-$1
+# TODO: need to add more params such as sc, mc, hz and by default install only k8 - make this script receive arguments properly
+# $1
+
+case "$1" in
+shell | bash | sh | /bin/bash)
+  echo "Starting a bash shell"
+  exec /bin/bash
+  ;;
+update | deploy)
+  echo "do sometying"
+  exec t.sh
+  ;;
+cleanup | remove)
+  kubectl delete secrets,deployments,issuers,certs,sa,svc --all
+  ;;
+*)
+  echo "Unknown action: $action"
+  help
+  exit 1
+  ;;
+esac
