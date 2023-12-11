@@ -90,7 +90,7 @@ function multiCluster() {
 
     # install a standalone version of zookeeper. This is known as the 'configurationStore' when it comes to working with geo-replication. Make sure to  change the client.port to something other than 2181 as that port is already used by the other zookeepers
     #helm repo add bitnami https://charts.bitnami.com/bitnami
-    helm upgrade --install my-zookeeper bitnami/zookeeper --values ../zk-values.yaml
+    helm upgrade --install my-zookeeper bitnami/zookeeper --values zk-values.yaml
 
     # ------------------ plite2 ------------------
     helm upgrade --install backup apache/pulsar \
