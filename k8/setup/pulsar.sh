@@ -2,7 +2,7 @@
 
 function pulsarMonitoring() {
     #install local volume provisioner and give it some time to start and identify the nodes' volumes
-    kubectl create -f local-volume-provisioner.generated.yaml
+    kubectl create -f ../local-volume-provisioner.generated.yaml
 
     helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --version=50.3.0 --values prom-values.yaml
 
@@ -12,11 +12,11 @@ function pulsarMonitoring() {
 
 function pulsar3mc() {
     helm upgrade --install primary pulsar3/charts/pulsar \
-                 --values=pulsar3/charts/pulsar/mc-bookies.yaml \
-                 --values=pulsar3/charts/pulsar/mc-broker.yaml \
-                 --values=pulsar3/charts/pulsar/mc-proxy.yaml \
-                 --values=pulsar3/charts/pulsar/toolset.yaml \
-                 --values=pulsar3/charts/pulsar/values.yaml \
+                 --values=../pulsar3/charts/pulsar/mc-bookies.yaml \
+                 --values=../pulsar3/charts/pulsar/mc-broker.yaml \
+                 --values=../pulsar3/charts/pulsar/mc-proxy.yaml \
+                 --values=../pulsar3/charts/pulsar/toolset.yaml \
+                 --values=../pulsar3/charts/pulsar/values.yaml \
                  --timeout 10m \
                  --set initilize=true \
                  --version=3.0.0
@@ -25,11 +25,11 @@ function pulsar3mc() {
 
 function pulsar3() {
     helm upgrade --install primary pulsar3/charts/pulsar \
-                 --values=pulsar3/charts/pulsar/bookies.yaml \
-                 --values=pulsar3/charts/pulsar/broker.yaml \
-                 --values=pulsar3/charts/pulsar/proxy.yaml \
-                 --values=pulsar3/charts/pulsar/toolset.yaml \
-                 --values=pulsar3/charts/pulsar/values.yaml \
+                 --values=../pulsar3/charts/pulsar/bookies.yaml \
+                 --values=../pulsar3/charts/pulsar/broker.yaml \
+                 --values=../pulsar3/charts/pulsar/proxy.yaml \
+                 --values=../pulsar3/charts/pulsar/toolset.yaml \
+                 --values=../pulsar3/charts/pulsar/values.yaml \
                  --timeout 10m \
                  --set initilize=true \
                  --version=3.0.0
@@ -62,7 +62,7 @@ function pulsar3Config() {
     done
 
     # now upload all of our dashboards
-    for filename in dashboards/ds/*.json; do
+    for filename in ../dashboards/ds/*.json; do
         curl -X POST -u ${creds} -H "Content-Type: application/json" -d @${filename} http://$grafanaSvcIp/api/dashboards/import
     done;
 }
@@ -90,11 +90,11 @@ function multiCluster() {
 
     # install a standalone version of zookeeper. This is known as the 'configurationStore' when it comes to working with geo-replication. Make sure to  change the client.port to something other than 2181 as that port is already used by the other zookeepers
     #helm repo add bitnami https://charts.bitnami.com/bitnami
-    helm upgrade --install my-zookeeper bitnami/zookeeper --values zk-values.yaml
+    helm upgrade --install my-zookeeper bitnami/zookeeper --values ../zk-values.yaml
 
     # ------------------ plite2 ------------------
     helm upgrade --install backup apache/pulsar \
-                 --values=pulsar-mc/plite2-values.yaml\
+                 --values=../pulsar-mc/plite2-values.yaml\
                  --timeout 10m \
                  --set initilize=true \
                  --version=3.0.0
