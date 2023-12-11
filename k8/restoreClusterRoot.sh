@@ -165,6 +165,16 @@ function waitForWorkers() {
     done
 }
 
+function pulsarMonitoring() {
+    #install local volume provisioner and give it some time to start and identify the nodes' volumes
+    kubectl create -f local-volume-provisioner.generated.yaml
+
+    helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --version=50.3.0 --values prom-values.yaml
+
+    kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type merge --patch='{ "spec":{ "podMonitorSelector":{ "matchLabels":{ "release": "primary"}}}}'
+    kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type json  --patch='[{"op": "replace", "path": "/spec/logLevel", "value": "debug"}]'
+}
+
 yes | sudo kubeadm reset && 
 sudo rm -R /etc/cni/net.d
 rm /home/w/.kube/config
@@ -179,8 +189,6 @@ sudo systemctl restart containerd.service
 kubectl create -f new-tigera-operator.yaml
 kubectl apply -f calico-custom-resources.yaml
 
-
-
 # remove output from prior runs
 rm out-[1-4] out-log-[1-4]
 
@@ -192,33 +200,39 @@ time startWorker 4 192.168.100.171 >> out-log-4 &   # worker-4-large
 # block on checking whether the first worker is up. All the workers should come up at around the same time.
 waitForWorkers
 
-#install local volume provisioner and give it some time to start and identify the nodes' volumes
-kubectl create -f local-volume-provisioner.generated.yaml
-
-helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --version=50.3.0 --values prom-values.yaml
-
-kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type merge --patch='{ "spec":{ "podMonitorSelector":{ "matchLabels":{ "release": "primary"}}}}'
-kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type json  --patch='[{"op": "replace", "path": "/spec/logLevel", "value": "debug"}]'
-
-# singleCluster or multiCluster or hazelcast
-# TODO: need to add more params such as sc, mc, hz and by default install only k8 - make this script receive arguments properly
-# $1
-
-case "$1" in
-shell | bash | sh | /bin/bash)
-  echo "Starting a bash shell"
-  exec /bin/bash
-  ;;
-update | deploy)
-  echo "do sometying"
-  exec t.sh
-  ;;
-cleanup | remove)
-  kubectl delete secrets,deployments,issuers,certs,sa,svc --all
-  ;;
-*)
-  echo "Unknown action: $action"
-  help
-  exit 1
-  ;;
-esac
+for values in $(echo "$@")
+do
+  # echo "Parameter values: "$values
+  case "$values" in
+  as )
+    echo "Installing Auto-scalers"
+    vpa && hpa
+    ;;
+  hz )
+    echo "Installing hazelcast"
+    hazelcast
+    ;;
+  istio )
+    echo "Installing Istio"
+    ;;
+  sc )
+    echo "Installing a single cluster"
+    pulsarMonitoring && singleCluster
+    ;;
+  mc | deploy)
+    echo "Installing multi cluster"
+    pulsarMonitoring && multiCluster
+    ;;
+  pulsar-cleanup )
+    echo "cleaing up pulsar"
+    #TODO add helm uninstall
+    kubectl delete pvc --all
+    ;;
+  help)
+    help
+    ;;
+  *)
+    echo "Not installing anything else"
+    ;;
+  esac
+done
