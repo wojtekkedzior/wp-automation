@@ -4,7 +4,7 @@ function createTestTopics() {
   local cluster=$1
   local partitions=$2
 
-  echo "creating topics using ${clusters}"
+  echo "creating topics using ${cluster}"
 
   kubectl exec -i ${cluster} -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic t/ns/mercury -p ${partitions}"
   kubectl exec -i ${cluster} -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic t/ns/venus   -p ${partitions}"
@@ -42,7 +42,7 @@ function multiCluster() {
   echo "primary cluster is ready"
 
   # on backup: 
-  echo "setting up the primary cluster" 
+  echo "setting up the backup cluster" 
   kubectl exec -i backup-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants    create t    --admin-roles my-admin-role --allowed-clusters primary,backup"
   kubectl exec -i backup-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces create t/ns --bundles 4"
   kubectl exec -i backup-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces set-clusters t/ns --clusters primary,backup"
@@ -52,9 +52,9 @@ function multiCluster() {
   createTestTopics "primary-toolset-0" 2
   kubectl exec -i primary-toolset-0 -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create t/ns/sun"
 
-  echo "topics in primary"
+  echo "topics in primary:"
   kubectl exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics list t/ns"
-  echo "topics in backup"
+  echo "topics in backup:"
   kubectl exec -i backup-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics list t/ns"
   
   echo "multi pulsar cluster installed and setup" 
