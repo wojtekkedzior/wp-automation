@@ -4,14 +4,14 @@ function pulsarMonitoring() {
     #install local volume provisioner and give it some time to start and identify the nodes' volumes
     kubectl create -f ../local-volume-provisioner.generated.yaml
 
-    helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --version=50.3.0 --values prom-values.yaml
+    helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --version=50.3.0 --values ../prom-values.yaml
 
     kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type merge --patch='{ "spec":{ "podMonitorSelector":{ "matchLabels":{ "release": "primary"}}}}'
     kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type json  --patch='[{"op": "replace", "path": "/spec/logLevel", "value": "debug"}]'
 }
 
 function pulsar3mc() {
-    helm upgrade --install primary pulsar3/charts/pulsar \
+    helm upgrade --install primary ../pulsar3/charts/pulsar \
                  --values=../pulsar3/charts/pulsar/mc-bookies.yaml \
                  --values=../pulsar3/charts/pulsar/mc-broker.yaml \
                  --values=../pulsar3/charts/pulsar/mc-proxy.yaml \
@@ -24,7 +24,7 @@ function pulsar3mc() {
 }
 
 function pulsar3() {
-    helm upgrade --install primary pulsar3/charts/pulsar \
+    helm upgrade --install primary ../pulsar3/charts/pulsar \
                  --values=../pulsar3/charts/pulsar/bookies.yaml \
                  --values=../pulsar3/charts/pulsar/broker.yaml \
                  --values=../pulsar3/charts/pulsar/proxy.yaml \

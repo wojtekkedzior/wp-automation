@@ -73,7 +73,7 @@ time startWorker 3 192.168.100.244 >> out-log-3 &   # worker-3-large
 time startWorker 4 192.168.100.171 >> out-log-4 &   # worker-4-large
 
 # block on checking whether the first worker is up. All the workers should come up at around the same time.
-waitForWorkers
+timeout 300 waitForWorkers
 
 for values in $(echo "$@")
 do
