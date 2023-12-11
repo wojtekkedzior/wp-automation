@@ -82,7 +82,7 @@ function singleCluster() {
         sleep 1
     done;
 
-    bash -c "source cluster.sh; singleCluster"
+    bash -c "source cluster-setup.sh; singleCluster"
 }
 
 function multiCluster() {
