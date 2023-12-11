@@ -60,24 +60,11 @@ function multiCluster() {
 }
 
 function singleCluster {
-  echo "installing a single pulsar cluster..."  
- 
-  # todo might not be needed any more as the there is already a wait-for the proxies after the cluster has been installed
-  # sleep 40
-
   kubectl  exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants create t"
   kubectl  exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces create t/ns"
   #  kubectl  exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces set-retention t/ns --size 2M --time 1m"
 
   createTestTopics "primary-toolset-0" 8
 
-  echo "single pulsar cluster installed" 
+  echo "single pulsar cluster installed and setup" 
 }
-
-
-
-
-# kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics terminate t/ns/sun "
-# kubectl exec -i plite2-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics delete  t/ns/sun "
-
-# kubectl exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics terminate t/ns/sun"
