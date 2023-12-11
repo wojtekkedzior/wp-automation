@@ -4,14 +4,17 @@ function createTestTopics() {
   local cluster=$1
   local partitions=$2
 
+  echo "creating topics using ${clusters}"
+
   kubectl exec -i ${cluster} -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic t/ns/mercury -p ${partitions}"
   kubectl exec -i ${cluster} -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic t/ns/venus   -p ${partitions}"
   kubectl exec -i ${cluster} -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic t/ns/earth   -p ${partitions}"
   kubectl exec -i ${cluster} -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-partitioned-topic t/ns/mars    -p ${partitions}"
+  echo "topics created"
 }
 
 function multiCluster() {
-  echo "Installing multiple Pulsar clusters"
+  echo "Setting up multiple Pulsar clusters"
   # initialize the cluster metadata from the first Pulsar cluster which is plite1 in this case. This populates the configuration store and lists the plit2 Pulsar cluster as the geo-replication destination. 
   # Note that the --zookeeper parameter refers to the zookeeper for the plite1 cluster
   kubectl exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar initialize-cluster-metadata --cluster primary --zookeeper primary-zookeeper.default.svc.cluster.local:2181 --configuration-store my-zookeeper.default.svc.cluster.local:2185  --web-service-url http://primary-broker.default.svc.cluster.local:8080 --broker-service-url pulsar://primary-broker.default.svc.cluster.local:6650"
@@ -58,6 +61,7 @@ function multiCluster() {
 }
 
 function singleCluster {
+  echo "Setting up the Pulsar cluster"
   kubectl  exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants create t"
   kubectl  exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces create t/ns"
   #  kubectl  exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces set-retention t/ns --size 2M --time 1m"
