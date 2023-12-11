@@ -94,7 +94,7 @@ function multiCluster() {
 
     # ------------------ plite2 ------------------
     helm upgrade --install backup apache/pulsar \
-                 --values=../pulsar-mc/plite2-values.yaml\
+                 --values=pulsar-mc/plite2-values.yaml\
                  --timeout 10m \
                  --set initilize=true \
                  --version=3.0.0
