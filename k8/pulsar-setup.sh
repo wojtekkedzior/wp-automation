@@ -57,6 +57,8 @@ function multiCluster() {
   kubectl exec -i backup-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics list t/ns"
 
   # TODO remove subscription auto-create
+  
+  echo "multi pulsar cluster installed and setup" 
 }
 
 function singleCluster {
