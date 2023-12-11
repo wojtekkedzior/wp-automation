@@ -138,10 +138,12 @@ function multiCluster() {
 }
 
 function vpa() {
+    echo "TODO"
     #TODO
 }
 
 function hpa() {
+    echo "TODO"
     #TODO
     #TODO - include metrics server
 }
