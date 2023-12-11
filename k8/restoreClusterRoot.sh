@@ -50,30 +50,32 @@ function waitForWorkers() {
     done
 }
 
-yes | sudo kubeadm reset && 
-sudo rm -R /etc/cni/net.d
-rm /home/w/.kube/config
-sudo kubeadm init --pod-network-cidr=192.168.122.0/18 | tee initout.txt
-sudo cp -i /etc/kubernetes/admin.conf /home/w/.kube/config
-sudo chown $(id -u):$(id -g) /home/w/.kube/config
+function k8() {
+  yes | sudo kubeadm reset && 
+  sudo rm -R /etc/cni/net.d
+  rm /home/w/.kube/config
+  sudo kubeadm init --pod-network-cidr=192.168.122.0/18 | tee initout.txt
+  sudo cp -i /etc/kubernetes/admin.conf /home/w/.kube/config
+  sudo chown $(id -u):$(id -g) /home/w/.kube/config
 
-sudo systemctl restart containerd.service 
+  sudo systemctl restart containerd.service 
 
-# use a calico version from around Jan 22 because later versions change the PDB api from v1beta to v1
-# kubectl apply -f tigera-operator.yaml
-kubectl create -f new-tigera-operator.yaml
-kubectl apply -f calico-custom-resources.yaml
+  # use a calico version from around Jan 22 because later versions change the PDB api from v1beta to v1
+  # kubectl apply -f tigera-operator.yaml
+  kubectl create -f new-tigera-operator.yaml
+  kubectl apply -f calico-custom-resources.yaml
 
-# remove output from prior runs
-rm out-[1-4] out-log-[1-4]
+  # remove output from prior runs
+  rm out-[1-4] out-log-[1-4]
 
-time startWorker 1 192.168.100.221 >> out-log-1 &   # worker-1-large
-time startWorker 2 192.168.100.252 >> out-log-2 &   # worker-2-large
-time startWorker 3 192.168.100.244 >> out-log-3 &   # worker-3-large
-time startWorker 4 192.168.100.171 >> out-log-4 &   # worker-4-large
+  time startWorker 1 192.168.100.221 >> out-log-1 &   # worker-1-large
+  time startWorker 2 192.168.100.252 >> out-log-2 &   # worker-2-large
+  time startWorker 3 192.168.100.244 >> out-log-3 &   # worker-3-large
+  time startWorker 4 192.168.100.171 >> out-log-4 &   # worker-4-large
 
-# block on checking whether the first worker is up. All the workers should come up at around the same time.
-waitForWorkers
+  # block on checking whether the first worker is up. All the workers should come up at around the same time.
+  waitForWorkers
+}
 
 for values in $(echo "$@")
 do
@@ -90,13 +92,17 @@ do
   istio )
     echo "Installing Istio"
     ;;
+  k8 )
+    echo "Installing k8 cluster"
+    k8 
+    ;;  
   sc )
     echo "Installing a single cluster"
-    pulsarMonitoring && singleCluster
+    k8 && pulsarMonitoring && singleCluster
     ;;
   mc | deploy)
     echo "Installing multi cluster"
-    pulsarMonitoring && multiCluster
+    k8 && pulsarMonitoring && multiCluster
     ;;
   pulsar-cleanup )
     echo "cleaing up pulsar"

@@ -1,0 +1,4 @@
+# Cluster settings
+cluster:
+  # memberCount is the number Hazelcast members
+  memberCount: 3
