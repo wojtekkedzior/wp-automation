@@ -49,14 +49,10 @@ function multiCluster() {
   createTestTopics "primary-toolset-0" 2
   kubectl exec -i primary-toolset-0 -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create t/ns/sun"
 
-  # kubectl exec -i backup-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics create-subscription -s sub t/ns/sun"
-
   echo "topics in primary"
   kubectl exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics list t/ns"
   echo "topics in backup"
   kubectl exec -i backup-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin topics list t/ns"
-
-  # TODO remove subscription auto-create
   
   echo "multi pulsar cluster installed and setup" 
 }
