@@ -2,9 +2,9 @@
 
 function pulsarMonitoring() {
     #install local volume provisioner and give it some time to start and identify the nodes' volumes
-    kubectl create -f local-volume-provisioner.generated.yaml
+    kubectl create -f k8-cluster/local-volume-provisioner.generated.yaml
 
-    helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --version=50.3.0 --values prom-values.yaml
+    helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --version=50.3.0 --values pulsar-setup/prom-values.yaml
 
     kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type merge --patch='{ "spec":{ "podMonitorSelector":{ "matchLabels":{ "release": "primary"}}}}'
     kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type json  --patch='[{"op": "replace", "path": "/spec/logLevel", "value": "debug"}]'
@@ -82,7 +82,7 @@ function singleCluster() {
         sleep 1
     done;
 
-    bash -c "source setup/cluster-setup.sh; singleCluster"
+    bash -c "source pulsar-setup/cluster-setup.sh; singleCluster"
 }
 
 function multiCluster() {
@@ -90,11 +90,11 @@ function multiCluster() {
 
     # install a standalone version of zookeeper. This is known as the 'configurationStore' when it comes to working with geo-replication. Make sure to  change the client.port to something other than 2181 as that port is already used by the other zookeepers
     #helm repo add bitnami https://charts.bitnami.com/bitnami
-    helm upgrade --install my-zookeeper bitnami/zookeeper --values zk-values.yaml
+    helm upgrade --install my-zookeeper bitnami/zookeeper --values pulsar-setup/zk-values.yaml
 
     # ------------------ plite2 ------------------
     helm upgrade --install backup apache/pulsar \
-                 --values=pulsar-mc/plite2-values.yaml\
+                 --values=pulsar3-mc/plite2-values.yaml\
                  --timeout 10m \
                  --set initilize=true \
                  --version=3.0.0
@@ -110,5 +110,5 @@ function multiCluster() {
       echo "proxy not ready. waiting..."
       sleep 5
     done
-    bash -c "source setup/cluster-setup.sh; multiCluster"
+    bash -c "source pulsar-setup/cluster-setup.sh; multiCluster"
 }

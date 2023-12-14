@@ -1,7 +1,7 @@
 #/bin/bash
 
-source setup/pulsar.sh
-source setup/tools.sh
+source pulsar-setup/pulsar.sh
+source k8-cluster/third-party-tools.sh
 
 function startWorker() {
     workerId=$1
@@ -10,8 +10,6 @@ function startWorker() {
 
     echo w | ssh -tt "w@${host}" 'yes | sudo kubeadm reset'
     echo w | ssh -tt "w@${host}" 'sudo rm -R /etc/cni/net.d'
-#   This is not set on the workers. (? why not?)
-#   ssh "w@${host}" 'rm .kube/config'
     echo w | ssh -tt "w@${host}" "sudo ${joinCmd}"
 
     # prepare mount dirs, unmount if already mounted, format and (re)mount
@@ -25,15 +23,11 @@ function startWorker() {
         (( index++ ))
     done
 
-    # tmpfs
+    # tmpfs - in case a need some RAM drives
     # echo w | ssh -tt "w@${host}" "sudo mount -t tmpfs -o rw,size=2G tmpfs /mnt/fast-disks/disk2"
     # echo w | ssh -tt "w@${host}" "sudo mount -t tmpfs -o rw,size=2G tmpfs /mnt/fast-disks/disk3"
 
-    # in case we need to clean out some customer iamges
-    # echo w | ssh -tt "w@${host}" "yes | sudo docker system prune --all"
-
     echo w | ssh -tt "w@${host}" "sudo systemctl restart containerd.service"
-
     echo 1 > out-$workerId
 }
 
@@ -58,12 +52,10 @@ function k8() {
   sudo cp -i /etc/kubernetes/admin.conf /home/w/.kube/config
   sudo chown $(id -u):$(id -g) /home/w/.kube/config
 
-  sudo systemctl restart containerd.service 
+  sudo systemctl restart containerd.service
 
-  # use a calico version from around Jan 22 because later versions change the PDB api from v1beta to v1
-  # kubectl apply -f tigera-operator.yaml
-  kubectl create -f new-tigera-operator.yaml
-  kubectl apply -f calico-custom-resources.yaml
+  # install the CNI - calico in this case
+  kubectl apply -f k8-cluster/tigera-operator.yaml -f k8-cluster/tigera-install.yaml
 
   # remove output from prior runs
   rm out-[1-4] out-log-[1-4]
