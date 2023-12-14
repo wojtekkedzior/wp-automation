@@ -38,7 +38,7 @@ function waitForWorkers() {
     while [ ! -f "out-${workerId}" ]
     do
         echo "waiting for worker ${workerId}"
-        sleep 3
+        sleep 6
     done
     echo "Worker ${workerId} is alive"
   done
@@ -77,7 +77,7 @@ do
     echo "Installing Auto-scalers"
     vpa && hpa
     ;;
-  hz )
+  hc )
     echo "Installing hazelcast"
     hazelcast
     ;;
