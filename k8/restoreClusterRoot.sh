@@ -55,7 +55,8 @@ function k8() {
   sudo systemctl restart containerd.service
 
   # install the CNI - calico in this case
-  kubectl apply -f k8-cluster/tigera-operator.yaml -f k8-cluster/tigera-install.yaml
+  kubectl apply -f k8-cluster/tigera-operator.yaml 
+  kubectl apply -f k8-cluster/tigera-install.yaml
 
   # remove output from prior runs
   rm out-[1-4] out-log-[1-4]
