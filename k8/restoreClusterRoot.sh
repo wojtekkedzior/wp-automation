@@ -4,44 +4,44 @@ source pulsar-setup/pulsar.sh
 source k8-cluster/third-party-tools.sh
 
 function startWorker() {
-    workerId=$1
-    host=$2
-    joinCmd=$(tail -2 initout.txt)
+  workerId=$1
+  host=$2
+  joinCmd=$(tail -2 initout.txt)
 
-    echo w | ssh -tt "w@${host}" 'yes | sudo kubeadm reset'
-    echo w | ssh -tt "w@${host}" 'sudo rm -R /etc/cni/net.d'
-    echo w | ssh -tt "w@${host}" "sudo ${joinCmd}"
+  echo w | ssh -tt "w@${host}" 'yes | sudo kubeadm reset'
+  echo w | ssh -tt "w@${host}" 'sudo rm -R /etc/cni/net.d'
+  echo w | ssh -tt "w@${host}" "sudo ${joinCmd}"
 
-    # prepare mount dirs, unmount if already mounted, format and (re)mount
-    index=1
-    echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks"
-    for disk in {b..p}
-    do
-        echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks/disk${index}"
-        echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk${index}"
-        echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sd${disk} && sudo mount /dev/sd${disk} /mnt/fast-disks/disk${index}"
-        (( index++ ))
-    done
+  # prepare mount dirs, unmount if already mounted, format and (re)mount
+  index=1
+  echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks"
+  for disk in {b..p}
+  do
+      echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks/disk${index}"
+      echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk${index}"
+      echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sd${disk} && sudo mount /dev/sd${disk} /mnt/fast-disks/disk${index}"
+      (( index++ ))
+  done
 
-    # tmpfs - in case a need some RAM drives
-    # echo w | ssh -tt "w@${host}" "sudo mount -t tmpfs -o rw,size=2G tmpfs /mnt/fast-disks/disk2"
-    # echo w | ssh -tt "w@${host}" "sudo mount -t tmpfs -o rw,size=2G tmpfs /mnt/fast-disks/disk3"
+  # tmpfs - in case a need some RAM drives
+  # echo w | ssh -tt "w@${host}" "sudo mount -t tmpfs -o rw,size=2G tmpfs /mnt/fast-disks/disk2"
+  # echo w | ssh -tt "w@${host}" "sudo mount -t tmpfs -o rw,size=2G tmpfs /mnt/fast-disks/disk3"
 
-    echo w | ssh -tt "w@${host}" "sudo systemctl restart containerd.service"
-    echo 1 > out-$workerId
+  echo w | ssh -tt "w@${host}" "sudo systemctl restart containerd.service"
+  echo 1 > out-$workerId
 }
 
 # cascade the wait-for workers. The first loop will take the longs and the last 2 will be really quick as those two workers should be ready at about the same time as the first two.
 function waitForWorkers() {
-    for workerId in {1..4}
+  for workerId in {1..4}
+  do
+    while [ ! -f "out-${workerId}" ]
     do
-        while [ ! -f "out-${workerId}" ]
-        do
-            echo "waiting for worker ${workerId}"
-            sleep 3
-        done
-        echo "Worker ${workerId} is alive"
+        echo "waiting for worker ${workerId}"
+        sleep 3
     done
+    echo "Worker ${workerId} is alive"
+  done
 }
 
 function k8() {
