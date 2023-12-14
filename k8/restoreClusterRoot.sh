@@ -71,7 +71,6 @@ function k8() {
 
 for values in $(echo "$@")
 do
-  # echo "Parameter values: "$values
   case "$values" in
   as )
     echo "Installing Auto-scalers"
