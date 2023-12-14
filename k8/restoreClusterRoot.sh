@@ -38,7 +38,7 @@ function waitForWorkers() {
     while [ ! -f "out-${workerId}" ]
     do
         echo "waiting for worker ${workerId}"
-        sleep 10
+        sleep 5
     done
     echo "Worker ${workerId} is alive"
   done
