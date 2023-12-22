@@ -20,9 +20,9 @@ spec:
         resources:
           requests:
             cpu: 100m
-            ephemeral-storage: 500mb
-            memory: 100m
+            ephemeral-storage: 500M
+            memory: 100M
           limits:
             cpu: 100m
-            ephemeral-storage: 800mb
-            memory: 100m
+            ephemeral-storage: 800M
+            memory: 100M
