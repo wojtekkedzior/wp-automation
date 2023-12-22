@@ -17,10 +17,10 @@ function startWorker() {
   echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks"
   for disk in {b..p}
   do
-      echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks/disk${index}"
-      echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk${index}"
-      echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sd${disk} && sudo mount /dev/sd${disk} /mnt/fast-disks/disk${index}"
-      (( index++ ))
+    echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks/disk${index}"
+    echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk${index}"
+    echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sd${disk} && sudo mount /dev/sd${disk} /mnt/fast-disks/disk${index}"
+    (( index++ ))
   done
 
   # tmpfs - in case a need some RAM drives
@@ -37,8 +37,8 @@ function waitForWorkers() {
   do
     while [ ! -f "out-${workerId}" ]
     do
-        echo "waiting for worker ${workerId}"
-        sleep 5
+      echo "waiting for worker ${workerId}"
+      sleep 5
     done
     echo "Worker ${workerId} is alive"
   done
