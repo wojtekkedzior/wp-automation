@@ -43,3 +43,7 @@ function hazelcast() {
     sleep 2
     sudo sed -i "/setenv HAZELCAST_IP/c\\\tsetenv HAZELCAST_IP $(kubectl get svc my-release-hazelcast -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
 }
+
+function nginx() {
+    kubectl apply -f k8-cluster/nginx.yaml
+}

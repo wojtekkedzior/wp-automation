@@ -92,9 +92,13 @@ do
     echo "Installing a single cluster"
     k8 && pulsarMonitoring && singleCluster
     ;;
-  mc | deploy)
+  mc )
     echo "Installing multi cluster"
     k8 && pulsarMonitoring && multiCluster
+    ;;
+  ng )
+    echo "Installing nginx"
+    nginx
     ;;
   pulsar-cleanup )
     echo "cleaing up pulsar"
