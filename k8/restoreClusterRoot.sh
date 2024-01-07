@@ -61,10 +61,10 @@ function k8() {
   # remove output from prior runs
   rm out-[1-4] out-log-[1-4]
 
-  time startWorker 1 192.168.100.221 >> out-log-1 &   # worker-1-large
-  time startWorker 2 192.168.100.252 >> out-log-2 &   # worker-2-large
-  time startWorker 3 192.168.100.244 >> out-log-3 &   # worker-3-large
-  time startWorker 4 192.168.100.171 >> out-log-4 &   # worker-4-large
+  time startWorker 1 192.168.100.221 > out-log-1 2>&1 &   # worker-1-large
+  time startWorker 2 192.168.100.252 > out-log-2 2>&1 &   # worker-2-large
+  time startWorker 3 192.168.100.244 > out-log-3 2>&1 &   # worker-3-large
+  time startWorker 4 192.168.100.171 > out-log-4 2>&1 &   # worker-4-large
 
   # block on checking whether the first worker is up. All the workers should come up at around the same time.
   waitForWorkers
