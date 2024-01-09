@@ -82,7 +82,7 @@ function singleCluster() {
         sleep 1
     done;
 
-    bash -c "source pulsar-setup/cluster-setup.sh; singleCluster"
+    bash -c "source pulsar3/setup/cluster-setup.sh; singleCluster"
 }
 
 function multiCluster() {
@@ -110,5 +110,5 @@ function multiCluster() {
       echo "proxy not ready. waiting..."
       sleep 5
     done
-    bash -c "source pulsar-setup/cluster-setup.sh; multiCluster"
+    bash -c "source  pulsar3/setup/cluster-setup.sh; multiCluster"
 }

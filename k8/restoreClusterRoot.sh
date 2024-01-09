@@ -1,6 +1,6 @@
 #/bin/bash
 
-source pulsar-setup/pulsar.sh
+source pulsar3/setup/pulsar.sh
 source k8-cluster/third-party-tools.sh
 
 function startWorker() {
