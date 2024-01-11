@@ -7,7 +7,7 @@ bookkeeper:
       # requests:
         # memory: 4Gi
         # cpu: 2
-  replicaCount: 3
+  replicaCount: 5
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: Parallel
