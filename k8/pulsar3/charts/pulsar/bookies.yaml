@@ -7,7 +7,7 @@ bookkeeper:
       # requests:
         # memory: 4Gi
         # cpu: 2
-  replicaCount: 5
+  replicaCount: 3
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: Parallel
@@ -81,7 +81,14 @@ bookkeeper:
           size: 39Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal1
-    ledgers:
+        - name: journal2
+          size: 39Gi
+          storageClassName: fast-disks
+          mountPath: /pulsar/data/bookkeeper/journal2
+        - name: journal3
+          size: 39Gi
+          storageClassName: fast-disks
+          mountPath: /pulsar/data/bookkeeper/journal3          
       name: ledgers
       size: 39Gi
       local_storage: true
@@ -96,6 +103,14 @@ bookkeeper:
           size: 39Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers1
+        - name: ledgers2
+          size: 39Gi
+          storageClassName: fast-disks
+          mountPath: /pulsar/data/bookkeeper/ledgers2
+        - name: ledgers3
+          size: 39Gi
+          storageClassName: fast-disks
+          mountPath: /pulsar/data/bookkeeper/ledgers3          
     useSingleCommonVolume: false
     common:
       name: common

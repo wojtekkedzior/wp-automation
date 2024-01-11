@@ -63,10 +63,10 @@ function multiCluster() {
 function singleCluster {
   echo "Setting up the Pulsar cluster"
   kubectl  exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin tenants create t"
-  kubectl  exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces create t/ns"
+  kubectl  exec -i primary-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces create t/ns --bundles 24"
   #  kubectl  exec -i pulsar-toolset-0  -- /bin/bash -c "/pulsar/bin/pulsar-admin namespaces set-retention t/ns --size 2M --time 1m"
 
-  createTestTopics "primary-toolset-0" 8
+  createTestTopics "primary-toolset-0" 24
 
   echo "single pulsar cluster installed and setup" 
 }
