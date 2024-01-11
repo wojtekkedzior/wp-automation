@@ -81,14 +81,6 @@ bookkeeper:
           size: 39Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal1
-        - name: journal2
-          size: 39Gi
-          storageClassName: fast-disks
-          mountPath: /pulsar/data/bookkeeper/journal2
-        - name: journal3
-          size: 39Gi
-          storageClassName: fast-disks
-          mountPath: /pulsar/data/bookkeeper/journal3
     ledgers:
       name: ledgers
       size: 39Gi
@@ -104,14 +96,6 @@ bookkeeper:
           size: 39Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers1
-        - name: ledgers2
-          size: 39Gi
-          storageClassName: fast-disks
-          mountPath: /pulsar/data/bookkeeper/ledgers2
-        - name: ledgers3
-          size: 39Gi
-          storageClassName: fast-disks
-          mountPath: /pulsar/data/bookkeeper/ledgers3
     useSingleCommonVolume: false
     common:
       name: common
