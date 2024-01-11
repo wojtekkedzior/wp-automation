@@ -88,7 +88,8 @@ bookkeeper:
         - name: journal3
           size: 39Gi
           storageClassName: fast-disks
-          mountPath: /pulsar/data/bookkeeper/journal3          
+          mountPath: /pulsar/data/bookkeeper/journal3
+    ledgers: 
       name: ledgers
       size: 39Gi
       local_storage: true
