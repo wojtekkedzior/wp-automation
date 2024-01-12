@@ -68,27 +68,31 @@ bookkeeper:
     persistence: true
     journal:
       name: journal
-      size: 39Gi
+      size: 100Gi
       storageClassName: fast-disks
       selector: {}
       useMultiVolumes: true
       multiVolumes:
         - name: journal0
-          size: 39Gi
+          size: 95Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal0
         - name: journal1
-          size: 39Gi
+          size: 95Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal1
         - name: journal2
-          size: 39Gi
+          size: 95Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal2
         - name: journal3
-          size: 39Gi
+          size: 95Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal3
+        - name: journal4
+          size: 95Gi
+          storageClassName: fast-disks
+          mountPath: /pulsar/data/bookkeeper/journal4
     ledgers: 
       name: ledgers
       size: 39Gi
@@ -104,15 +108,6 @@ bookkeeper:
           size: 39Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers1
-        - name: ledgers2
-          size: 39Gi
-          storageClassName: fast-disks
-          mountPath: /pulsar/data/bookkeeper/ledgers2
-        - name: ledgers3
-          size: 39Gi
-          storageClassName: fast-disks
-          mountPath: /pulsar/data/bookkeeper/ledgers3          
-    useSingleCommonVolume: false
     common:
       name: common
       size: 60Gi
@@ -144,8 +139,8 @@ bookkeeper:
     dbStorage_readAheadCacheMaxSizeMb: "200"
     dbStorage_rocksDB_writeBufferSizeMB: "8"
     dbStorage_rocksDB_blockCacheSize: "8388608"
-    writeBufferSizeBytes: "262144"
-    journalWriteBufferSizeKB: "512"
+    writeBufferSizeBytes: "1048576"
+    journalWriteBufferSizeKB: "20480"
   ## Add a custom command to the start up process of the bookie pods (e.g. update-ca-certificates, jvm commands, etc)
   additionalCommand:
   ## Bookkeeper Service
