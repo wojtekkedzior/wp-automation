@@ -55,7 +55,7 @@ bookkeeper:
   gracePeriod: 30
   resources:
     requests:
-      memory: 2
+      memory: 2.5
       cpu: 0.5
   extraVolumes: []
   extraVolumeMounts: []
@@ -117,9 +117,9 @@ bookkeeper:
   configData:
     # we use `bin/pulsar` for starting bookie daemons
     PULSAR_MEM: >
-      -Xms128m
-      -Xmx500m
-      -XX:MaxDirectMemorySize=1500m
+      -Xms100m
+      -Xmx400m
+      -XX:MaxDirectMemorySize=2000m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10
@@ -142,7 +142,7 @@ bookkeeper:
     journalWriteBufferSizeKB: "20480"
     journalPreAllocSizeMB: "200"
     writeBufferSizeBytes: "1048576"
-    numAddWorkerThreads: "10"
+    numAddWorkerThreads: "4"
   ## Add a custom command to the start up process of the bookie pods (e.g. update-ca-certificates, jvm commands, etc)
   additionalCommand:
   ## Bookkeeper Service
