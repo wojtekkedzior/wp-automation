@@ -134,7 +134,7 @@ bookkeeper:
       -XX:+ExitOnOutOfMemoryError
       -XX:+PerfDisableSharedMem
     # configure the memory settings based on jvm memory settings
-    dbStorage_writeCacheMaxSizeMb: "1000"
+    dbStorage_writeCacheMaxSizeMb: "500"
     dbStorage_rocksDB_blockSize: "262144"
     dbStorage_readAheadCacheMaxSizeMb: "200"
     dbStorage_rocksDB_writeBufferSizeMB: "8"
