@@ -7,7 +7,7 @@ bookkeeper:
       # requests:
         # memory: 4Gi
         # cpu: 2
-  replicaCount: 3
+  replicaCount: 2
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: Parallel
@@ -55,8 +55,8 @@ bookkeeper:
   gracePeriod: 30
   resources:
     requests:
-      memory: 2.5
-      cpu: 0.5
+      memory: 3
+      cpu: 1
   extraVolumes: []
   extraVolumeMounts: []
   # Ensures 2.10.0 non-root docker image works correctly.
@@ -134,7 +134,7 @@ bookkeeper:
       -XX:+ExitOnOutOfMemoryError
       -XX:+PerfDisableSharedMem
     # configure the memory settings based on jvm memory settings
-    dbStorage_writeCacheMaxSizeMb: "500"
+    dbStorage_writeCacheMaxSizeMb: "1000"
     dbStorage_rocksDB_blockSize: "262144"
     dbStorage_readAheadCacheMaxSizeMb: "200"
     dbStorage_rocksDB_writeBufferSizeMB: "8"
@@ -142,7 +142,7 @@ bookkeeper:
     journalWriteBufferSizeKB: "20480"
     journalPreAllocSizeMB: "200"
     writeBufferSizeBytes: "1048576"
-    numAddWorkerThreads: "6"
+    numAddWorkerThreads: "10"
   ## Add a custom command to the start up process of the bookie pods (e.g. update-ca-certificates, jvm commands, etc)
   additionalCommand:
   ## Bookkeeper Service
