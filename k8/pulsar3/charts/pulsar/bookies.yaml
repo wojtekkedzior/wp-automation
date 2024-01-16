@@ -137,7 +137,7 @@ bookkeeper:
     dbStorage_writeCacheMaxSizeMb: "1000"
     dbStorage_rocksDB_blockSize: "262144"
     dbStorage_readAheadCacheMaxSizeMb: "200"
-    dbStorage_rocksDB_writeBufferSizeMB: "8"
+    dbStorage_rocksDB_writeBufferSizeMB: "256"
     dbStorage_rocksDB_blockCacheSize: "8388608"
     journalWriteBufferSizeKB: "20480"
     journalPreAllocSizeMB: "200"
