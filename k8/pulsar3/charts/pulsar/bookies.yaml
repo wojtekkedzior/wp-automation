@@ -115,7 +115,7 @@ bookkeeper:
           mountPath: /pulsar/data/bookkeeper/journal9
     ledgers: 
       name: ledgers
-      size: 39Gi
+      size: 48Gi
       local_storage: true
       storageClassName: fast-disks
       useMultiVolumes: true
