@@ -133,7 +133,7 @@ bookkeeper:
     PULSAR_MEM: >
       -Xms100m
       -Xmx400m
-      -XX:MaxDirectMemorySize=35000m
+      -XX:MaxDirectMemorySize=3500m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10
