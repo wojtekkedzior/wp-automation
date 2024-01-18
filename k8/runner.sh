@@ -9,4 +9,4 @@ while [[ $i -lt $1 ]];do
   ((i++))
 done
 
-echo "DIE: kill -9 ${pidsToKill[*]}"
+echo "kill -9 ${pidsToKill[*]}"
