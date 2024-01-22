@@ -4,7 +4,7 @@ function pulsarMonitoring() {
     #install local volume provisioner and give it some time to start and identify the nodes' volumes
     kubectl create -f k8-cluster/local-volume-provisioner.generated.yaml
 
-    helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --version=50.3.0 --values pulsar3/setup/prom-values.yaml
+    helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --version=50.3.0 --values pulsar3/setup/prom-values.yaml || exit 1
 
     kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type merge --patch='{ "spec":{ "podMonitorSelector":{ "matchLabels":{ "release": "primary"}}}}'
     kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type json  --patch='[{"op": "replace", "path": "/spec/logLevel", "value": "debug"}]'
@@ -84,7 +84,7 @@ function multiCluster() {
                  --values=pulsar3-mc/plite2-values.yaml\
                  --timeout 10m \
                  --set initilize=true \
-                 --version=3.0.0
+                 --version=3.0.0 || exit 1
 
     # Update the HA proxy with the ClusterIPs
     sudo sed -i "/setenv PROXY_2_IP/c\\\tsetenv PROXY_2_IP $(kubectl get svc backup-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
