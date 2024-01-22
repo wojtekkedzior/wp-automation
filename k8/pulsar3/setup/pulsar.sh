@@ -10,32 +10,6 @@ function pulsarMonitoring() {
     kubectl patch Prometheus prometheus-kube-prometheus-prometheus --type json  --patch='[{"op": "replace", "path": "/spec/logLevel", "value": "debug"}]'
 }
 
-# function pulsar3mc() {
-#     helm upgrade --install primary pulsar3/charts/pulsar \
-#                  --values=pulsar3/charts/pulsar/mc-bookies.yaml \
-#                  --values=pulsar3/charts/pulsar/mc-broker.yaml \
-#                  --values=pulsar3/charts/pulsar/mc-proxy.yaml \
-#                  --values=pulsar3/charts/pulsar/toolset.yaml \
-#                  --values=pulsar3/charts/pulsar/values.yaml \
-#                  --timeout 10m \
-#                  --set initilize=true \
-#                  --version=3.0.0 || exit 1
-#     pulsar3Config
-# }
-
-# function pulsar3() {
-#     helm upgrade --install primary pulsar3/charts/pulsar \
-#                  --values=pulsar3/charts/pulsar/bookies.yaml \
-#                  --values=pulsar3/charts/pulsar/broker.yaml \
-#                  --values=pulsar3/charts/pulsar/proxy.yaml \
-#                  --values=pulsar3/charts/pulsar/toolset.yaml \
-#                  --values=pulsar3/charts/pulsar/values.yaml \
-#                  --timeout 10m \
-#                  --set initilize=true \
-#                  --version=3.0.0 || exit 1
-#     pulsar3Config
-# }
-
 function pulsar3() {
     helm upgrade --install primary pulsar3/charts/pulsar \
                  --values=pulsar3/charts/pulsar/${1}bookies.yaml \
@@ -48,7 +22,6 @@ function pulsar3() {
                  --version=3.0.0 || exit 1
     pulsar3Config
 }
-
 
 function pulsar3Config() {
     # the metrics for the brokers and proxies is at /metrics/cluster=<cluster-name>
