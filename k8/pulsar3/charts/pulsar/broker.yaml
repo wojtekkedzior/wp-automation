@@ -106,6 +106,9 @@ broker:
     bookkeeperNumberOfChannelsPerBookie: "32"
     loadBalancerAutoBundleSplitEnabled: "true"
     bookkeeperClientTimeoutInSeconds: "180"
+    # bookkeeperClientNumWorkerThreads: "10"
+    #numIOThreads: "10"
+    # managedLedgerCacheSizeMB:2500
     # loadBalancerResourceQuotaUpdateIntervalMinutes: "2"
     # loadBalancerNamespaceBundleMaxTopics: "5"
     # loadBalancerBrokerMaxTopics: "20"
