@@ -74,11 +74,11 @@ bookkeeper:
       useMultiVolumes: true
       multiVolumes:
         - name: journal0
-          size: 50Gi
+          size: 48Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal0
         - name: journal1
-          size: 50Gi
+          size: 48Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal1
     ledgers: 
@@ -89,11 +89,11 @@ bookkeeper:
       useMultiVolumes: true
       multiVolumes:
         - name: ledgers0
-          size: 300Gi
+          size: 290Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers0
         - name: ledgers1
-          size: 300Gi
+          size: 290Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers1
         # - name: ledgers2
