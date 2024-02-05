@@ -25,6 +25,13 @@ function istio() {
 
 }
 
+function couchBase() {
+    # https://docs.couchdb.org/en/stable/install/kubernetes.html
+    # helm repo add couchdb https://apache.github.io/couchdb-helm
+    # helm repo update
+    helm upgrade --install cb couchdb/couchdb -f 3rd-party-values/couch-base.yaml
+}
+
 function vpa() {
     echo "TODO"
     #TODO

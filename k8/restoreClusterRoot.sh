@@ -77,6 +77,10 @@ do
     echo "Installing Auto-scalers"
     vpa && hpa
     ;;
+  cb )
+    echo "Installing CouchBase"
+    couchBase
+    ;;
   hc )
     echo "Installing hazelcast"
     hazelcast
