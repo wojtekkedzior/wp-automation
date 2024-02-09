@@ -147,8 +147,8 @@ bookkeeper:
       -XX:+PerfDisableSharedMem
     # configure the memory settings based on jvm memory settings
     dbStorage_writeCacheMaxSizeMb: "100"
-    dbStorage_readAheadCacheMaxSizeMb: "0"
-    dbStorage_readAheadCacheBatchSize: "0"
+    dbStorage_readAheadCacheMaxSizeMb: "500"
+    dbStorage_readAheadCacheBatchSize: "50000"
     dbStorage_rocksDB_blockSize: "262144"
     dbStorage_rocksDB_writeBufferSizeMB: "256"
     dbStorage_rocksDB_blockCacheSize: "8388608"
@@ -159,7 +159,6 @@ bookkeeper:
     # ledgerStorageClass: "org.apache.bookkeeper.bookie.SortedLedgerStorage"
     # readBufferSizeBytes: "262144"
     # numReadWorkerThreads
-
      # dbstorage_rocksdb_blocksize: "262144" no effect
      # dbStorage_readAheadCacheBatchSize:
   ## Add a custom command to the start up process of the bookie pods (e.g. update-ca-certificates, jvm commands, etc)

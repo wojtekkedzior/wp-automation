@@ -1,0 +1,28 @@
+FROM ubuntu:22.04
+
+# to get console output during a build
+# DOCKER_BUILDKIT=0 docker build . -f github-actions-builder
+
+RUN apt update
+RUN apt install -y openjdk-17-jdk openjdk-17-jre curl libdigest-sha-perl maven
+# RUN java --version
+# RUN env
+# RUN echo asdasda
+
+
+ENV RUNNER_ALLOW_RUNASROOT="1"
+RUN mkdir actions-runner
+WORKDIR /actions-runner
+RUN curl -o actions-runner-linux-x64-2.312.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.312.0/actions-runner-linux-x64-2.312.0.tar.gz
+RUN echo "85c1bbd104d539f666a89edef70a18db2596df374a1b51670f2af1578ecbe031  actions-runner-linux-x64-2.312.0.tar.gz" | shasum -a 256 -c
+RUN tar xzf actions-runner-linux-x64-2.312.0.tar.gz
+RUN ./config.sh --url https://github.com/wojtekkedzior/hotel-reservation --token <token>
+
+ENTRYPOINT ["./run.sh"]
+
+
+
+
+
+# CMD ["shell"]
+# RUN ./run.sh
