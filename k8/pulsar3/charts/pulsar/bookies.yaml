@@ -147,8 +147,8 @@ bookkeeper:
       -XX:+PerfDisableSharedMem
     # configure the memory settings based on jvm memory settings
     dbStorage_writeCacheMaxSizeMb: "32"
-    dbStorage_readAheadCacheMaxSizeMb: "500"
-    dbStorage_readAheadCacheBatchSize: "50000"
+    dbStorage_readAheadCacheMaxSizeMb: "32"
+    # dbStorage_readAheadCacheBatchSize: "5000"
     dbStorage_rocksDB_blockSize: "262144"
     dbStorage_rocksDB_writeBufferSizeMB: "8"
     dbStorage_rocksDB_blockCacheSize: "8388608"
