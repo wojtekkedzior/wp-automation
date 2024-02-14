@@ -93,7 +93,7 @@ broker:
       -XX:+ExitOnOutOfMemoryError
       -XX:+PerfDisableSharedMem
     managedLedgerDefaultEnsembleSize: "3"
-    managedLedgerDefaultWriteQuorum: "3"
+    managedLedgerDefaultWriteQuorum: "2"
     managedLedgerDefaultAckQuorum: "2"
     enableReplicatedSubscriptions: "true"
     replicatedSubscriptionsSnapshotTimeoutSeconds: "180"
