@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pollInterval=30
+pollInterval=10
 
 function pulsarMonitoring() {
     #install local volume provisioner and give it some time to start and identify the nodes' volumes
