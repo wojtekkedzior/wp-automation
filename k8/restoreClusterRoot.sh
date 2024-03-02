@@ -3,10 +3,15 @@
 source pulsar3/setup/pulsar.sh
 source k8-cluster/third-party-tools.sh
 
+pids=()
+
 function startWorker() {
   workerId=$1
   host=$2
   joinCmd=$(tail -2 initout.txt)
+
+  echo "worker one: $BASHPID"
+  pids+=($BASHPID)
 
   echo w | ssh -tt "w@${host}" 'yes | sudo kubeadm reset'
   echo w | ssh -tt "w@${host}" 'sudo rm -R /etc/cni/net.d'
@@ -28,21 +33,21 @@ function startWorker() {
   # echo w | ssh -tt "w@${host}" "sudo mount -t tmpfs -o rw,size=2G tmpfs /mnt/fast-disks/disk3"
 
   echo w | ssh -tt "w@${host}" "sudo systemctl restart containerd.service"
-  echo 1 > out-$workerId
+  # echo 1 > out-$workerId
 }
 
 # cascade the wait-for workers. The first loop will take the longs and the last 2 will be really quick as those two workers should be ready at about the same time as the first two.
-function waitForWorkers() {
-  for workerId in {1..4}
-  do
-    while [ ! -f "out-${workerId}" ]
-    do
-      echo "waiting for worker ${workerId}"
-      sleep 5
-    done
-    echo "Worker ${workerId} is alive"
-  done
-}
+# function waitForWorkers() {
+#   for workerId in {1..4}
+#   do
+#     while [ ! -f "out-${workerId}" ]
+#     do
+#       echo "waiting for worker ${workerId}"
+#       sleep 5
+#     done
+#     echo "Worker ${workerId} is alive"
+#   done
+# }
 
 function k8() {
   yes | sudo kubeadm reset && 
@@ -67,7 +72,8 @@ function k8() {
   time startWorker 4 192.168.100.171 > out-log-4 2>&1 &
 
   # block on checking whether the first worker is up. All the workers should come up at around the same time.
-  waitForWorkers
+  # waitForWorkers
+  wait "${pids[@]}"
 }
 
 for values in $(echo "$@")
