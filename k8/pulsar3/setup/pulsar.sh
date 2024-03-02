@@ -1,5 +1,7 @@
 #!/bin/bash
 
+pollInterval=30
+
 function pulsarMonitoring() {
     #install local volume provisioner and give it some time to start and identify the nodes' volumes
     kubectl create -f k8-cluster/local-volume-provisioner.generated.yaml
@@ -60,13 +62,13 @@ function singleCluster() {
     while [ $(kubectl get po primary-proxy-0 -o json | jq -r .status.phase) != "Running" ];
     do
       echo "proxy not ready. waiting..."
-      sleep 5
+      sleep ${pollInterval}
     done
 
     while [ "$(curl -s http://$(kubectl get svc primary-proxy -o json | jq -r '.spec.clusterIP'):8080/status.html)" != "OK" ];
     do
         echo "proxy up, but not yet ready to work..."
-        sleep 1
+        sleep ${pollInterval}
     done;
 
     bash -c "source pulsar3/setup/cluster-setup.sh; singleCluster"
@@ -95,7 +97,7 @@ function multiCluster() {
     while [ $(kubectl get po backup-proxy-0 -o json | jq -r .status.phase) != "Running" ];
     do
       echo "proxy not ready. waiting..."
-      sleep 5
+      sleep ${pollInterval}
     done
     bash -c "source  pulsar3/setup/cluster-setup.sh; multiCluster"
 }

@@ -33,21 +33,7 @@ function startWorker() {
   # echo w | ssh -tt "w@${host}" "sudo mount -t tmpfs -o rw,size=2G tmpfs /mnt/fast-disks/disk3"
 
   echo w | ssh -tt "w@${host}" "sudo systemctl restart containerd.service"
-  # echo 1 > out-$workerId
 }
-
-# cascade the wait-for workers. The first loop will take the longs and the last 2 will be really quick as those two workers should be ready at about the same time as the first two.
-# function waitForWorkers() {
-#   for workerId in {1..4}
-#   do
-#     while [ ! -f "out-${workerId}" ]
-#     do
-#       echo "waiting for worker ${workerId}"
-#       sleep 5
-#     done
-#     echo "Worker ${workerId} is alive"
-#   done
-# }
 
 function k8() {
   yes | sudo kubeadm reset && 
@@ -64,7 +50,7 @@ function k8() {
   kubectl apply -f k8-cluster/tigera-install.yaml
 
   # remove output from prior runs
-  rm out-[1-4] out-log-[1-4]
+  rm out-log-[1-4]
 
   time startWorker 1 192.168.100.221 > out-log-1 2>&1 &
   time startWorker 2 192.168.100.252 > out-log-2 2>&1 &
@@ -72,7 +58,6 @@ function k8() {
   time startWorker 4 192.168.100.171 > out-log-4 2>&1 &
 
   # block on checking whether the first worker is up. All the workers should come up at around the same time.
-  # waitForWorkers
   wait "${pids[@]}"
 }
 
