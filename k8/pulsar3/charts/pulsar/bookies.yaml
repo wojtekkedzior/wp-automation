@@ -7,7 +7,7 @@ bookkeeper:
       # requests:
         # memory: 4Gi
         # cpu: 2
-  replicaCount: 3
+  replicaCount: 5
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: Parallel
@@ -55,7 +55,7 @@ bookkeeper:
   gracePeriod: 30
   resources:
     requests:
-      memory: 3
+      memory: 1
       cpu: 1
   extraVolumes: []
   extraVolumeMounts: []
@@ -130,8 +130,8 @@ bookkeeper:
     # we use `bin/pulsar` for starting bookie daemons
     PULSAR_MEM: >
       -Xms100m
-      -Xmx800m
-      -XX:MaxDirectMemorySize=2000m
+      -Xmx300m
+      -XX:MaxDirectMemorySize=650m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10
