@@ -127,7 +127,7 @@ images:
   bookie:
     repository: public.ecr.aws/y7c9l5j8/custom-pulsar
     # uses defaultPulsarImageTag when unspecified
-    tag: 3.4.1
+    tag: 3.4.2
     pullPolicy: IfNotPresent
   autorecovery:
     repository: apachepulsar/pulsar-all
@@ -137,7 +137,7 @@ images:
   broker:
     repository: public.ecr.aws/y7c9l5j8/custom-pulsar
     # uses defaultPulsarImageTag when unspecified
-    tag: 3.4.1
+    tag: 3.4.2
     pullPolicy: IfNotPresent
   proxy:
     repository: apachepulsar/pulsar-all
