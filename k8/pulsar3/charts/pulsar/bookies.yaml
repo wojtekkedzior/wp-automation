@@ -96,6 +96,7 @@ bookkeeper:
           size: 97Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers1
+
         # - name: ledgers3
         #   size: 45Gi
         #   storageClassName: fast-disks
