@@ -2,7 +2,7 @@ broker:
   # use a component name that matches your grafana configuration
   # so the metrics are correctly rendered in grafana dashboard
   component: broker
-  replicaCount: 1
+  replicaCount: 2
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -51,7 +51,7 @@ broker:
   resources:
     requests:
       memory: 5000Mi
-      cpu: 2
+      cpu: 4
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
