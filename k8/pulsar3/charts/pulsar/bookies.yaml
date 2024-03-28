@@ -7,7 +7,7 @@ bookkeeper:
       # requests:
         # memory: 4Gi
         # cpu: 2
-  replicaCount: 2
+  replicaCount: 8
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: Parallel
@@ -56,7 +56,7 @@ bookkeeper:
   resources:
     requests:
       memory: 1
-      cpu: 2
+      cpu: 0.5
   extraVolumes: []
   extraVolumeMounts: []
   # Ensures 2.10.0 non-root docker image works correctly.
@@ -81,10 +81,6 @@ bookkeeper:
           size: 97Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal1
-        - name: journal2
-          size: 97Gi
-          storageClassName: fast-disks
-          mountPath: /pulsar/data/bookkeeper/journal2
     ledgers: 
       name: ledgers
       size: 39Gi
@@ -100,10 +96,6 @@ bookkeeper:
           size: 97Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers1
-        - name: ledgers2
-          size: 97Gi
-          storageClassName: fast-disks
-          mountPath: /pulsar/data/bookkeeper/ledgers2
         # - name: ledgers3
         #   size: 45Gi
         #   storageClassName: fast-disks
