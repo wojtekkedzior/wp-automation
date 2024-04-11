@@ -396,9 +396,9 @@ autorecovery:
     http: 8000
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
-  # affinity:
-  #   anti_affinity: true
-  #   anti_affinity_topology_key: kubernetes.io/hostname
+  affinity:
+    anti_affinity: false
+    anti_affinity_topology_key: kubernetes.io/hostname
     # Set the anti affinity type. Valid values:
     # requiredDuringSchedulingIgnoredDuringExecution - rules must be met for pod to be scheduled (hard) requires at least one node per replica
     # preferredDuringSchedulingIgnoredDuringExecution - scheduler will try to enforce but not guranentee
