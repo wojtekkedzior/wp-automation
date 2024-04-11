@@ -384,7 +384,7 @@ autorecovery:
   # use a component name that matches your grafana configuration
   # so the metrics are correctly rendered in grafana dashboard
   component: recovery
-  replicaCount: 1
+  replicaCount: 10
   # This is how prometheus discovers this component
   podMonitor:
     enabled: true

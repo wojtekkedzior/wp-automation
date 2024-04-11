@@ -50,7 +50,7 @@ broker:
   gracePeriod: 30
   resources:
     requests:
-      memory: 5000Mi
+      memory: 4000Mi
       cpu: 2
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
@@ -76,7 +76,7 @@ broker:
   ##
   configData:
     PULSAR_MEM: >
-      -Xms128m -Xmx500m -XX:MaxDirectMemorySize=4400m
+      -Xms128m -Xmx500m -XX:MaxDirectMemorySize=3400m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10

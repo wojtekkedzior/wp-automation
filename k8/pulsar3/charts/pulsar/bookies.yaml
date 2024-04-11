@@ -7,7 +7,7 @@ bookkeeper:
       # requests:
         # memory: 4Gi
         # cpu: 2
-  replicaCount: 8
+  replicaCount: 3
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: Parallel
@@ -55,8 +55,8 @@ bookkeeper:
   gracePeriod: 30
   resources:
     requests:
-      memory: 1
-      cpu: 0.4
+      memory: 3
+      cpu: 1
   extraVolumes: []
   extraVolumeMounts: []
   # Ensures 2.10.0 non-root docker image works correctly.
@@ -128,7 +128,7 @@ bookkeeper:
     PULSAR_MEM: >
       -Xms100m
       -Xmx300m
-      -XX:MaxDirectMemorySize=650m
+      -XX:MaxDirectMemorySize=2600m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10
@@ -143,7 +143,7 @@ bookkeeper:
       -XX:+ExitOnOutOfMemoryError
       -XX:+PerfDisableSharedMem
     # configure the memory settings based on jvm memory settings
-    dbStorage_writeCacheMaxSizeMb: "32"
+    dbStorage_writeCacheMaxSizeMb: "1500"
     dbStorage_readAheadCacheMaxSizeMb: "32"
     # dbStorage_readAheadCacheBatchSize: "5000"
     dbStorage_rocksDB_blockSize: "262144"
