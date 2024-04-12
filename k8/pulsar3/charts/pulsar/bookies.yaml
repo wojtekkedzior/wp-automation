@@ -77,10 +77,10 @@ bookkeeper:
           size: 47Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal0
-        - name: journal1
-          size: 47Gi
-          storageClassName: fast-disks
-          mountPath: /pulsar/data/bookkeeper/journal1
+        # - name: journal1
+        #   size: 47Gi
+        #   storageClassName: fast-disks
+        #   mountPath: /pulsar/data/bookkeeper/journal1
     ledgers: 
       name: ledgers
       size: 39Gi
