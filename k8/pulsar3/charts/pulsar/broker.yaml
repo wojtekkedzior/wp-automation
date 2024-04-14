@@ -101,6 +101,7 @@ broker:
     managedLedgerMaxLedgerRolloverTimeMinutes: "3"
     managedLedgerMinLedgerRolloverTimeMinutes: "1"
     managedLedgerCursorRolloverTimeInSeconds: "60"
+    managedLedgerMaxEntriesPerLedger: "100"
 #    systemTopicEnabled: "true"
 #    topicLevelPoliciesEnabled: "true"
     bookkeeperNumberOfChannelsPerBookie: "32"
