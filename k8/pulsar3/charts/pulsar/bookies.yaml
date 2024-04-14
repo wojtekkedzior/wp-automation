@@ -154,6 +154,7 @@ bookkeeper:
     journalPreAllocSizeMB: "200"
     writeBufferSizeBytes: "1048576"
     # numAddWorkerThreads: "10"
+    logSizeLimit: "104857600"
     # ledgerStorageClass: "org.apache.bookkeeper.bookie.SortedLedgerStorage"
     # readBufferSizeBytes: "262144"
     # numReadWorkerThreads
