@@ -415,7 +415,7 @@ autorecovery:
   ##
   configData:
     BOOKIE_MEM: >
-      -Xms64m -Xmx64m
+      -Xms64m -Xmx500m
     PULSAR_PREFIX_useV2WireProtocol: "true"
 
 ## Pulsar Zookeeper metadata. The metadata will be deployed as
