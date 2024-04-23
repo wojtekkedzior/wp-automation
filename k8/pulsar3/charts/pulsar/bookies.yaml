@@ -7,7 +7,7 @@ bookkeeper:
       # requests:
         # memory: 4Gi
         # cpu: 2
-  replicaCount: 3
+  replicaCount: 2
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: Parallel
@@ -89,7 +89,7 @@ bookkeeper:
       useMultiVolumes: true
       multiVolumes:
         - name: ledgers0
-          size: 580Gi
+          size: 1350Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers0
         # - name: ledgers1
