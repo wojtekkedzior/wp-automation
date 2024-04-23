@@ -89,7 +89,7 @@ bookkeeper:
       useMultiVolumes: true
       multiVolumes:
         - name: ledgers0
-          size: 1350Gi
+          size: 1250Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers0
         # - name: ledgers1

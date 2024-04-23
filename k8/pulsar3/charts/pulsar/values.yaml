@@ -325,7 +325,7 @@ zookeeper:
     persistence: true
     data:
       name: data
-      size: 4.5Gi
+      size: 970Mi
       local_storage: true
       ## If you already have an existent storage class and want to reuse it, you can specify its name with the option below
       ##
