@@ -384,7 +384,7 @@ autorecovery:
   # use a component name that matches your grafana configuration
   # so the metrics are correctly rendered in grafana dashboard
   component: recovery
-  replicaCount: 4
+  replicaCount: 1
   # This is how prometheus discovers this component
   podMonitor:
     enabled: true
@@ -408,8 +408,8 @@ autorecovery:
   gracePeriod: 30
   resources:
     requests:
-      memory: 512Mi
-      cpu: 0.2
+      memory: 64Mi
+      cpu: 0.01
   ## Bookkeeper auto-recovery configmap
   ## templates/autorecovery-configmap.yaml
   ##

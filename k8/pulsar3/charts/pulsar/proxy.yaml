@@ -45,7 +45,7 @@ proxy:
   resources:
     requests:
       memory: 2500Mi
-      cpu: 1
+      cpu: 3
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
