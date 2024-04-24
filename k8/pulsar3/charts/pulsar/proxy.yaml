@@ -44,11 +44,11 @@ proxy:
   gracePeriod: 30
   resources:
     requests:
-      memory: 2500Mi
-      cpu: 3
+      memory: 5000Mi
+      cpu: 7
     limits:
-      memory: 2500Mi
-      cpu: 3
+      memory: 5000Mi
+      cpu: 7
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
@@ -73,7 +73,7 @@ proxy:
   ##
   configData:
     PULSAR_MEM: >
-      -Xms64m -Xmx200m -XX:MaxDirectMemorySize=2300m
+      -Xms64m -Xmx200m -XX:MaxDirectMemorySize=4600m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10
