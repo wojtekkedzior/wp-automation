@@ -33,7 +33,7 @@ proxy:
       periodSeconds: 10
       timeoutSeconds: 5
   affinity:
-    anti_affinity: true
+    anti_affinity: false
     anti_affinity_topology_key: kubernetes.io/hostname
     # Set the anti affinity type. Valid values:
     # requiredDuringSchedulingIgnoredDuringExecution - rules must be met for pod to be scheduled (hard) requires at least one node per replica
