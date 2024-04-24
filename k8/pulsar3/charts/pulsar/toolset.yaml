@@ -14,8 +14,8 @@ toolset:
   gracePeriod: 30
   resources:
     requests:
-      memory: 256Mi
-      cpu: 0.2
+      memory: 64Mi
+      cpu: 0.1
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
