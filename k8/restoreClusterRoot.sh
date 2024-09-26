@@ -58,10 +58,10 @@ function k8() {
   # time startWorker 3 192.168.100.244 > out-log-3 2>&1 &
   # time startWorker 4 192.168.100.171 > out-log-4 2>&1 &
 
-  time startWorker 1 192.168.100.163 > out-log-1 2>&1 &
-  time startWorker 2 192.168.100.216 > out-log-2 2>&1 &
-  time startWorker 3 192.168.100.199 > out-log-3 2>&1 &
-  time startWorker 4 192.168.100.180 > out-log-4 2>&1 &
+  time startWorker 1 192.168.122.23 > out-log-1 2>&1 &
+  time startWorker 2 192.168.122.236 > out-log-2 2>&1 &
+  time startWorker 3 192.168.122.238 > out-log-3 2>&1 &
+  time startWorker 4 192.168.122.120 > out-log-4 2>&1 &
 
   # block on checking whether the first worker is up. All the workers should come up at around the same time.
   wait "${pids[@]}"
