@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 source pulsar3/setup/pulsar.sh
 source k8-cluster/third-party-tools.sh
@@ -52,10 +52,16 @@ function k8() {
   # remove output from prior runs
   rm out-log-[1-4]
 
-  time startWorker 1 192.168.100.221 > out-log-1 2>&1 &
-  time startWorker 2 192.168.100.252 > out-log-2 2>&1 &
-  time startWorker 3 192.168.100.244 > out-log-3 2>&1 &
-  time startWorker 4 192.168.100.171 > out-log-4 2>&1 &
+# old server
+  # time startWorker 1 192.168.100.221 > out-log-1 2>&1 &
+  # time startWorker 2 192.168.100.252 > out-log-2 2>&1 &
+  # time startWorker 3 192.168.100.244 > out-log-3 2>&1 &
+  # time startWorker 4 192.168.100.171 > out-log-4 2>&1 &
+
+  time startWorker 1 192.168.100.163 > out-log-1 2>&1 &
+  time startWorker 2 192.168.100.216 > out-log-2 2>&1 &
+  time startWorker 3 192.168.100.199 > out-log-3 2>&1 &
+  time startWorker 4 192.168.100.180 > out-log-4 2>&1 &
 
   # block on checking whether the first worker is up. All the workers should come up at around the same time.
   wait "${pids[@]}"
