@@ -55,7 +55,7 @@ bookkeeper:
   gracePeriod: 30
   resources:
     requests:
-      memory: 3
+      memory: 1
       cpu: 0.5
   extraVolumes: []
   extraVolumeMounts: []
@@ -128,7 +128,7 @@ bookkeeper:
     PULSAR_MEM: >
       -Xms100m
       -Xmx300m
-      -XX:MaxDirectMemorySize=2600m
+      -XX:MaxDirectMemorySize=600m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10
@@ -143,7 +143,7 @@ bookkeeper:
       -XX:+ExitOnOutOfMemoryError
       -XX:+PerfDisableSharedMem
     # configure the memory settings based on jvm memory settings
-    dbStorage_writeCacheMaxSizeMb: "1500"
+    dbStorage_writeCacheMaxSizeMb: "300"
     dbStorage_readAheadCacheMaxSizeMb: "32"
     # dbStorage_readAheadCacheBatchSize: "5000"
     dbStorage_rocksDB_blockSize: "262144"
