@@ -58,10 +58,10 @@ function create() {
             qemu-img create "$path/worker-$i-$j.qcow2" 100G -f qcow2 -o preallocation=full
         done
 
-        for j in `eval echo {$index..15}`;
+        for j in `eval echo {$(( $index + 1 ))..6}`;
         do
             echo "$path/worker-$i-$j.qcow2"
-            qemu-img create "$path/worker-$i-$j.qcow2" 10G -f qcow2 -o preallocation=full
+            qemu-img create "$path/worker-$i-$j.qcow2" 5G -f qcow2 -o preallocation=full
         done
     done
 }
