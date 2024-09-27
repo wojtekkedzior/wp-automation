@@ -55,7 +55,7 @@ bookkeeper:
   gracePeriod: 30
   resources:
     requests:
-      memory: 1
+      memory: 2
       cpu: 0.5
   extraVolumes: []
   extraVolumeMounts: []
@@ -128,7 +128,7 @@ bookkeeper:
     PULSAR_MEM: >
       -Xms100m
       -Xmx300m
-      -XX:MaxDirectMemorySize=600m
+      -XX:MaxDirectMemorySize=1600m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10

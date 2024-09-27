@@ -44,10 +44,10 @@ proxy:
   gracePeriod: 30
   resources:
     requests:
-      memory: 500Mi
+      memory: 1000Mi
       cpu: 0.5
     limits:
-      memory: 500Mi
+      memory: 1000Mi
       cpu: 3
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
