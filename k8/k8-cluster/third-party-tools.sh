@@ -61,4 +61,13 @@ function litmus() {
     kubectl create ns litmus
 
     helm install chaos litmuschaos/litmus --namespace=litmus --set portal.frontend.service.type=NodePort
+
+    # for the the service to get an IP
+    sleep 3
+
+    sudo sed -i "/setenv LITMUS_UI_IP/c\\\tsetenv LITMUS_UI_IP $(kubectl -n litmus get svc chaos-litmus-frontend-service -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
+
+    kubectl apply -f https://raw.githubusercontent.com/litmuschaos/litmus/master/mkdocs/docs/3.6.1/litmus-portal-crds-3.6.1.yml
+
+
 }
