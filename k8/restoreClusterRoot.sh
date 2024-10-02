@@ -101,6 +101,10 @@ do
     echo "Installing nginx"
     nginx
     ;;
+  litmus )
+    echo "Installing litmus"
+    litmus
+    ;;
   pulsar-cleanup )
     echo "cleaing up pulsar"
     #TODO add helm uninstall
