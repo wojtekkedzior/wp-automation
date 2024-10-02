@@ -4,7 +4,7 @@ pollInterval=10
 
 function pulsarMonitoring() {
     #install local volume provisioner and give it some time to start and identify the nodes' volumes
-    kubectl create -f k8-cluster/local-volume-provisioner.generated.yaml
+    # kubectl create -f k8-cluster/local-volume-provisioner.generated.yaml
 
     helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --version=50.3.0 --values pulsar3/setup/prom-values.yaml || exit 1
 

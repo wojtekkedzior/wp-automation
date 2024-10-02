@@ -65,6 +65,8 @@ function k8() {
 
   # block on checking whether the first worker is up. All the workers should come up at around the same time.
   wait "${pids[@]}"
+
+  kubectl create -f k8-cluster/local-volume-provisioner.generated.yaml
 }
 
 for values in $(echo "$@")
