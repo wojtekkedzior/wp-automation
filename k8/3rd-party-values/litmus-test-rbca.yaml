@@ -28,6 +28,7 @@ rules:
       - "litmuschaos.io"
     resources:
       - chaosengines
+      - chaosexperiments
     verbs:
       - create
       - delete
