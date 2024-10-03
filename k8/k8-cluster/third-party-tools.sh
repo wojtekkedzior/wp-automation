@@ -69,5 +69,7 @@ function litmus() {
 
     kubectl apply -f https://raw.githubusercontent.com/litmuschaos/litmus/master/mkdocs/docs/3.6.1/litmus-portal-crds-3.6.1.yml
 
+    kubectl -n litmus apply -f 3rd-party-values/litmus-test-app.yaml
+    kubectl -n litmus apply -f 3rd-party-values/litmus-test.yaml
 
 }

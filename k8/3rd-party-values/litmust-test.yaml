@@ -1,0 +1,28 @@
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosEngine
+metadata:
+ name: bookinfo-network-delay
+ namespace: default
+spec:  
+ jobCleanUpPolicy: 'retain'  # It can be delete/retain
+ annotationCheck: 'false'
+ engineState: 'active'
+ monitoring: false
+ appinfo:
+   appns: 'default'
+   applabel: 'app=ratings'   # application label matching
+   appkind: 'deployment'     # k8s object type
+ chaosServiceAccount: pod-network-latency-sa
+ experiments:
+   - name: pod-network-latency
+     spec:
+       components:
+         env:
+           - name: NETWORK_INTERFACE
+             value: 'eth0'   # default interface used by pod   
+           - name: NETWORK_LATENCY
+             value: '2000'   # delay in milliseconds
+           - name: TOTAL_CHAOS_DURATION
+             value: '100'    # chaos duration in seconds
+           - name: PODS_AFFECTED_PERC
+             value: '100'    # effect # of pods in percentage
