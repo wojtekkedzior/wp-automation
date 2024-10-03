@@ -2,14 +2,14 @@ apiVersion: litmuschaos.io/v1alpha1
 kind: ChaosEngine
 metadata:
  name: bookinfo-network-delay
- namespace: default
+ namespace: litmus
 spec:  
  jobCleanUpPolicy: 'retain'  # It can be delete/retain
  annotationCheck: 'false'
  engineState: 'active'
  monitoring: false
  appinfo:
-   appns: 'default'
+   appns: 'litmus'
    applabel: 'app=ratings'   # application label matching
    appkind: 'deployment'     # k8s object type
  chaosServiceAccount: pod-network-latency-sa

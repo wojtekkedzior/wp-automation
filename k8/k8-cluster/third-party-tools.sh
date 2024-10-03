@@ -59,8 +59,10 @@ function nginx() {
 function litmus() {
     helm repo add litmuschaos https://litmuschaos.github.io/litmus-helm/
     kubectl create ns litmus
-
     helm install chaos litmuschaos/litmus --namespace=litmus --set portal.frontend.service.type=NodePort
+
+    kubectl apply -f https://litmuschaos.github.io/litmus/litmus-operator-v2.2.0.yaml
+    kubectl apply -f https://hub.litmuschaos.io/api/chaos/2.2.0?file=charts/generic/pod-network-latency/experiment.yaml
 
     # for the the service to get an IP
     sleep 3
