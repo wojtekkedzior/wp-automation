@@ -59,7 +59,7 @@ function nginx() {
 function litmus() {
     # https://github.com/litmuschaos/litmus-helm
 
-    
+
     helm repo add litmuschaos https://litmuschaos.github.io/litmus-helm/
     kubectl create ns litmus
     helm install chaos litmuschaos/litmus --namespace=litmus --set portal.frontend.service.type=NodePort
@@ -76,6 +76,7 @@ function litmus() {
 
     helm install kchaos litmuschaos/kubernetes-chaos -n litmus
 
+    kubectl apply -f 3rd-party-values/litmus-test-rbca.yaml  -n litmus
     kubectl -n litmus apply -f 3rd-party-values/litmus-test-app.yaml
     kubectl -n litmus apply -f 3rd-party-values/litmus-test.yaml
 
