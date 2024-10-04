@@ -57,6 +57,9 @@ function nginx() {
 
 
 function litmus() {
+    # https://github.com/litmuschaos/litmus-helm
+
+    
     helm repo add litmuschaos https://litmuschaos.github.io/litmus-helm/
     kubectl create ns litmus
     helm install chaos litmuschaos/litmus --namespace=litmus --set portal.frontend.service.type=NodePort
@@ -70,6 +73,8 @@ function litmus() {
     sudo sed -i "/setenv LITMUS_UI_IP/c\\\tsetenv LITMUS_UI_IP $(kubectl -n litmus get svc chaos-litmus-frontend-service -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
 
     kubectl apply -f https://raw.githubusercontent.com/litmuschaos/litmus/master/mkdocs/docs/3.6.1/litmus-portal-crds-3.6.1.yml
+
+    helm install kchaos litmuschaos/kubernetes-chaos -n litmus
 
     kubectl -n litmus apply -f 3rd-party-values/litmus-test-app.yaml
     kubectl -n litmus apply -f 3rd-party-values/litmus-test.yaml
