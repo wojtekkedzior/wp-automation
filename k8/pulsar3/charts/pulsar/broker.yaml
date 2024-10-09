@@ -112,7 +112,7 @@ broker:
     bookkeeperClientTimeoutInSeconds: "180"
     # bookkeeperClientNumWorkerThreads: "10"
     #numIOThreads: "10"
-    managedLedgerCacheSizeMB:4000
+    managedLedgerCacheSizeMB: "4000"
     # loadBalancerResourceQuotaUpdateIntervalMinutes: "2"
     # loadBalancerNamespaceBundleMaxTopics: "5"
     # loadBalancerBrokerMaxTopics: "20"
