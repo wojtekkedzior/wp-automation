@@ -98,17 +98,17 @@ bookkeeper:
     persistence: true
     journal:
       name: journal
-      size: 24Gi
+      size: 22Gi
       storageClassName: fast-disks
       selector: {}
       useMultiVolumes: true
       multiVolumes:
         - name: journal0
-          size: 24Gi
+          size: 22Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal0
         - name: journal1
-          size: 24Gi
+          size: 22Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal1
     ledgers: 
