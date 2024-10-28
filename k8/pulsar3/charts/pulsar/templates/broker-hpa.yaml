@@ -26,6 +26,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: "{{ template "pulsar.fullname" . }}-{{ .Values.broker.component }}"
+  namespace: {{ template "pulsar.namespace" . }}
 spec:
   maxReplicas: {{ .Values.broker.autoscaling.maxReplicas }}
   {{- with .Values.broker.autoscaling.metrics }}
@@ -33,6 +34,10 @@ spec:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   minReplicas: {{ .Values.broker.autoscaling.minReplicas }}
+  {{- with .Values.broker.autoscaling.behavior }}
+  behavior:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   scaleTargetRef:
     apiVersion: apps/v1
     kind: StatefulSet

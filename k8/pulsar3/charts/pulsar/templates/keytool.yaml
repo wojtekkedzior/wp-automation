@@ -36,9 +36,14 @@ data:
     crtFile=/pulsar/certs/${component}/tls.crt
     keyFile=/pulsar/certs/${component}/tls.key
     caFile=/pulsar/certs/ca/ca.crt
-    p12File=/pulsar/${component}.p12
-    keyStoreFile=/pulsar/${component}.keystore.jks
-    trustStoreFile=/pulsar/${component}.truststore.jks
+    tlsDir=/tmp/pulsar-tls$$
+    p12File=${tlsDir}/${component}.p12
+    keyStoreFile=${tlsDir}/${component}.keystore.jks
+    trustStoreFile=${tlsDir}/${component}.truststore.jks
+
+    # create tmp dir for keystore and truststore files
+    mkdir ${tlsDir}
+    chmod 0700 ${tlsDir}
     
     function checkFile() {
         local file=$1
@@ -95,11 +100,11 @@ data:
     
     if [[ "x${isClient}" == "xtrue" ]]; then
         echo $'\n' >> conf/pulsar_env.sh
-        echo "PULSAR_EXTRA_OPTS=\"${PULSAR_EXTRA_OPTS} -Dzookeeper.clientCnxnSocket=org.apache.zookeeper.ClientCnxnSocketNetty -Dzookeeper.client.secure=true -Dzookeeper.ssl.keyStore.location=${keyStoreFile} -Dzookeeper.ssl.keyStore.password=${PASSWORD} -Dzookeeper.ssl.trustStore.location=${trustStoreFile} -Dzookeeper.ssl.trustStore.password=${PASSWORD}\"" >> conf/pulsar_env.sh
+        echo "PULSAR_EXTRA_OPTS=\"\${PULSAR_EXTRA_OPTS} -Dzookeeper.clientCnxnSocket=org.apache.zookeeper.ClientCnxnSocketNetty -Dzookeeper.client.secure=true -Dzookeeper.ssl.keyStore.location=${keyStoreFile} -Dzookeeper.ssl.keyStore.password=${PASSWORD} -Dzookeeper.ssl.trustStore.location=${trustStoreFile} -Dzookeeper.ssl.trustStore.password=${PASSWORD}\"" >> conf/pulsar_env.sh
         echo $'\n' >> conf/bkenv.sh
-        echo "BOOKIE_EXTRA_OPTS=\"${BOOKIE_EXTRA_OPTS} -Dzookeeper.clientCnxnSocket=org.apache.zookeeper.ClientCnxnSocketNetty -Dzookeeper.client.secure=true -Dzookeeper.ssl.keyStore.location=${keyStoreFile} -Dzookeeper.ssl.keyStore.password=${PASSWORD} -Dzookeeper.ssl.trustStore.location=${trustStoreFile} -Dzookeeper.ssl.trustStore.password=${PASSWORD}\"" >> conf/bkenv.sh
+        echo "BOOKIE_EXTRA_OPTS=\"\${BOOKIE_EXTRA_OPTS} -Dzookeeper.clientCnxnSocket=org.apache.zookeeper.ClientCnxnSocketNetty -Dzookeeper.client.secure=true -Dzookeeper.ssl.keyStore.location=${keyStoreFile} -Dzookeeper.ssl.keyStore.password=${PASSWORD} -Dzookeeper.ssl.trustStore.location=${trustStoreFile} -Dzookeeper.ssl.trustStore.password=${PASSWORD}\"" >> conf/bkenv.sh
     else
         echo $'\n' >> conf/pulsar_env.sh
-        echo "PULSAR_EXTRA_OPTS=\"${PULSAR_EXTRA_OPTS} -Dzookeeper.ssl.keyStore.location=${keyStoreFile} -Dzookeeper.ssl.keyStore.password=${PASSWORD} -Dzookeeper.ssl.trustStore.location=${trustStoreFile} -Dzookeeper.ssl.trustStore.password=${PASSWORD}\"" >> conf/pulsar_env.sh
+        echo "PULSAR_EXTRA_OPTS=\"\${PULSAR_EXTRA_OPTS} -Dzookeeper.ssl.keyStore.location=${keyStoreFile} -Dzookeeper.ssl.keyStore.password=${PASSWORD} -Dzookeeper.ssl.trustStore.location=${trustStoreFile} -Dzookeeper.ssl.trustStore.password=${PASSWORD}\"" >> conf/pulsar_env.sh
     fi
 {{- end }}
