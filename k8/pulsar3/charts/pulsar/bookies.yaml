@@ -75,7 +75,7 @@ bookkeeper:
   resources:
     requests:
       memory: 8Mi
-      cpu: 1
+      cpu: 0.5
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
