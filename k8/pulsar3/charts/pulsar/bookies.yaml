@@ -122,7 +122,7 @@ bookkeeper:
           size: 230Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers0
-        - name: ledgers0
+        - name: ledgers1
           size: 230Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers1
