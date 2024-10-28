@@ -15,13 +15,9 @@ function istio() {
 
     kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.20/samples/addons/prometheus.yaml
 
-
     curl -L https://istio.io/downloadIstio | sh -
     kubectl apply -f istio-1.20.0/samples/addons/prometheus.yaml
     kubectl apply -f istio-1.20.0/samples/addons/kiali.yaml
-
-
-
 
 }
 
@@ -54,7 +50,6 @@ function hazelcast() {
 function nginx() {
     kubectl apply -f k8-cluster/nginx.yaml
 }
-
 
 function litmus() {
     # docs

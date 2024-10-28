@@ -113,7 +113,8 @@ extra:
 
 # default image tag for pulsar images
 # uses chart's appVersion when unspecified
-defaultPulsarImageTag: 3.1.0
+# defaultPulsarImageTag: 3.1.0
+defaultPulsarImageTag: 4.0.0
 
 ## Images
 ##
@@ -127,7 +128,7 @@ images:
   bookie:
     repository: public.ecr.aws/y7c9l5j8/custom-pulsar
     # uses defaultPulsarImageTag when unspecified
-    tag: 3.4.2
+    # tag: 3.4.2
     pullPolicy: IfNotPresent
   autorecovery:
     repository: apachepulsar/pulsar-all
@@ -137,7 +138,7 @@ images:
   broker:
     repository: public.ecr.aws/y7c9l5j8/custom-pulsar
     # uses defaultPulsarImageTag when unspecified
-    tag: 3.4.2
+    # tag: 3.4.2
     pullPolicy: IfNotPresent
   proxy:
     repository: apachepulsar/pulsar-all
