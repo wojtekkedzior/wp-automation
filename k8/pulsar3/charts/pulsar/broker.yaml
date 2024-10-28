@@ -69,10 +69,10 @@ broker:
   waitBookkeeperTimeout: 120
   resources:
     requests:
-      memory: 10000Mi
+      memory: 8000Mi
       cpu: 1.5
     limits:
-      memory: 10000Mi
+      memory: 8000Mi
       cpu: 1.5
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
@@ -100,7 +100,7 @@ broker:
   ##
   configData:
     PULSAR_MEM: >
-      -Xms1600m -Xmx1900m -XX:MaxDirectMemorySize=8000m
+      -Xms1600m -Xmx1900m -XX:MaxDirectMemorySize=6000m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10
