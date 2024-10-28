@@ -392,7 +392,7 @@ zookeeper:
     persistence: true
     data:
       name: data
-      size: 20Gi
+      size: 1Gi
       local_storage: true
       ## If you already have an existent storage class and want to reuse it, you can specify its name with the option below
       ##
@@ -413,7 +413,7 @@ zookeeper:
     ## If you set useSeparateDiskForTxlog to true, this section configures the extra volume for the zookeeper transaction log.
     datalog:
       name: datalog
-      size: 20Gi
+      size: 1Gi
       local_storage: true
       ## If you already have an existent storage class and want to reuse it, you can specify its name with the option below
       ##
