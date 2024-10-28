@@ -68,27 +68,27 @@ function create() {
 
 function staticVolumes() {
 
-    path="/mnt/llms/k8vms/volumes"
-    smallVolSz="2G"
+    path="/mnt/k8volumes"
+    smallVolSz="10G"
 
     #worker 1
         #journals
-        qemu-img create "${path}/worker1-1.qcow2" 25G -f qcow2 -o preallocation=full
-        qemu-img create "${path}/worker1-2.qcow2" 25G -f qcow2 -o preallocation=full
+        qemu-img create "${path}/worker1-1.qcow2" 75G -f qcow2 -o preallocation=full
+        qemu-img create "${path}/worker1-2.qcow2" 75G -f qcow2 -o preallocation=full
         #journals
-        qemu-img create "${path}/worker1-3.qcow2" 240G -f qcow2 -o preallocation=full
-        qemu-img create "${path}/worker1-4.qcow2" 240G -f qcow2 -o preallocation=full
+        qemu-img create "${path}/worker1-3.qcow2" 600G -f qcow2 -o preallocation=full
+        qemu-img create "${path}/worker1-4.qcow2" 600G -f qcow2 -o preallocation=full
         # small volumes
         qemu-img create "${path}/worker1-5.qcow2" ${smallVolSz} -f qcow2 -o preallocation=full
         qemu-img create "${path}/worker1-6.qcow2" ${smallVolSz} -f qcow2 -o preallocation=full
 
     #worker 2
         #journals
-        qemu-img create "${path}/worker2-1.qcow2" 25G -f qcow2 -o preallocation=full
-        qemu-img create "${path}/worker2-2.qcow2" 25G -f qcow2 -o preallocation=full
+        qemu-img create "${path}/worker2-1.qcow2" 75G -f qcow2 -o preallocation=full
+        qemu-img create "${path}/worker2-2.qcow2" 75G -f qcow2 -o preallocation=full
         #journals
-        qemu-img create "${path}/worker2-3.qcow2" 240G -f qcow2 -o preallocation=full
-        qemu-img create "${path}/worker2-4.qcow2" 240G -f qcow2 -o preallocation=full
+        qemu-img create "${path}/worker2-3.qcow2" 600G -f qcow2 -o preallocation=full
+        qemu-img create "${path}/worker2-4.qcow2" 600G -f qcow2 -o preallocation=full
         # small volumes
         qemu-img create "${path}/worker2-5.qcow2" ${smallVolSz} -f qcow2 -o preallocation=full
         qemu-img create "${path}/worker2-6.qcow2" ${smallVolSz} -f qcow2 -o preallocation=full
