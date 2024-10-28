@@ -24,7 +24,7 @@ function startWorker() {
   do
     echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks/disk${index}"
     echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk${index}"
-    echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/vd${disk} && sudo mount /dev/vd${disk} /mnt/fast-disks/disk${index}"
+    echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sd${disk} && sudo mount /dev/vd${disk} /mnt/fast-disks/disk${index}"
     (( index++ ))
   done
 
