@@ -107,10 +107,10 @@ bookkeeper:
           size: 22Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal0
-        - name: journal1
-          size: 22Gi
-          storageClassName: fast-disks
-          mountPath: /pulsar/data/bookkeeper/journal1
+        # - name: journal1
+        #   size: 22Gi
+        #   storageClassName: fast-disks
+        #   mountPath: /pulsar/data/bookkeeper/journal1
     ledgers: 
       name: ledgers
       size: 230Gi
@@ -122,10 +122,10 @@ bookkeeper:
           size: 230Gi
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers0
-        - name: ledgers1
-          size: 230Gi
-          storageClassName: fast-disks
-          mountPath: /pulsar/data/bookkeeper/ledgers1
+        # - name: ledgers1
+        #   size: 230Gi
+        #   storageClassName: fast-disks
+        #   mountPath: /pulsar/data/bookkeeper/ledgers1
 
     ## use a single common volume for both journal and ledgers
     useSingleCommonVolume: false
