@@ -68,7 +68,11 @@ bookkeeper:
   # set topologySpreadConstraint to deploy pods across different zones
   topologySpreadConstraints: []
   annotations: {}
-  tolerations: []
+  tolerations: 
+  - key: "pulsar"
+    operator: "Equal"
+    value: "storage"
+    effect: "NoSchedule"
   gracePeriod: 30
   ## Timeout for waiting for bookkeeper cluster metadata to be initialized before starting a bookie
   waitMetadataTimeout: 600
