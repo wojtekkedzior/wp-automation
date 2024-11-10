@@ -74,8 +74,8 @@ bookkeeper:
   waitMetadataTimeout: 600
   resources:
     requests:
-      memory: 4Mi
-      cpu: 0.5
+      memory: 10Mi
+      cpu: 2.5
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
@@ -107,10 +107,10 @@ bookkeeper:
           size: 72G
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal0
-        # - name: journal1
-        #   size: 72G
-        #   storageClassName: fast-disks
-        #   mountPath: /pulsar/data/bookkeeper/journal1
+        - name: journal1
+          size: 72G
+          storageClassName: fast-disks
+          mountPath: /pulsar/data/bookkeeper/journal1
     ledgers: 
       name: ledgers
       size: 585G
@@ -122,10 +122,10 @@ bookkeeper:
           size: 585G
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers0
-        # - name: ledgers1
-        #   size: 570G
-        #   storageClassName: fast-disks
-        #   mountPath: /pulsar/data/bookkeeper/ledgers1
+        - name: ledgers1
+          size: 570G
+          storageClassName: fast-disks
+          mountPath: /pulsar/data/bookkeeper/ledgers1
 
     ## use a single common volume for both journal and ledgers
     useSingleCommonVolume: false
