@@ -311,7 +311,7 @@ zookeeper:
   # so the metrics are correctly rendered in grafana dashboard
   component: zookeeper
   # the number of zookeeper servers to run. it should be an odd number larger than or equal to 3.
-  replicaCount: 3
+  replicaCount: 1
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: Parallel
@@ -368,7 +368,7 @@ zookeeper:
   resources:
     requests:
       memory: 256Mi
-      cpu: 0.1
+      cpu: 0.2
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
