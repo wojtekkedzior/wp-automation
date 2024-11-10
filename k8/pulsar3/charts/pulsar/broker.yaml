@@ -70,7 +70,7 @@ broker:
   resources:
     requests:
       memory: 8000Mi
-      cpu: 30
+      cpu: 3
     limits:
       memory: 11000Mi
       cpu: 3
