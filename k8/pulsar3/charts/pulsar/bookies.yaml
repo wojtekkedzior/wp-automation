@@ -78,10 +78,10 @@ bookkeeper:
   waitMetadataTimeout: 600
   resources:
     requests:
-      memory: 10G
+      memory: 8G
       cpu: 2
     limits:
-      memory: 10G
+      memory: 8G
       cpu: 2
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
