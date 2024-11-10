@@ -20,7 +20,7 @@ function startWorker() {
   # prepare mount dirs, unmount if already mounted, format and (re)mount
   index=1
   echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks"
-  for disk in {b..p}
+  for disk in {a..g}
   do
     echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks/disk${index}"
     echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk${index}"
