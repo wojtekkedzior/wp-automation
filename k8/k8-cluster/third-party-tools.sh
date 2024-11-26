@@ -64,6 +64,7 @@ function litmus() {
     sleep 3
     sudo sed -i "/setenv LITMUS_UI_IP/c\\\tsetenv LITMUS_UI_IP $(kubectl -n litmus get svc chaos-litmus-frontend-service -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
 
+    sudo service haproxy restart
 
     kubectl apply -f https://litmuschaos.github.io/litmus/litmus-operator-v2.2.0.yaml
     kubectl apply -f https://raw.githubusercontent.com/litmuschaos/litmus/master/mkdocs/docs/3.6.1/litmus-portal-crds-3.6.1.yml
