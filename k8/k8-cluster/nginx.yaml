@@ -26,3 +26,17 @@ spec:
             cpu: 100m
             ephemeral-storage: 800M
             memory: 100M
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "nginx-service"
+  labels:
+    app: nginx
+spec:
+  ports:
+  - name: http
+    port: 8090
+    targetPort: 80
+  selector:
+    app: nginx
