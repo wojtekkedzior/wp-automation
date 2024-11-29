@@ -66,9 +66,9 @@ function litmus() {
     --set "INFRA_NAME=helm-agent" \
     --set "INFRA_DESCRIPTION=My first agent deployed with helm !" \
     --set "LITMUS_URL=http://chaos-litmus-frontend-service.litmus.svc.cluster.local:9091" \
-    --set "LITMUS_BACKEND_URL=http://litmusportal-server-service.litmus.svc.cluster.local:9002" \
+    --set "LITMUS_BACKEND_URL=http://chaos-litmus-server-service.litmus.svc.cluster.local:9002" \
     --set "LITMUS_USERNAME=admin" \
-    --set "LITMUS_PASSWORD=Litmus1@" \
+    --set "LITMUS_PASSWORD=litmus" \
     --set "LITMUS_PROJECT_ID=69395cb3-0231-4262-8990-78056c8adb4c" \
     --set "LITMUS_ENVIRONMENT_ID=test"
 
