@@ -72,6 +72,33 @@ function litmus() {
     --set "LITMUS_PROJECT_ID=69395cb3-0231-4262-8990-78056c8adb4c" \
     --set "LITMUS_ENVIRONMENT_ID=test"
 
+    helm install litmus-agent ./litmus-helm/charts/litmus-agent \
+    --namespace litmus \
+    --set "INFRA_NAME=helm-agent" \
+    --set "INFRA_DESCRIPTION=My first agent deployed with helm !" \
+    --set "LITMUS_URL=http://chaos-litmus-frontend-service.litmus.svc.cluster.local:9091" \
+    --set "LITMUS_BACKEND_URL=http://chaos-litmus-server-service.litmus.svc.cluster.local:9002" \
+    --set "LITMUS_USERNAME=admin" \
+    --set "LITMUS_PASSWORD=litmus" \
+    --set "LITMUS_PROJECT_ID=69395cb3-0231-4262-8990-78056c8adb4c" \
+    --set "LITMUS_ENVIRONMENT_ID=test" \
+    --set "SA_EXISTS=false" \
+    --set "SKIP_SSL=true"   \
+    --set "global.INFRA_MODE=cluster" 
+
+    # helm install litmus-agent litmuschaos/litmus-agent \
+    # --namespace litmus --create-namespace \
+    # --set "INFRA_NAME=helm-agent" \
+    # --set "INFRA_DESCRIPTION=My first agent deployed with helm !" \
+    # --set "LITMUS_URL=https://chaos-center.domain.com" \ # FOR REMOTE AGENT (INGRESS)
+    # --set "LITMUS_URL=http://litmusportal-frontend-service.litmus.svc.cluster.local:9091" \ # FOR SELF AGENT (SVC)
+    # --set "LITMUS_BACKEND_URL=http://litmusportal-server-service.litmus.svc.cluster.local:9002" \ # FOR SELF AGENT (SVC)
+    # --set "LITMUS_USERNAME=admin" \
+    # --set "LITMUS_PASSWORD=litmus" \
+    # --set "LITMUS_PROJECT_ID=<PROJECT_ID>" \
+    # --set "global.INFRA_MODE=cluster"
+
+
     # for the the service to get an IP
     sleep 3
     sudo sed -i "/setenv LITMUS_UI_IP/c\\\tsetenv LITMUS_UI_IP $(kubectl -n litmus get svc chaos-litmus-frontend-service -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
@@ -91,3 +118,13 @@ function litmus() {
 
 
 # curl -X POST --user 'admin:Litmus1!!'  http://localhost:8185/api/v1/environments name=my-env
+
+
+# bash-4.4$ curl -X POST --user admin:litmus http://localhost:8185/auth/login -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{"username": "admin", "password": "litmus"}'
+# {"accessToken":"eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzI5Nzc2NTcsInJvbGUiOiJhZG1pbiIsInVpZCI6IjFjZjc4OTg0LTcwYjMtNGIwYi1hZmY0LWM5NTViM2Y5ODBkZCIsInVzZXJuYW1lIjoiYWRtaW4ifQ.9MR0ywdvzl3Pp3QEreuVRwVngRtXOnWqjnVcRONFN_JHXaSQoNiHdv0X2b5O2n6Xg52628uXR2oXixYlMuadHA","expiresIn":86400,"projectID":"","projectRole":"Owner","type":"Bearer"}bash-4.4$ 
+
+
+#  kubectl exec -i deployment/chaos-litmus-frontend -n litmus -- /bin/bash -c "curl http://localhost:8185/auth/login -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"username\": \"admin\", \"password\": \"litmus\"}'"
+
+
+# kubectl exec -i deployment/chaos-litmus-server -n litmus -- /bin/bash -c "curl -X POST http://localhost:8080/query -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"access_key\": \"eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzI5NzgxNjYsInJvbGUiOiJhZG1pbiIsInVpZCI6IjFjZjc4OTg0LTcwYjMtNGIwYi1hZmY0LWM5NTViM2Y5ODBkZCIsInVzZXJuYW1lIjoiYWRtaW4ifQ.5I_nDxVAtQu100\", \"password\": \"litmus\"}'" -H "Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzI5NzgxNjYsInJvbGUiOiJhZG1pbiIsInVpZCI6IjFjZjc4OTg0LTcwYjMtNGIwYi1hZmY0LWM5NTViM2Y5ODBkZCIsInVzZXJuYW1lIjoiYWRtaW4ifQ.5I_nDxVAtQu100"
