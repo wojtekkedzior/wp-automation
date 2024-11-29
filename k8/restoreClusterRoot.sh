@@ -51,7 +51,7 @@ function k8() {
   kubectl create -f tiaggra-operator.yaml
 
   # curl https://raw.githubusercontent.com/projectcalico/calico/v3.27.4/manifests/custom-resources.yaml -O
-  kubectl apply -f kcustom-resources.yaml
+  kubectl apply -f custom-resources.yaml
 
   # remove output from prior runs
   rm out-log-[1-4]
