@@ -58,7 +58,19 @@ function litmus() {
 
     helm repo add litmuschaos https://litmuschaos.github.io/litmus-helm/
     kubectl create ns litmus
+
     helm install chaos litmuschaos/litmus --namespace=litmus --set portal.frontend.service.type=NodePort --version 3.9.0
+
+    helm install litmus-agent litmuschaos/litmus-agent \
+    --namespace litmus \
+    --set "INFRA_NAME=helm-agent" \
+    --set "INFRA_DESCRIPTION=My first agent deployed with helm !" \
+    --set "LITMUS_URL=http://chaos-litmus-frontend-service.litmus.svc.cluster.local:9091" \
+    --set "LITMUS_BACKEND_URL=http://litmusportal-server-service.litmus.svc.cluster.local:9002" \
+    --set "LITMUS_USERNAME=admin" \
+    --set "LITMUS_PASSWORD=Litmus1@" \
+    --set "LITMUS_PROJECT_ID=69395cb3-0231-4262-8990-78056c8adb4c" \
+    --set "LITMUS_ENVIRONMENT_ID=test"
 
     # for the the service to get an IP
     sleep 3
@@ -66,13 +78,16 @@ function litmus() {
 
     sudo service haproxy restart
 
-    kubectl apply -f https://litmuschaos.github.io/litmus/litmus-operator-v2.2.0.yaml
-    kubectl apply -f https://raw.githubusercontent.com/litmuschaos/litmus/master/mkdocs/docs/3.6.1/litmus-portal-crds-3.6.1.yml
+    # kubectl apply -f https://litmuschaos.github.io/litmus/litmus-operator-v2.2.0.yaml
+    # kubectl apply -f https://raw.githubusercontent.com/litmuschaos/litmus/master/mkdocs/docs/3.6.1/litmus-portal-crds-3.6.1.yml
 
     # helm install kchaos litmuschaos/kubernetes-chaos -n litmus
-    helm install kchaos litmuschaos/kubernetes-chaos -n litmus --version 3.9.0
+    # helm install kchaos litmuschaos/kubernetes-chaos -n litmus --version 3.9.0
 
-    kubectl -n litmus apply -f 3rd-party-values/litmus-test-rbca.yaml  
-    kubectl -n litmus apply -f 3rd-party-values/litmus-test-app.yaml
-    kubectl -n litmus apply -f 3rd-party-values/litmus-test.yaml
+    # kubectl -n litmus apply -f 3rd-party-values/litmus-test-rbca.yaml  
+    # kubectl -n litmus apply -f 3rd-party-values/litmus-test-app.yaml
+    # kubectl -n litmus apply -f 3rd-party-values/litmus-test.yaml
 }
+
+
+# curl -X POST --user 'admin:Litmus1!!'  http://localhost:8185/api/v1/environments name=my-env
