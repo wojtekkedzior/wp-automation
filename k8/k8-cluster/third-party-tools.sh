@@ -59,7 +59,7 @@ function litmus() {
     helm repo add litmuschaos https://litmuschaos.github.io/litmus-helm/
     kubectl create ns litmus
 
-    helm install chaos litmuschaos/litmus --namespace=litmus --set portal.frontend.service.type=NodePort --version 3.9.0
+    helm install chaos litmuschaos/litmus --namespace=litmus --set portal.frontend.service.type=NodePort
 
     helm install litmus-agent litmuschaos/litmus-agent \
     --namespace litmus \
