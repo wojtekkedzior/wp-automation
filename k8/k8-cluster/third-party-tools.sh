@@ -130,7 +130,7 @@ function litmus() {
     #  kubectl exec -i deployment/chaos-litmus-frontend -n litmus -- /bin/bash -c "curl http://localhost:8185/auth/login -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"username\": \"admin\", \"password\": \"litmus\"}'"
 
     password="Litmus1!"
-    sleep 10
+    sleep 30
 
 
     litmusServiceIP=$(kubectl -n litmus get svc chaos-litmus-frontend-service -o json | jq -r '.spec.clusterIP') 
