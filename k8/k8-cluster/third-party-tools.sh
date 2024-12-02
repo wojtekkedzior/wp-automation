@@ -144,7 +144,7 @@ function litmus() {
     echo "initial login done. Bearer ${bearerToken}"
 
     # 2.
-    curl -X -vvv POST http://${litmusServiceIP}:9091/auth/update/password -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{"username": "admin", "oldPassword": "litmus", "newPassword": "'${password}'"}' -H "Authorization: Bearer "'${bearerToken}'" "
+    curl -X -vvv POST http://${litmusServiceIP}:9091/auth/update/password -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{"username": "admin", "oldPassword": "litmus", "newPassword": "'${password}'"}' -H "Authorization: Bearer '${bearerToken}' "
     echo "password changed"
 
 
