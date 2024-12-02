@@ -156,9 +156,9 @@ function litmus() {
 
     # 3. 
     rm ~/.litmusconfig
-    
+
     echo "litmusctl setting account"
-    litmusctl config set-account -n --endpoint "${litmusServiceIP}" --password "${password}" --username "admin"
+    litmusctl config set-account -n --endpoint "http://${litmusServiceIP}" --password "${password}" --username "admin"
     echo "litmusctl setting account - done"
 
     # 4.
