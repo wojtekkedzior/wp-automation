@@ -46,16 +46,19 @@ function k8() {
   # sudo systemctl restart containerd.service
 
   # install the CNI - calico in this case
-  # NOTE: For some reason after an upgrade (not sure if it was because of the linux update or calico) two files were missing:
+  #
+  # Note: For some reason after an upgrade (not sure if it was because of the linux update or calico) two files were missing:
   # sudo modprobe br_netfilter
   # sudo echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
   # sudo echo 1 > /proc/sys/net/ipv4/ip_forward
+  #
+  # Note: some more magic in the /etc/containerd/config.toml config file.  https://github.com/etcd-io/etcd/issues/13670
 
-  #curl -o tiaggra-operator.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.27.4/manifests/tigera-operator.yaml
-  kubectl create -f tigera-operator.yaml
+  # curl -o k8-cluster/tigera-operator.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.27.4/manifests/tigera-operator.yaml
+  kubectl create -f k8-cluster/tigera-operator.yaml
 
-  # curl -o custom-resources.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.27.4/manifests/custom-resources.yaml
-  kubectl apply -f custom-resources.yaml
+  # curl -o k8-cluster/tigera-operator.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.27.4/manifests/custom-resources.yaml
+  kubectl apply -f k8-cluster/tigera-operator.yaml
 
   # remove output from prior runs
   rm out-log-[1-4]
