@@ -43,7 +43,8 @@ function k8() {
   sudo cp -i /etc/kubernetes/admin.conf /home/w/.kube/config
   sudo chown $(id -u):$(id -g) /home/w/.kube/config
 
-  # sudo systemctl restart containerd.service
+  # without this restart the csi-node-driver pod on the cp does not start and complains about not being able to init.
+  sudo systemctl restart containerd.service
 
   # install the CNI - calico in this case
   #
