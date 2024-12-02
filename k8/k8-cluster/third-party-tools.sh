@@ -141,11 +141,12 @@ function litmus() {
 
     curl -X POST --user admin:litmus http://${litmusServiceIP}:9091/auth/login -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{"username": "admin", "password": "litmus"}' > litmusAccessToken
     bearerToken=$(cat litmusAccessToken | jq -r '.accessToken')
-    echo "initial login done"
+    echo "initial login done. Bearer ${bearerToken}"
 
     # 2.
-    curl -X POST http://${litmusServiceIP}:9091/auth/update/password -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{"username": "admin", "oldPassword": "litmus", "newPassword": "'${password}'"}' -H "Authorization: Bearer '${bearerToken}'"
+    curl -X -vvv POST http://${litmusServiceIP}:9091/auth/update/password -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{"username": "admin", "oldPassword": "litmus", "newPassword": "'${password}'"}' -H "Authorization: Bearer "'${bearerToken}'" "
     echo "password changed"
+
 
     # login again
     curl -X POST --user admin:litmus http://${litmusServiceIP}:9091/auth/login -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{"username": "admin", "password": "'${password}'"}'  > litmusAccessToken
@@ -153,6 +154,9 @@ function litmus() {
     echo "second login done"
 
     # 3. 
+    litmusctl config set-account -n --endpoint "${litmusServiceIP} --password "${password}" --username "admin"
+
+    # 4.
     litmusctl create project --name test-project
     projectId=$(litmusctl get projects -o json | jq -r '.projects[] | select(.name=="test-project") | .projectID')
 
