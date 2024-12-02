@@ -43,9 +43,13 @@ function k8() {
   sudo cp -i /etc/kubernetes/admin.conf /home/w/.kube/config
   sudo chown $(id -u):$(id -g) /home/w/.kube/config
 
-  sudo systemctl restart containerd.service
+  # sudo systemctl restart containerd.service
 
   # install the CNI - calico in this case
+  # NOTE: For some reason after an upgrade (not sure if it was because of the linux update or calico) two files were missing:
+  # sudo modprobe br_netfilter
+  # sudo echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
+  # sudo echo 1 > /proc/sys/net/ipv4/ip_forward
 
   #curl -o tiaggra-operator.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.27.4/manifests/tigera-operator.yaml
   kubectl create -f tigera-operator.yaml
