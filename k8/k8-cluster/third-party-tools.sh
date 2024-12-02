@@ -153,8 +153,13 @@ function litmus() {
     bearerToken=$(cat litmusAccessToken | jq -r '.accessToken')
     echo "second login done"
 
+
     # 3. 
+    rm ~/.litmusconfig
+    
+    echo "litmusctl setting account"
     litmusctl config set-account -n --endpoint "${litmusServiceIP}" --password "${password}" --username "admin"
+    echo "litmusctl setting account - done"
 
     # 4.
     litmusctl create project --name test-project
