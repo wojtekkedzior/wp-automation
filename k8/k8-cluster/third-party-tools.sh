@@ -130,8 +130,8 @@ function litmus() {
     #  kubectl exec -i deployment/chaos-litmus-frontend -n litmus -- /bin/bash -c "curl http://localhost:8185/auth/login -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"username\": \"admin\", \"password\": \"litmus\"}'"
 
     password="Litmus1!"
-    ct='Content-Type: application/json'
-    a='Accept: application/json'
+    ct="Content-Type: application/json"
+    a="Accept: application/json"
     
     sleep 60
 
