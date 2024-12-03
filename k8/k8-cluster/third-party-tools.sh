@@ -155,14 +155,11 @@ function litmus() {
     # 3. 
     rm ~/.litmusconfig
 
-    echo "litmusctl - setting account"
     litmusctl config set-account -n --endpoint "http://${litmusServiceIP}:9091" --password "${password}" --username "admin"
-    echo "litmusctl - setting account - done"
 
     # 4.
     litmusctl create project --name test-project
     projectId=$(litmusctl get projects -o json | jq -r '.projects[] | select(.name=="test-project") | .projectID')
-    echo "project ID for test-project: ${projectId}"
 
     # 4.
     litmusctl create chaos-environment --project-id="${projectId}" --name="new-chaos-environment"
