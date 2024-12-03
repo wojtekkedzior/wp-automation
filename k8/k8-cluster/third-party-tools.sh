@@ -151,7 +151,7 @@ function litmus() {
 
     # login again
     # curl -X POST --user admin:litmus http://${litmusServiceIP}:9091/auth/login -H ${ct} -H ${a} -d '{"username": "admin", "password": "'${password}'"}'  > litmusAccessToken
-    bearerToken=$(curl -s -X POST http://${litmusServiceIP}:9091/auth/login -H ${ct} -H ${a} -d '{"username": "admin", "password": "'${password}'"}' | jq -r '.accessToken')
+    bearerToken=$(curl -vvv -X POST http://${litmusServiceIP}:9091/auth/login -H ${ct} -H ${a} -d '{"username": "admin", "password": "'${password}'"}' | jq -r '.accessToken')
     echo "second login done. New Bearer: ${bearerToken}"
 
     # 3. 
