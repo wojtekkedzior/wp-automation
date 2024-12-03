@@ -130,6 +130,9 @@ function litmus() {
     #  kubectl exec -i deployment/chaos-litmus-frontend -n litmus -- /bin/bash -c "curl http://localhost:8185/auth/login -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"username\": \"admin\", \"password\": \"litmus\"}'"
 
     password="Litmus1!"
+    ct='Content-Type: application/json'
+    a='Accept: application/json'
+    
     sleep 60
 
 
@@ -139,39 +142,35 @@ function litmus() {
     # 1.
     # kubectl exec -i deployment/chaos-litmus-server -n litmus -- /bin/bash -c "curl -X POST http://localhost:8080/query -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"access_key\": \"eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzI5NzgxNjYsInJvbGUiOiJhZG1pbiIsInVpZCI6IjFjZjc4OTg0LTcwYjMtNGIwYi1hZmY0LWM5NTViM2Y5ODBkZCIsInVzZXJuYW1lIjoiYWRtaW4ifQ.5I_nDxVAtQu100\", \"password\": \"litmus\"}'" -H "Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzI5NzgxNjYsInJvbGUiOiJhZG1pbiIsInVpZCI6IjFjZjc4OTg0LTcwYjMtNGIwYi1hZmY0LWM5NTViM2Y5ODBkZCIsInVzZXJuYW1lIjoiYWRtaW4ifQ.5I_nDxVAtQu100"
 
-    curl -X POST --user admin:litmus http://${litmusServiceIP}:9091/auth/login -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{"username": "admin", "password": "litmus"}' > litmusAccessToken
-    bearerToken=$(cat litmusAccessToken | jq -r '.accessToken')
-    echo "initial login done. Bearer ${bearerToken}"
+    # curl -X POST --user admin:litmus http://${litmusServiceIP}:9091/auth/login -H ${ct} -H ${a} -d '{"username": "admin", "password": "litmus"}' > litmusAccessToken
+    bearerToken=$(curl -s -X POST http://${litmusServiceIP}:9091/auth/login -H ${ct} -H ${a} -d '{"username": "admin", "password": "litmus"}' | jq -r '.accessToken')
+    echo "initial login done. Bearer: ${bearerToken}"
 
     # 2.
-    curl -X POST http://${litmusServiceIP}:9091/auth/update/password -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{"username": "admin", "oldPassword": "litmus", "newPassword": "'${password}'"}' -H "Authorization: Bearer ${bearerToken}"
-    echo "password changed"
-
+    curl -X POST http://${litmusServiceIP}:9091/auth/update/password -H ${ct} -H ${a} -d '{"username": "admin", "oldPassword": "litmus", "newPassword": "'${password}'"}' -H "Authorization: Bearer ${bearerToken}"
 
     # login again
-    curl -X POST --user admin:litmus http://${litmusServiceIP}:9091/auth/login -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{"username": "admin", "password": "'${password}'"}'  > litmusAccessToken
-    bearerToken=$(cat litmusAccessToken | jq -r '.accessToken')
-    echo "second login done"
-
+    # curl -X POST --user admin:litmus http://${litmusServiceIP}:9091/auth/login -H ${ct} -H ${a} -d '{"username": "admin", "password": "'${password}'"}'  > litmusAccessToken
+    bearerToken=$(curl -s -X POST http://${litmusServiceIP}:9091/auth/login -H ${ct} -H ${a} -d '{"username": "admin", "password": "'${password}'"}' | jq -r '.accessToken')
+    echo "second login done. New Bearer: ${bearerToken}"
 
     # 3. 
     rm ~/.litmusconfig
 
-    echo "litmusctl setting account"
+    echo "litmusctl - setting account"
     litmusctl config set-account -n --endpoint "http://${litmusServiceIP}:9091" --password "${password}" --username "admin"
-    echo "litmusctl setting account - done"
+    echo "litmusctl - setting account - done"
 
     # 4.
     litmusctl create project --name test-project
     projectId=$(litmusctl get projects -o json | jq -r '.projects[] | select(.name=="test-project") | .projectID')
+    echo "project ID for test-project: ${projectId}"
 
     # 4.
     litmusctl create chaos-environment --project-id="${projectId}" --name="new-chaos-environment"
 
     # 5.
     litmusctl connect chaos-infra --name="new-chaos-infra" --environment-id="new_chaos_environment" --project-id="${projectId}" --non-interactive
-
-
 }
 
 
