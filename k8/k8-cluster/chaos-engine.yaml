@@ -35,6 +35,7 @@ rules:
       - configmaps
       - deployments
       - pods
+      - events
     verbs:
       - create
       - delete
@@ -60,6 +61,7 @@ rules:
       - "litmuschaos.io"
     resources:
       - chaosengines
+      - chaosexperiments
     verbs:
       - create
       - delete
