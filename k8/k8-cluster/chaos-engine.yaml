@@ -17,6 +17,12 @@ spec:
   chaosServiceAccount: pod-delete-sa
   experiments:
   - name: pod-delete
+    spec:
+    components:
+      env:
+      # name of the target node
+      - name: TOTAL_CHAOS_DURATION
+        value: "360"
 ---
 apiVersion: v1
 kind: ServiceAccount
