@@ -48,7 +48,7 @@ function hazelcast() {
 }
 
 function nginx() {
-    kubectl apply -f k8-cluster/nginx.yaml
+    kubectl apply -f k8-cluster/nginx.yaml -n litmus
 }
 
 function litmus() {
@@ -71,7 +71,6 @@ function litmus() {
     # --set "LITMUS_PASSWORD=litmus" \
     # --set "LITMUS_PROJECT_ID=69395cb3-0231-4262-8990-78056c8adb4c" \
     # --set "LITMUS_ENVIRONMENT_ID=test"
-    
 
     # helm install litmus-agent ./litmus-helm/charts/litmus-agent \
     # --namespace litmus \
@@ -86,6 +85,8 @@ function litmus() {
     # --set "SA_EXISTS=false" \
     # --set "SKIP_SSL=true"   \
     # --set "global.INFRA_MODE=cluster" 
+
+    helm install kube-chaos litmuschaos/kubernetes-chaos
 
     # helm install litmus-agent litmuschaos/litmus-agent \
     # --namespace litmus --create-namespace \
@@ -166,6 +167,14 @@ function litmus() {
 
     # 5.
     litmusctl connect chaos-infra --name="new-chaos-infra" --environment-id="new_chaos_environment" --project-id="${projectId}" --non-interactive
+
+    # 6.
+    # https://litmuschaos.github.io/litmus/experiments/concepts/chaos-resources/chaos-engine/runtime-details/
+
+
+    kubectl -n litmus apply -f chaos-engine.yaml
+
+
 }
 
 
