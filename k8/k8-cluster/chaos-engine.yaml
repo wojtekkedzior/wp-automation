@@ -43,6 +43,19 @@ rules:
       - patch
       - update
       - watch
+  - apiGroups:
+      - "apps/v1"
+    resources:
+      - deployments
+      - pods
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -55,3 +68,35 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: pod-delete-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: litmus-events-role
+rules:
+  - apiGroups:
+      - "apps/v1"
+    resources:
+      - deployments
+      - statefulsets
+      - daemonSet
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: litmus-events-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: litmus-events-role
+subjects:
+  - kind: ServiceAccount
+    name: litmus
