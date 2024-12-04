@@ -172,8 +172,9 @@ function litmus() {
     # https://litmuschaos.github.io/litmus/experiments/concepts/chaos-resources/chaos-engine/runtime-details/
 
 
-    kubectl -n litmus apply -f k8-cluster/chaos-engine.yaml
+    kubectl apply -f k8-cluster/nginx.yaml -n litmus
 
+    kubectl -n litmus apply -f k8-cluster/chaos-engine.yaml
 
 }
 
