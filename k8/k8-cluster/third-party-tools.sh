@@ -86,7 +86,7 @@ function litmus() {
     # --set "SKIP_SSL=true"   \
     # --set "global.INFRA_MODE=cluster" 
 
-    helm install kube-chaos litmuschaos/kubernetes-chaos
+    helm install -n litmus kube-chaos litmuschaos/kubernetes-chaos
 
     # helm install litmus-agent litmuschaos/litmus-agent \
     # --namespace litmus --create-namespace \
