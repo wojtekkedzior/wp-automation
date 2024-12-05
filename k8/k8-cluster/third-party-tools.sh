@@ -176,7 +176,7 @@ function litmus() {
 
     sleep 2
     sudo sed -i "/setenv NGINX_IP/c\\\tsetenv NGINX_IP $(kubectl -n litmus get svc nginx-service -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
-
+    sudo service haproxy restart
 
     kubectl -n litmus apply -f k8-cluster/chaos-engine.yaml
 
