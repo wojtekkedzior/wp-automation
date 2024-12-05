@@ -51,6 +51,7 @@ rules:
       - update
       - watch
       - delete
+      - get
   - apiGroups:
       - "apps"
     resources:
