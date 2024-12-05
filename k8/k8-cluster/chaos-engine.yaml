@@ -22,7 +22,7 @@ spec:
         env:
         # name of the target node
         - name: TOTAL_CHAOS_DURATION
-          value: "30"
+          value: "20"
   - name: pod-network-latency
     spec:
       components:
@@ -30,7 +30,8 @@ spec:
         - name: TOTAL_CHAOS_DURATION
           value: "60"
         - name: NETWORK_LATENCY
-          value: "5000"
+          value: "2000"
+
 ---
 apiVersion: v1
 kind: ServiceAccount
