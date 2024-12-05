@@ -22,13 +22,13 @@ spec:
         env:
         # name of the target node
         - name: TOTAL_CHAOS_DURATION
-          value: "360"
+          value: "30"
   - name: pod-network-latency
     spec:
       components:
         env:
         - name: TOTAL_CHAOS_DURATION
-          value: "360"
+          value: "60"
         - name: NETWORK_LATENCY
           value: "5000"
 ---
@@ -95,6 +95,7 @@ rules:
       - list
       - update
       - watch
+      - patch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
