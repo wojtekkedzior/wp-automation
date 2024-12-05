@@ -23,28 +23,30 @@ spec:
         - name: TOTAL_CHAOS_DURATION
           value: "60"
         - name: NETWORK_LATENCY
-          value: "2000"
----          
-apiVersion: litmuschaos.io/v1alpha1
-kind: ChaosEngine
-metadata:
-  name: engine-nginx-corrupt
-spec:
-  engineState: "active"
-  annotationCheck: "false"
-  # AUT details
-  appinfo:
-    appns: "litmus"
-    applabel: "app=nginx"
-    appkind: "deployment"
-  chaosServiceAccount: pod-delete-sa
-  experiments:
-  - name: pod-network-corruption
-    spec:
-      components:
-        env:
-        - name: TOTAL_CHAOS_DURATION
-          value: "60"
+          value: "200"
+        - name: JITTER
+          value: "1000"
+# ---          
+# apiVersion: litmuschaos.io/v1alpha1
+# kind: ChaosEngine
+# metadata:
+#   name: engine-nginx-corrupt
+# spec:
+#   engineState: "active"
+#   annotationCheck: "false"
+#   # AUT details
+#   appinfo:
+#     appns: "litmus"
+#     applabel: "app=nginx"
+#     appkind: "deployment"
+#   chaosServiceAccount: pod-delete-sa
+#   experiments:
+#   - name: pod-network-corruption
+#     spec:
+#       components:
+#         env:
+#         - name: TOTAL_CHAOS_DURATION
+#           value: "60"
 # apiVersion: litmuschaos.io/v1alpha1
 # kind: ChaosEngine
 # metadata:
