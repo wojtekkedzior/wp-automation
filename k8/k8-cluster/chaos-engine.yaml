@@ -43,6 +43,15 @@ metadata:
   name: pod-delete-role
 rules:
   - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - list
+      - update
+      - watch
+      - delete
+  - apiGroups:
       - "apps"
     resources:
       - replicasets
