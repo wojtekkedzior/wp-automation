@@ -5,7 +5,7 @@
 apiVersion: litmuschaos.io/v1alpha1
 kind: ChaosEngine
 metadata:
-  name: engine-nginx
+  name: engine-nginx-latency
 spec:
   engineState: "active"
   annotationCheck: "false"
@@ -16,13 +16,13 @@ spec:
     appkind: "deployment"
   chaosServiceAccount: pod-delete-sa
   experiments:
-  - name: pod-delete
-    spec:
-      components:
-        env:
-        # name of the target node
-        - name: TOTAL_CHAOS_DURATION
-          value: "20"
+  # - name: pod-delete
+  #   spec:
+  #     components:
+  #       env:
+  #       # name of the target node
+  #       - name: TOTAL_CHAOS_DURATION
+  #         value: "20"
   - name: pod-network-latency
     spec:
       components:
@@ -31,6 +31,33 @@ spec:
           value: "60"
         - name: NETWORK_LATENCY
           value: "2000"
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosEngine
+metadata:
+  name: engine-nginx-corrupt
+spec:
+  engineState: "active"
+  annotationCheck: "false"
+  # AUT details
+  appinfo:
+    appns: "litmus"
+    applabel: "app=nginx"
+    appkind: "deployment"
+  chaosServiceAccount: pod-delete-sa
+  experiments:
+  # - name: pod-delete
+  #   spec:
+  #     components:
+  #       env:
+  #       # name of the target node
+  #       - name: TOTAL_CHAOS_DURATION
+  #         value: "20"
+  - name: pod-network-corruption
+    spec:
+      components:
+        env:
+        - name: TOTAL_CHAOS_DURATION
+          value: "60"
 apiVersion: litmuschaos.io/v1alpha1
 kind: ChaosEngine
 metadata:
