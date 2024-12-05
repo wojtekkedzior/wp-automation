@@ -46,6 +46,7 @@ rules:
       - ""
     resources:
       - pods
+      - events
     verbs:
       - list
       - update
