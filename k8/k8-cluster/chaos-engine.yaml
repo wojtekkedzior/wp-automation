@@ -49,6 +49,7 @@ rules:
       - events
     verbs:
       - list
+      - create
       - update
       - watch
       - delete
