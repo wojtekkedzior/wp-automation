@@ -22,7 +22,7 @@ spec:
         env:
         # name of the target node
         - name: TOTAL_CHAOS_DURATION
-          value: "20"
+          value: "300"
 ---
 apiVersion: litmuschaos.io/v1alpha1
 kind: ChaosEngine
@@ -43,7 +43,7 @@ spec:
       components:
         env:
         - name: TOTAL_CHAOS_DURATION
-          value: "60"
+          value: "300"
         - name: NETWORK_LATENCY
           value: "2000"          
 ---
