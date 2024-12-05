@@ -134,7 +134,7 @@ function litmus() {
     ct="Content-Type: application/json"
     a="Accept: application/json"
     
-    sleep 40
+    sleep 60
 
 
     litmusServiceIP=$(kubectl -n litmus get svc chaos-litmus-frontend-service -o json | jq -r '.spec.clusterIP') 
