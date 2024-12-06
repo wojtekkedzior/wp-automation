@@ -1,27 +1,4 @@
-# apiVersion: litmuschaos.io/v1alpha1
-# kind: ChaosEngine
-# metadata:
-#   name: engine-nginx-latency
-# spec:
-#   engineState: "active"
-#   annotationCheck: "false"
-#   # AUT details
-#   appinfo:
-#     appns: "litmus"
-#     applabel: "app=nginx"
-#     appkind: "deployment"
-#   chaosServiceAccount: pod-delete-sa
-#   experiments:
-#   - name: pod-network-latency
-#     spec:
-#       components:
-#         env:
-#         - name: TOTAL_CHAOS_DURATION
-#           value: "60"
-#         - name: NETWORK_LATENCY
-#           value: "200"
-#         - name: JITTER
-#           value: "1000"
+
 # ---          
 # apiVersion: litmuschaos.io/v1alpha1
 # kind: ChaosEngine
@@ -84,15 +61,15 @@ spec:
         env:
         # name of the target node
         - name: TOTAL_CHAOS_DURATION
-          value: "20"
-  - name: pod-network-latency
-    spec:
-      components:
-        env:
-        - name: TOTAL_CHAOS_DURATION
-          value: "60"
-        - name: NETWORK_LATENCY
-          value: "2000"          
+          value: "120"
+  # - name: pod-network-latency
+  #   spec:
+  #     components:
+  #       env:
+  #       - name: TOTAL_CHAOS_DURATION
+  #         value: "60"
+  #       - name: NETWORK_LATENCY
+  #         value: "2000"          
 ---
 apiVersion: v1
 kind: ServiceAccount
