@@ -26,27 +26,27 @@ spec:
           value: "200"
         - name: JITTER
           value: "1000"
----          
-apiVersion: litmuschaos.io/v1alpha1
-kind: ChaosEngine
-metadata:
-  name: engine-nginx-cpu-hog
-spec:
-  engineState: "active"
-  annotationCheck: "false"
-  # AUT details
-  appinfo:
-    appns: "litmus"
-    applabel: "app=nginx"
-    appkind: "deployment"
-  chaosServiceAccount: pod-delete-sa
-  experiments:
-  - name: pod-cpu-hog
-    spec:
-      components:
-        env:
-        - name: TOTAL_CHAOS_DURATION
-          value: "60"
+# ---          
+# apiVersion: litmuschaos.io/v1alpha1
+# kind: ChaosEngine
+# metadata:
+#   name: engine-nginx-cpu-hog
+# spec:
+#   engineState: "active"
+#   annotationCheck: "false"
+#   # AUT details
+#   appinfo:
+#     appns: "litmus"
+#     applabel: "app=nginx"
+#     appkind: "deployment"
+#   chaosServiceAccount: pod-delete-sa
+#   experiments:
+#   - name: pod-cpu-hog
+#     spec:
+#       components:
+#         env:
+#         - name: TOTAL_CHAOS_DURATION
+#           value: "60"
 # ---          
 # apiVersion: litmuschaos.io/v1alpha1
 # kind: ChaosEngine
