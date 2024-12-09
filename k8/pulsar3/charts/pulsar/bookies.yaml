@@ -59,30 +59,30 @@ bookkeeper:
       periodSeconds: 30
       timeoutSeconds: 5
   affinity:
-    anti_affinity: true
-    anti_affinity_topology_key: kubernetes.io/hostname
+    anti_affinity: false
+    # anti_affinity_topology_key: kubernetes.io/hostname
     # Set the anti affinity type. Valid values:
     # requiredDuringSchedulingIgnoredDuringExecution - rules must be met for pod to be scheduled (hard) requires at least one node per replica
     # preferredDuringSchedulingIgnoredDuringExecution - scheduler will try to enforce but not guranentee
-    type: requiredDuringSchedulingIgnoredDuringExecution
+    # type: requiredDuringSchedulingIgnoredDuringExecution
   # set topologySpreadConstraint to deploy pods across different zones
   topologySpreadConstraints: []
   annotations: {}
   tolerations: 
-  - key: "pulsar"
-    operator: "Equal"
-    value: "storage"
-    effect: "NoSchedule"
+  # - key: "pulsar"
+  #   operator: "Equal"
+  #   value: "storage"
+  #   effect: "NoSchedule"
   gracePeriod: 30
   ## Timeout for waiting for bookkeeper cluster metadata to be initialized before starting a bookie
   waitMetadataTimeout: 600
   resources:
     requests:
-      memory: 8G
-      cpu: 1
+      memory: 4G
+      cpu: 0.5
     limits:
-      memory: 8G
-      cpu: 1
+      memory: 4G
+      cpu: 0.5
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
@@ -156,8 +156,8 @@ bookkeeper:
     # we use `bin/pulsar` for starting bookie daemons
     PULSAR_MEM: >
       -Xms1000m
-      -Xmx3000m
-      -XX:MaxDirectMemorySize=4900m
+      -Xmx1000m
+      -XX:MaxDirectMemorySize=2900m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10
@@ -197,8 +197,8 @@ bookkeeper:
     diskUsageWarnThreshold: "0.9"   # default 0.95
     diskUsageThreshold: "0.95"      # default 0.95 (use default)
     diskCheckInterval: "1800"       # default 10000
-    dbStorage_writeCacheMaxSizeMb: "2000"
-    dbStorage_readAheadCacheMaxSizeMb: "1000"
+    dbStorage_writeCacheMaxSizeMb: "200"
+    dbStorage_readAheadCacheMaxSizeMb: "100"
     # dbStorage_readAheadCacheBatchSize: "5000"
     dbStorage_rocksDB_blockSize: "262144"
     dbStorage_rocksDB_writeBufferSizeMB: "8"
