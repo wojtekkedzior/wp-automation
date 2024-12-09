@@ -1,0 +1,181 @@
+
+# ---          
+# apiVersion: litmuschaos.io/v1alpha1
+# kind: ChaosEngine
+# metadata:
+#   name: engine-nginx-cpu-hog
+# spec:
+#   engineState: "active"
+#   annotationCheck: "false"
+#   # AUT details
+#   appinfo:
+#     appns: "litmus"
+#     applabel: "app=nginx"
+#     appkind: "deployment"
+#   chaosServiceAccount: pod-delete-sa
+#   experiments:
+#   - name: pod-cpu-hog
+#     spec:
+#       components:
+#         env:
+#         - name: TOTAL_CHAOS_DURATION
+#           value: "60"
+# ---          
+# apiVersion: litmuschaos.io/v1alpha1
+# kind: ChaosEngine
+# metadata:
+#   name: engine-nginx-corrupt
+# spec:
+#   engineState: "active"
+#   annotationCheck: "false"
+#   # AUT details
+#   appinfo:
+#     appns: "litmus"
+#     applabel: "app=nginx"
+#     appkind: "deployment"
+#   chaosServiceAccount: pod-delete-sa
+#   experiments:
+#   - name: pod-network-corruption
+#     spec:
+#       components:
+#         env:
+#         - name: TOTAL_CHAOS_DURATION
+#           value: "60"
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosEngine
+metadata:
+  name: engine-nginx
+spec:
+  engineState: "active"
+  annotationCheck: "false"
+  # AUT details
+  appinfo:
+    appns: "litmus"
+    applabel: "app=nginx"
+    appkind: "deployment"
+  chaosServiceAccount: pod-delete-sa
+  experiments:
+  - name: pod-delete
+    spec:
+      components:
+        env:
+        # name of the target node
+        - name: TOTAL_CHAOS_DURATION
+          value: "120"
+  # - name: pod-network-latency
+  #   spec:
+  #     components:
+  #       env:
+  #       - name: TOTAL_CHAOS_DURATION
+  #         value: "60"
+  #       - name: NETWORK_LATENCY
+  #         value: "2000"          
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pod-delete-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-delete-role
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - events
+    verbs:
+      - list
+      - create
+      - update
+      - watch
+      - delete
+      - get
+  - apiGroups:
+      - "apps"
+    resources:
+      - replicasets
+    verbs:
+      - list
+      - update
+      - watch
+      - get
+  - apiGroups:
+      - "batch"
+    resources:
+      - jobs
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - "apps/v1"
+    resources:
+      - deployments
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - "litmuschaos.io"
+    resources:
+      - chaosengines
+      - chaosexperiments
+      - chaosresults
+    verbs:
+      - create
+      - get
+      - list
+      - update
+      - watch
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pod-delete-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: pod-delete-role
+subjects:
+  - kind: ServiceAccount
+    name: pod-delete-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: litmus-events-role
+rules:
+  - apiGroups:
+      - "apps/v1"
+    resources:
+      - deployments
+      - statefulsets
+      - daemonSet
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: litmus-events-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: litmus-events-role
+subjects:
+  - kind: ServiceAccount
+    name: litmus

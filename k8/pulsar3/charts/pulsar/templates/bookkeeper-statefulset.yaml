@@ -59,6 +59,10 @@ spec:
       tolerations:
 {{ toYaml .Values.bookkeeper.tolerations | indent 8 }}
     {{- end }}
+    {{- if .Values.bookkeeper.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml .Values.bookkeeper.topologySpreadConstraints | nindent 8 }}
+    {{- end }}
       affinity:
         {{- if and .Values.affinity.anti_affinity .Values.bookkeeper.affinity.anti_affinity}}
         podAntiAffinity:
@@ -101,20 +105,20 @@ spec:
         {{ end }}
         {{- end }}
       terminationGracePeriodSeconds: {{ .Values.bookkeeper.gracePeriod }}
-    {{- if and .Values.rbac.enabled .Values.rbac.psp }}
       serviceAccountName: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}"
-    {{- end}}
       {{- if .Values.bookkeeper.securityContext }}
       securityContext:
 {{ toYaml .Values.bookkeeper.securityContext | indent 8 }}
       {{- end }}
+      {{- if and .Values.bookkeeper.waitMetadataTimeout (not (eq (.Values.bookkeeper.waitMetadataTimeout | toString) "0")) }}
       initContainers:
       # This initContainer will wait for bookkeeper initnewcluster to complete
       # before deploying the bookies
       - name: pulsar-bookkeeper-verify-clusterid
         image: "{{ template "pulsar.imageFullName" (dict "image" .Values.images.bookie "root" .) }}"
-        imagePullPolicy: {{ .Values.images.bookie.pullPolicy }}
-        command: ["sh", "-c"]
+        imagePullPolicy: "{{ template "pulsar.imagePullPolicy" (dict "image" .Values.images.bookie "root" .) }}"
+        resources: {{ toYaml .Values.initContainer.resources | nindent 10 }}
+        command: ["timeout", "{{ .Values.bookkeeper.waitMetadataTimeout }}", "sh", "-c"]
         args:
         # only reformat bookie if bookkeeper is running without persistence
         - >
@@ -122,16 +126,20 @@ spec:
         envFrom:
         - configMapRef:
             name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}"
-      {{- if and .Values.rbac.enabled .Values.rbac.psp }}
+      {{- if and (semverCompare "<1.25-0" .Capabilities.KubeVersion.Version) .Values.rbac.enabled .Values.rbac.psp }}
         securityContext:
           readOnlyRootFilesystem: false
       {{- end}}
         volumeMounts:
         {{- include "pulsar.bookkeeper.certs.volumeMounts" . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.bookkeeper.initContainers }}
+        {{- toYaml .Values.bookkeeper.initContainers | nindent 6 }}
+      {{- end }}
       containers:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.bookkeeper.component }}"
         image: "{{ template "pulsar.imageFullName" (dict "image" .Values.images.bookie "root" .) }}"
-        imagePullPolicy: {{ .Values.images.bookie.pullPolicy }}
+        imagePullPolicy: "{{ template "pulsar.imagePullPolicy" (dict "image" .Values.images.bookie "root" .) }}"
         {{- if .Values.bookkeeper.probe.liveness.enabled }}
         livenessProbe:
           httpGet:
@@ -175,7 +183,7 @@ spec:
           bin/apply-config-from-env.py conf/bookkeeper.conf;
           {{- include "pulsar.bookkeeper.zookeeper.tls.settings" . | nindent 10 }}
           OPTS="${OPTS} -Dlog4j2.formatMsgNoLookups=true" exec bin/pulsar bookie;
-      {{- if and .Values.rbac.enabled .Values.rbac.psp }}
+      {{- if and (semverCompare "<1.25-0" .Capabilities.KubeVersion.Version) .Values.rbac.enabled .Values.rbac.psp }}
         securityContext:
           readOnlyRootFilesystem: false
       {{- end}}

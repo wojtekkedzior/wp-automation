@@ -1,13 +1,46 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+###
+### K8S Settings
+###
+
+### Namespace to deploy pulsar
+# The namespace to use to deploy the pulsar components, if left empty
+# will default to .Release.Namespace (aka helm --namespace).
 namespace: ""
 namespaceCreate: false
 
 ## clusterDomain as defined for your k8s cluster
 clusterDomain: cluster.local
 
-initialize: false
+###
+### Global Settings
+###
 
+## Set to true on install
+initialize: false
+## Set useReleaseStatus to false if you're deploying this chart using a system that doesn't track .Release.IsInstall or .Release.IsUpgrade (like argocd)
+useReleaseStatus: true
 ## Set cluster name
-# clusterName: primary
+# clusterName:
+
 nameOverride: primary
 
 ## add custom labels to components of cluster
@@ -60,7 +93,8 @@ volumes:
 rbac:
   enabled: false
   psp: false
-  limit_to_namespace: false
+  limit_to_namespace: true
+
 
 ## AntiAffinity
 ##
@@ -88,71 +122,88 @@ components:
   # broker
   broker: true
   # functions
+  # WARNING! Before enabling functions, make sure that all of your users are trusted since functions run user code
+  # and the current security sandbox is not sufficient to protect against malicious code.
   functions: false
   # proxy
   proxy: true
   # toolset
   toolset: true
   # pulsar manager
-  pulsar_manager: false
+  # pulsar_manager: false
 
-## which extra components to deploy (Deprecated)
-extra:
-  # Pulsar proxy
-  proxy: false
-  # Bookkeeper auto-recovery
-  autoRecovery: false
-  # Pulsar dashboard
-  # Deprecated
-  # Replace pulsar-dashboard with pulsar-manager
-  dashboard: false
-  # pulsar manager
-  pulsar_manager: false
-  # Configure Kubernetes runtime for Functions
-  functionsAsPods: false
+# default image repository for pulsar images
+defaultPulsarImageRepository: apachepulsar/pulsar-all
 
 # default image tag for pulsar images
 # uses chart's appVersion when unspecified
-defaultPulsarImageTag: 3.1.0
+defaultPulsarImageTag: 4.0.0
+
+# default pull policy for all images
+defaultPullPolicy: IfNotPresent
 
 ## Images
 ##
 ## Control what images to use for each component
 images:
+  # set imagePullSecrets
+  # imagePullSecrets:
+  #   - secretName
   zookeeper:
-    repository: apachepulsar/pulsar-all
+    # uses defaultPulsarImageRepository when unspecified
+    repository:
     # uses defaultPulsarImageTag when unspecified
     tag:
-    pullPolicy: IfNotPresent
+    # uses defaultPullPolicy when unspecified
+    pullPolicy:
   bookie:
-    repository: public.ecr.aws/y7c9l5j8/custom-pulsar
+    # uses defaultPulsarImageRepository when unspecified
+    repository:
     # uses defaultPulsarImageTag when unspecified
-    tag: 3.4.2
-    pullPolicy: IfNotPresent
+    tag:
+    # uses defaultPullPolicy when unspecified
+    pullPolicy:
   autorecovery:
-    repository: apachepulsar/pulsar-all
+    # uses defaultPulsarImageRepository when unspecified
+    repository:
     # uses defaultPulsarImageTag when unspecified
     tag:
-    pullPolicy: IfNotPresent
+    # uses defaultPullPolicy when unspecified
+    pullPolicy:
   broker:
-    repository: public.ecr.aws/y7c9l5j8/custom-pulsar
+    # uses defaultPulsarImageRepository when unspecified
+    repository:
     # uses defaultPulsarImageTag when unspecified
-    tag: 3.4.2
-    pullPolicy: IfNotPresent
+    tag:
+    # uses defaultPullPolicy when unspecified
+    pullPolicy:
+  toolset:
+    # uses defaultPulsarImageRepository when unspecified
+    repository:
+    # uses defaultPulsarImageTag when unspecified
+    tag:
+    # uses defaultPullPolicy when unspecified
+    pullPolicy:
   proxy:
-    repository: apachepulsar/pulsar-all
+    # uses defaultPulsarImageRepository when unspecified
+    repository:
     # uses defaultPulsarImageTag when unspecified
     tag:
-    pullPolicy: IfNotPresent
+    # uses defaultPullPolicy when unspecified
+    pullPolicy:
   functions:
-    repository: apachepulsar/pulsar-all
+    # uses defaultPulsarImageRepository when unspecified
+    repository:
     # uses defaultPulsarImageTag when unspecified
     tag:
-  pulsar_manager:
-    repository: apachepulsar/pulsar-manager
-    tag: v0.3.0
-    pullPolicy: IfNotPresent
-    hasCommand: false
+    # uses defaultPullPolicy when unspecified
+    pullPolicy:
+  # pulsar_manager:
+  #   repository: apachepulsar/pulsar-manager
+  #   tag: v0.4.0
+  #   # uses defaultPullPolicy when unspecified
+  #   pullPolicy:
+  #   hasCommand: false
 
 ## TLS
 ## templates/tls-certs.yaml
@@ -177,6 +228,7 @@ tls:
   proxy:
     enabled: false
     cert_name: tls-proxy
+    createCert: true  # set to false if you want to use an existing certificate
   # settings for generating certs for broker
   broker:
     enabled: false
@@ -195,6 +247,10 @@ tls:
   # settings for generating certs for toolset
   toolset:
     cert_name: tls-toolset
+  # TLS setting for function runtime instance
+  function_instance:
+    # controls the use of TLS for function runtime connections towards brokers
+    enabled: false
 
 # Enable or disable broker authentication and authorization.
 auth:
@@ -215,6 +271,11 @@ auth:
     proxy: "proxy-admin"
     # pulsar-admin client to broker/proxy communication
     client: "admin"
+    # pulsar-manager to broker communication. If left empty, no jwt setup will be performed in the manager
+    manager: ""
+  # omits the above proxy role from superusers on the proxy
+  # and configures it as a proxy role on the broker in addition to the superusers
+  useProxyRoles: true
 
 ######################################################################
 # External dependencies
@@ -250,16 +311,19 @@ zookeeper:
   # so the metrics are correctly rendered in grafana dashboard
   component: zookeeper
   # the number of zookeeper servers to run. it should be an odd number larger than or equal to 3.
-  replicaCount: 2
+  replicaCount: 1
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: Parallel
+  initContainers: []
   # This is how prometheus discovers this component
   podMonitor:
     enabled: true
-    interval: 10s
-    scrapeTimeout: 10s
-    targetPort: 8000
+    interval: 60s
+    scrapeTimeout: 60s
+    metricRelabelings:
+      # - action: labeldrop
+      #   regex: cluster
   # True includes annotation for statefulset that contains hash of corresponding configmap, which will cause pods to restart on configmap change
   restartPodsOnConfigMapChange: false
   ports:
@@ -290,19 +354,21 @@ zookeeper:
       periodSeconds: 30
       timeoutSeconds: 30
   affinity:
-    anti_affinity: false
+    anti_affinity: true
     anti_affinity_topology_key: kubernetes.io/hostname
     # Set the anti affinity type. Valid values:
     # requiredDuringSchedulingIgnoredDuringExecution - rules must be met for pod to be scheduled (hard) requires at least one node per replica
     # preferredDuringSchedulingIgnoredDuringExecution - scheduler will try to enforce but not guranentee
     type: requiredDuringSchedulingIgnoredDuringExecution
+  # set topologySpreadConstraint to deploy pods across different zones
+  topologySpreadConstraints: []
   annotations: {}
   tolerations: []
   gracePeriod: 30
   resources:
     requests:
       memory: 256Mi
-      cpu: 0.1
+      cpu: 0.2
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
@@ -321,15 +387,37 @@ zookeeper:
     fsGroup: 0
     fsGroupChangePolicy: "OnRootMismatch"
   volumes:
+    useSeparateDiskForTxlog: false
     # use a persistent volume or emptyDir
     persistence: true
     data:
       name: data
-      size: 970Mi
+      size: 1Gi
       local_storage: true
       ## If you already have an existent storage class and want to reuse it, you can specify its name with the option below
       ##
-      storageClassName: fast-disks
+      # storageClassName: existent-storage-class
+      #
+      ## Instead if you want to create a new storage class define it below
+      ## If left undefined no storage class will be defined along with PVC
+      ##
+      # storageClass:
+        # type: pd-ssd
+        # fsType: xfs
+        # provisioner: kubernetes.io/gce-pd
+      ## If you want to bind static persistent volumes via selectors, e.g.:
+      # selector:
+        # matchLabels:
+        # app: pulsar-zookeeper
+      selector: {}
+    ## If you set useSeparateDiskForTxlog to true, this section configures the extra volume for the zookeeper transaction log.
+    datalog:
+      name: datalog
+      size: 1Gi
+      local_storage: true
+      ## If you already have an existent storage class and want to reuse it, you can specify its name with the option below
+      ##
+      # storageClassName: existent-storage-class
       #
       ## Instead if you want to create a new storage class define it below
       ## If left undefined no storage class will be defined along with PVC
@@ -346,6 +434,10 @@ zookeeper:
   # External zookeeper server list in case of global-zk list to create zk cluster across zk deployed on different clusters/namespaces
   # Example value: "us-east1-pulsar-zookeeper-0.us-east1-pulsar-zookeeper.us-east1.svc.cluster.local:2888:3888,us-east1-pulsar-zookeeper-1.us-east1-pulsar-zookeeper.us-east1.svc.cluster.local:2888:3888,us-east1-pulsar-zookeeper-2.us-east1-pulsar-zookeeper.us-east1.svc.cluster.local:2888:3888,us-west1-pulsar-zookeeper-0.us-west1-pulsar-zookeeper.us-west1.svc.cluster.local:2888:3888,us-west1-pulsar-zookeeper-1.us-west1-pulsar-zookeeper.us-west1.svc.cluster.local:2888:3888,us-west1-pulsar-zookeeper-2.us-west1-pulsar-zookeeper.us-west1.svc.cluster.local:2888:3888"
   externalZookeeperServerList: ""
+  ## Zookeeper service account
+  ## templates/zookeeper-service-account.yaml
+  service_account:
+    annotations: {}
   ## Zookeeper configmap
   ## templates/zookeeper-configmap.yaml
   ##
@@ -377,6 +469,9 @@ zookeeper:
     usePolicy: true
     maxUnavailable: 1
 
+
+
+
 ## Pulsar: Bookkeeper AutoRecovery
 ## templates/autorecovery-statefulset.yaml
 ##
@@ -385,11 +480,15 @@ autorecovery:
   # so the metrics are correctly rendered in grafana dashboard
   component: recovery
   replicaCount: 1
+  initContainers: []
   # This is how prometheus discovers this component
   podMonitor:
     enabled: true
-    interval: 10s
-    scrapeTimeout: 10s
+    interval: 60s
+    scrapeTimeout: 60s
+    metricRelabelings:
+      # - action: labeldrop
+      #   regex: cluster
   # True includes annotation for statefulset that contains hash of corresponding configmap, which will cause pods to restart on configmap change
   restartPodsOnConfigMapChange: false
   ports:
@@ -397,25 +496,33 @@ autorecovery:
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
   affinity:
-    anti_affinity: false
+    anti_affinity: true
     anti_affinity_topology_key: kubernetes.io/hostname
     # Set the anti affinity type. Valid values:
     # requiredDuringSchedulingIgnoredDuringExecution - rules must be met for pod to be scheduled (hard) requires at least one node per replica
     # preferredDuringSchedulingIgnoredDuringExecution - scheduler will try to enforce but not guranentee
     type: requiredDuringSchedulingIgnoredDuringExecution
+  # set topologySpreadConstraint to deploy pods across different zones
+  topologySpreadConstraints: []
   annotations: {}
   # tolerations: []
   gracePeriod: 30
+  ## Timeout for waiting for bookkeeper to become available before starting a broker
+  waitBookkeeperTimeout: 120
   resources:
     requests:
       memory: 64Mi
-      cpu: 0.01
+      cpu: 0.05
+  ## Bookkeeper auto-recovery service account
+  ## templates/autorecovery-service-account.yaml
+  service_account:
+    annotations: {}
   ## Bookkeeper auto-recovery configmap
   ## templates/autorecovery-configmap.yaml
   ##
   configData:
     BOOKIE_MEM: >
-      -Xms64m -Xmx500m
+      -Xms64m -Xmx64m
     PULSAR_PREFIX_useV2WireProtocol: "true"
 
 ## Pulsar Zookeeper metadata. The metadata will be deployed as
@@ -428,32 +535,51 @@ pulsar_metadata:
   component: pulsar-init
   image:
     # the image used for running `pulsar-cluster-initialize` job
-    repository: apachepulsar/pulsar-all
+    # uses defaultPulsarImageRepository when unspecified
+    repository:
     # uses defaultPulsarImageTag when unspecified
     tag:
-    pullPolicy: IfNotPresent
+    # uses defaultPullPolicy when unspecified
+    pullPolicy:
   ## set an existing configuration store
   # configurationStore:
   configurationStoreMetadataPrefix: ""
   configurationStorePort: 2181
-  ## optional you can specify a nodeSelector for all init jobs (pulsar-init & bookkeeper-init)
-  # nodeSelector:
-    # cloud.google.com/gke-nodepool: default-pool
+  ## Timeout for waiting for zookeeper to become available before running metadata initialization
+  waitZookeeperTimeout: 600
+  ## Timeout for waiting for bookkeeper to be initialized before running metadata initialization
+  waitBookkeeperTimeout: 120
+  ## Timeout for running metadata initialization
+  initTimeout: 60
+
+  # resources for bin/pulsar initialize-cluster-metadata
+  resources:
+#    requests:
+#      memory: 512Mi
+#      cpu: 1
+
+  ## optional you can specify tolerations and nodeSelectors for all init jobs (pulsar-init & bookkeeper-init)
+  # tolerations: []
+  #   - key: "someKey"
+  #     operator: "Equal"
+  #     value: "someValue"
+  #     effect: "NoSchedule"
+  # nodeSelector: {}
+  #   cloud.google.com/gke-nodepool: default-pool
 
   ## optional, you can provide your own zookeeper metadata store for other components
   # to use this, you should explicit set components.zookeeper to false
   #
   # userProvidedZookeepers: "zk01.example.com:2181,zk02.example.com:2181"
 
-  ## optional, you can specify where to run pulsar-cluster-initialize job
-  # nodeSelector:
-
 # Can be used to run extra commands in the initialization jobs e.g. to quit istio sidecars etc.
 extraInitCommand: ""
 
+
+
 ## Pulsar: Functions Worker
-## templates/function-worker-configmap.yaml
-##
+## The Function Worker component runs embedded with the broker
+## Configuration for the function worker is set in the broker configmap with keys prefixed by `PF_`.
 functions:
   component: functions-worker
   useBookieAsStateStore: false
@@ -462,50 +588,61 @@ functions:
   # Default is false which deploys functions with ClusterRole and ClusterRoleBinding at the cluster level
   # Set to true to deploy functions with Role and RoleBinding inside the specified namespace
   rbac:
-    limit_to_namespace: false
+    limit_to_namespace: true
+  ### Functions Worker service account
+  ## templates/broker-service-account.yaml
+  service_account:
+    annotations: {}
 
-## Pulsar Extra: Dashboard
-## templates/dashboard-deployment.yaml
-## Deprecated
+
+## Pulsar ToolSet
+## templates/toolset-statefulset.yaml
 ##
-dashboard:
-  component: dashboard
+toolset:
+  component: toolset
+  useProxy: true
   replicaCount: 1
+  initContainers: []
+  # True includes annotation for statefulset that contains hash of corresponding configmap, which will cause pods to restart on configmap change
+  restartPodsOnConfigMapChange: false
   # nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool
+  # set topologySpreadConstraint to deploy pods across different zones
+  topologySpreadConstraints: []
   annotations: {}
   tolerations: []
-  gracePeriod: 0
-  image:
-    repository: apachepulsar/pulsar-dashboard
-    tag: latest
-    pullPolicy: IfNotPresent
+  gracePeriod: 30
   resources:
     requests:
-      memory: 1Gi
-      cpu: 250m
-  ## Dashboard service
-  ## templates/dashboard-service.yaml
+      memory: 256Mi
+      cpu: 0.1
+  # extraVolumes and extraVolumeMounts allows you to mount other volumes
+  # Example Use Case: mount ssl certificates
+  # extraVolumes:
+  #   - name: ca-certs
+  #     secret:
+  #       defaultMode: 420
+  #       secretName: ca-certs
+  # extraVolumeMounts:
+  #   - name: ca-certs
+  #     mountPath: /certs
+  #     readOnly: true
+  extraVolumes: []
+  extraVolumeMounts: []
+  ## Toolset service account
+  ## templates/toolset-service-account.yaml
+  service_account:
+    annotations: {}
+  ## Toolset configmap
+  ## templates/toolset-configmap.yaml
   ##
-  service:
-    annotations: {}
-    ports:
-    - name: server
-      port: 80
-  ingress:
-    enabled: false
-    annotations: {}
-    ingressClassName: ""
-    tls:
-      enabled: false
-
-      ## Optional. Leave it blank if your Ingress Controller can provide a default certificate.
-      secretName: ""
-
-    ## Required if ingress is enabled
-    hostname: ""
-    path: "/"
-    port: 80
+  configData:
+    PULSAR_MEM: >
+      -Xms64M
+      -Xmx128M
+      -XX:MaxDirectMemorySize=128M
+  ## Add a custom command to the start up process of the toolset pods (e.g. update-ca-certificates, jvm commands, etc)
+  additionalCommand:
 
 #############################################################
 ### Monitoring Stack : kube-prometheus-stack chart
@@ -520,71 +657,191 @@ kube-prometheus-stack:
     enabled: true
   grafana:
     enabled: true
+    # Use random password at installation time for Grafana by default by setting empty value to `adminPassword`.
+    # You can find out the actual password by running the following command:
+    # kubectl get secret -l app.kubernetes.io/name=grafana -o=jsonpath="{.items[0].data.admin-password}" | base64 --decode
+    adminPassword:
+    # Configure Pulsar dashboards for Grafana
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+        - name: 'pulsar'
+          orgId: 1
+          folder: 'Pulsar'
+          type: file
+          disableDeletion: true
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/pulsar
+    dashboards:
+      pulsar:
+        # Download the maintained dashboards from AL 2.0 licenced repo https://github.com/streamnative/apache-pulsar-grafana-dashboard
+        bookkeeper:
+          url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/bookkeeper.json
+          datasource: Prometheus
+        broker:
+          url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/broker.json
+          datasource: Prometheus
+        connector_sink:
+          url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/connector_sink.json
+          datasource: Prometheus
+        connector_source:
+          url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/connector_source.json
+          datasource: Prometheus
+        container:
+          url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/container.json
+          datasource: Prometheus
+        functions:
+          url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/functions.json
+          datasource: Prometheus
+        jvm:
+          url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/jvm.json
+          datasource: Prometheus
+        loadbalance:
+          url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/loadbalance.json
+          datasource: Prometheus
+        messaging:
+          url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/messaging.json
+          datasource: Prometheus
+        node:
+          url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/node.json
+          datasource: Prometheus
+        overview:
+          url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/overview.json
+          datasource: Prometheus
+        proxy:
+          url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/proxy.json
+          datasource: Prometheus
+        recovery:
+          url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/recovery.json
+          datasource: Prometheus
+        topic:
+          url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/topic.json
+          datasource: Prometheus
+        transaction:
+          url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/transaction.json
+          datasource: Prometheus
+        zookeeper:
+          url: https://raw.githubusercontent.com/streamnative/apache-pulsar-grafana-dashboard/master/dashboards.kubernetes/zookeeper-3.6.json
+          datasource: Prometheus
   prometheus-node-exporter:
     enabled: true
+    hostRootFsMount:
+      enabled: false
   alertmanager:
     enabled: false
 
 ## Components Stack: pulsar_manager
 ## templates/pulsar-manager.yaml
 ##
-pulsar_manager:
-  component: pulsar-manager
-  replicaCount: 1
-  # True includes annotation for statefulset that contains hash of corresponding configmap, which will cause pods to restart on configmap change
-  restartPodsOnConfigMapChange: false
-  # nodeSelector:
-  # cloud.google.com/gke-nodepool: default-pool
-  annotations: {}
-  tolerations: []
-  gracePeriod: 30
-  resources:
-    requests:
-      memory: 250Mi
-      cpu: 0.1
-  configData:
-    REDIRECT_HOST: "http://127.0.0.1"
-    REDIRECT_PORT: "9527"
-    DRIVER_CLASS_NAME: org.postgresql.Driver
-    URL: jdbc:postgresql://127.0.0.1:5432/pulsar_manager
-    LOG_LEVEL: DEBUG
-    ## If you enabled authentication support
-    ## JWT_TOKEN: <token>
-    ## SECRET_KEY: data:base64,<secret key>
-  ## Pulsar manager service
-  ## templates/pulsar-manager-service.yaml
-  ##
-  service:
-    type: LoadBalancer
-    port: 9527
-    targetPort: 9527
-    annotations: {}
-  ## Pulsar manager ingress
-  ## templates/pulsar-manager-ingress.yaml
-  ##
-  ingress:
-    enabled: false
-    annotations: {}
-    ingressClassName: ""
-    tls:
-      enabled: false
+# pulsar_manager:
+#   component: pulsar-manager
+#   replicaCount: 1
+#   initContainers: []
+#   # True includes annotation for statefulset that contains hash of corresponding configmap, which will cause pods to restart on configmap change
+#   restartPodsOnConfigMapChange: false
+#   # nodeSelector:
+#   # cloud.google.com/gke-nodepool: default-pool
+#   # set topologySpreadConstraint to deploy pods across different zones
+#   topologySpreadConstraints: []
+#   annotations: {}
+#   tolerations: []
+#   gracePeriod: 30
+#   resources:
+#     requests:
+#       memory: 250Mi
+#       cpu: 0.1
+#   configData:
+#     REDIRECT_HOST: "http://127.0.0.1"
+#     REDIRECT_PORT: "9527"
+#     LOG_LEVEL: "INFO"
+#     # DB
+#     URL: "jdbc:postgresql://127.0.0.1:5432/pulsar_manager"
+#     DRIVER_CLASS_NAME: "org.postgresql.Driver"
+#     # enables the "message peeking" feature
+#     PULSAR_PEEK_MESSAGE: "true"
+#   volumes:
+#     # use a persistent volume or emptyDir
+#     persistence: true
+#     data:
+#       name: data
+#       size: 128Mi
+#       local_storage: true
+#       ## If you already have an existent storage class and want to reuse it, you can specify its name with the option below
+#       ##
+#       # storageClassName: existent-storage-class,
+#       ## If you want to bind static persistent volumes via selectors, e.g.:
+#       # selector:
+#         # matchLabels:
+#         # app: pulsar-bookkeeper-journal
+#       selector: {}
+#   ## Pulsar manager service
+#   ## templates/pulsar-manager-service.yaml
+#   ##
+#   service:
+#     type: ClusterIP
+#     port: 9527
+#     targetPort: 9527
+#     annotations: {}
+#     ## Set external traffic policy to: "Local" to preserve source IP on providers supporting it.
+#     ## Ref: https://kubernetes.io/docs/tutorials/services/source-ip/#source-ip-for-services-with-typeloadbalancer
+#     # externalTrafficPolicy: Local
+#     ## Restrict traffic through the load balancer to specified IPs on providers supporting it.
+#     # loadBalancerSourceRanges:
+#     #   - 10.0.0.0/8
+#   adminService:
+#     type: ClusterIP
+#     port: 7750
+#     targetPort: 7750
+#     annotations: {}
+#   ## Pulsar manager ingress
+#   ## templates/pulsar-manager-ingress.yaml
+#   ##
+#   ingress:
+#     enabled: false
+#     annotations: {}
+#     ingressClassName: ""
+#     tls:
+#       enabled: false
 
-      ## Optional. Leave it blank if your Ingress Controller can provide a default certificate.
-      secretName: ""
+#       ## Optional. Leave it blank if your Ingress Controller can provide a default certificate.
+#       secretName: ""
 
-    hostname: ""
-    path: "/"
+#     hostname: ""
+#     path: "/"
 
-  ## If set use existing secret with specified name to set pulsar admin credentials.
-  existingSecretName:
-  admin:
-    user: pulsar
-    password: pulsar
+#   ## On first install, the helm chart tries to reuse an existing secret with matching name by default
+#   ## if this should fail it uses the given username and password to create a new secret
+#   ## if either are missing the default value of "pulsar" is used for the username or a random password is generated
+#   ## And decode any key by using:
+#   ## kubectl get secret -l component=pulsar-manager -o=jsonpath="{.items[0].data.UI_PASSWORD}" | base64 --decode
+#   admin:
+#     ## Setting a value at existingSecret disables automatic creation of the secret for pulsar_manager admin credentials and instead uses an existing secret to initialize pulsar-manager
+#     ## The existing secret should have the following keys:
+#     ## DB_PASSWORD: <database password>
+#     ## DB_USERNAME: <database username>
+#     ## UI_PASSWORD: <UI password>
+#     ## UI_USERNAME: <UI username>
+#     existingSecret: ""
+#     ui_username: "pulsar"
+#     ui_password: ""  # leave empty for random password
+#     db_username: "pulsar"
+#     db_password: ""  # leave empty for random password
 
 # These are jobs where job ttl configuration is used
 # pulsar-helm-chart/charts/pulsar/templates/pulsar-cluster-initialize.yaml
 # pulsar-helm-chart/charts/pulsar/templates/bookkeeper-cluster-initialize.yaml
+# pulsar-helm-chart/charts/pulsar/templates/pulsar-manager-cluster-initialize.yaml
 job:
   ttl:
     enabled: false
     secondsAfterFinished: 3600
+
+# This section is intended for cluster providers where all containers, including init containers,
+# need to provide the number of resources they are going to use.
+initContainer:
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 0.1

@@ -17,7 +17,7 @@
 # under the License.
 #
 
-{{- if or .Values.components.proxy .Values.extra.proxy }}
+{{- if .Values.components.proxy }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -61,6 +61,10 @@ spec:
       tolerations:
 {{ toYaml .Values.proxy.tolerations | indent 8 }}
     {{- end }}
+    {{- if .Values.proxy.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml .Values.proxy.topologySpreadConstraints | nindent 8 }}
+    {{- end }}
       affinity:
         {{- if and .Values.affinity.anti_affinity .Values.proxy.affinity.anti_affinity}}
         podAntiAffinity:
@@ -103,33 +107,37 @@ spec:
         {{ end }}
         {{- end }}
       terminationGracePeriodSeconds: {{ .Values.proxy.gracePeriod }}
-    {{- if and .Values.rbac.enabled .Values.rbac.psp }}
       serviceAccountName: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}"
-    {{- end}}
       initContainers:
+      {{- if and .Values.proxy.waitZookeeperTimeout (not (eq (.Values.proxy.waitZookeeperTimeout | toString) "0")) }}
       # This init container will wait for zookeeper to be ready before
       # deploying the bookies
       - name: wait-zookeeper-ready
         image: "{{ template "pulsar.imageFullName" (dict "image" .Values.images.proxy "root" .) }}"
-        imagePullPolicy: {{ .Values.images.proxy.pullPolicy }}
-        command: ["sh", "-c"]
+        imagePullPolicy: "{{ template "pulsar.imagePullPolicy" (dict "image" .Values.images.proxy "root" .) }}"
+        resources: {{ toYaml .Values.initContainer.resources | nindent 10 }}
+        command: ["timeout", "{{ .Values.proxy.waitZookeeperTimeout }}", "sh", "-c"]
         args:
           - >-
+            export PULSAR_MEM="-Xmx128M";
             {{- if $zk:=.Values.pulsar_metadata.userProvidedZookeepers }}
-            until bin/pulsar zookeeper-shell -server {{ $zk }} ls {{ or .Values.metadataPrefix "/" }}; do
+            until timeout 15 bin/pulsar zookeeper-shell -server {{ $zk }} ls {{ or .Values.metadataPrefix "/" }}; do
               echo "user provided zookeepers {{ $zk }} are unreachable... check in 3 seconds ..." && sleep 3;
             done;
             {{ else }}
-            until bin/pulsar zookeeper-shell -server {{ template "pulsar.configurationStore.service" . }} get {{ .Values.metadataPrefix }}/admin/clusters/{{ template "pulsar.cluster.name" . }}; do
+            until timeout 15 bin/pulsar zookeeper-shell -server {{ template "pulsar.configurationStore.service" . }} get {{ .Values.metadataPrefix }}/admin/clusters/{{ template "pulsar.cluster.name" . }}; do
               sleep 3;
             done;
             {{- end}}
+      {{- end}}
+      {{- if and .Values.proxy.waitBrokerTimeout (not (eq (.Values.proxy.waitBrokerTimeout | toString) "0")) }}
       # This init container will wait for at least one broker to be ready before
       # deploying the proxy
       - name: wait-broker-ready
         image: "{{ template "pulsar.imageFullName" (dict "image" .Values.images.proxy "root" .) }}"
-        imagePullPolicy: {{ .Values.images.proxy.pullPolicy }}
-        command: ["sh", "-c"]
+        imagePullPolicy: "{{ template "pulsar.imagePullPolicy" (dict "image" .Values.images.proxy "root" .) }}"
+        resources: {{ toYaml .Values.initContainer.resources | nindent 10 }}
+        command: ["timeout", "{{ .Values.proxy.waitBrokerTimeout }}", "sh", "-c"]
         args:
           - >-
             set -e;
@@ -139,15 +147,19 @@ spec:
               sleep 10;
               brokerServiceNumber="$(nslookup -timeout=10 {{ template "pulsar.fullname" . }}-{{ .Values.broker.component }} | grep Name | wc -l)";
             done;
+      {{- end}}
+      {{- if .Values.proxy.initContainers }}
+        {{- toYaml .Values.proxy.initContainers | nindent 6 }}
+      {{- end }}
       containers:
       - name: "{{ template "pulsar.fullname" . }}-{{ .Values.proxy.component }}"
         image: "{{ template "pulsar.imageFullName" (dict "image" .Values.images.proxy "root" .) }}"
-        imagePullPolicy: {{ .Values.images.proxy.pullPolicy }}
+        imagePullPolicy: "{{ template "pulsar.imagePullPolicy" (dict "image" .Values.images.proxy "root" .) }}"
         {{- if .Values.proxy.probe.liveness.enabled }}
         livenessProbe:
           httpGet:
             path: /status.html
-            port: {{ .Values.proxy.ports.http }}
+            port: {{ .Values.proxy.ports.containerPorts.http }}
           initialDelaySeconds: {{ .Values.proxy.probe.liveness.initialDelaySeconds }}
           periodSeconds: {{ .Values.proxy.probe.liveness.periodSeconds }}
           timeoutSeconds: {{ .Values.proxy.probe.liveness.timeoutSeconds }}
@@ -157,7 +169,7 @@ spec:
         readinessProbe:
           httpGet:
             path: /status.html
-            port: {{ .Values.proxy.ports.http }}
+            port: {{ .Values.proxy.ports.containerPorts.http }}
           initialDelaySeconds: {{ .Values.proxy.probe.readiness.initialDelaySeconds }}
           periodSeconds: {{ .Values.proxy.probe.readiness.periodSeconds }}
           timeoutSeconds: {{ .Values.proxy.probe.readiness.timeoutSeconds }}
@@ -167,7 +179,7 @@ spec:
         startupProbe:
           httpGet:
             path: /status.html
-            port: {{ .Values.proxy.ports.http }}
+            port: {{ .Values.proxy.ports.containerPorts.http }}
           initialDelaySeconds: {{ .Values.proxy.probe.startup.initialDelaySeconds }}
           periodSeconds: {{ .Values.proxy.probe.startup.periodSeconds }}
           timeoutSeconds: {{ .Values.proxy.probe.startup.timeoutSeconds }}
@@ -184,7 +196,7 @@ spec:
           {{ .Values.proxy.additionalCommand }}
         {{- end }}
           bin/apply-config-from-env.py conf/proxy.conf &&
-          echo "OK" > status &&
+          echo "OK" > "${statusFilePath:-status}" &&
           OPTS="${OPTS} -Dlog4j2.formatMsgNoLookups=true" exec bin/pulsar proxy
         ports:
         # prometheus needs to access /metrics endpoint
@@ -200,7 +212,7 @@ spec:
         - name: "sts-{{ .Values.tlsPrefix }}pulsarssl"
           containerPort: {{ .Values.proxy.ports.pulsarssl }}
         {{- end }}
-      {{- if and .Values.rbac.enabled .Values.rbac.psp }}
+      {{- if and (semverCompare "<1.25-0" .Capabilities.KubeVersion.Version) .Values.rbac.enabled .Values.rbac.psp }}
         securityContext:
           readOnlyRootFilesystem: false
       {{- end }}

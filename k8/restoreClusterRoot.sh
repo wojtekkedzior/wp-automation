@@ -20,11 +20,11 @@ function startWorker() {
   # prepare mount dirs, unmount if already mounted, format and (re)mount
   index=1
   echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks"
-  for disk in {b..p}
+  for disk in {a..g}
   do
     echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks/disk${index}"
     echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk${index}"
-    echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/vd${disk} && sudo mount /dev/vd${disk} /mnt/fast-disks/disk${index}"
+    echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sd${disk} && sudo mount /dev/sd${disk} /mnt/fast-disks/disk${index}"
     (( index++ ))
   done
 
@@ -43,11 +43,23 @@ function k8() {
   sudo cp -i /etc/kubernetes/admin.conf /home/w/.kube/config
   sudo chown $(id -u):$(id -g) /home/w/.kube/config
 
+  # without this restart the csi-node-driver pod on the cp does not start and complains about not being able to init.
   sudo systemctl restart containerd.service
 
   # install the CNI - calico in this case
-  kubectl create -f k8-cluster/tigera-operator.yaml 
-  kubectl apply -f k8-cluster/tigera-install.yaml
+  #
+  # Note: For some reason after an upgrade (not sure if it was because of the linux update or calico) two files were missing:
+  # sudo modprobe br_netfilter
+  # sudo echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
+  # sudo echo 1 > /proc/sys/net/ipv4/ip_forward
+  #
+  # Note: some more magic in the /etc/containerd/config.toml config file.  https://github.com/etcd-io/etcd/issues/13670
+
+  # curl -o k8-cluster/tigera-operator.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.27.4/manifests/tigera-operator.yaml
+  kubectl create -f k8-cluster/tigera-operator.yaml
+
+  # curl -o k8-cluster/custom-resources.yaml https://raw.githubusercontent.com/projectcalico/calico/v3.27.4/manifests/custom-resources.yaml
+  kubectl apply -f k8-cluster/custom-resources.yaml
 
   # remove output from prior runs
   rm out-log-[1-4]
@@ -67,6 +79,10 @@ function k8() {
   wait "${pids[@]}"
 
   kubectl create -f k8-cluster/local-volume-provisioner.generated.yaml
+
+  # kubectl taint nodes worker-1-large pulsar=storage:NoSchedule
+  # kubectl taint nodes worker-2-large pulsar=storage:NoSchedule
+
 }
 
 for values in $(echo "$@")
