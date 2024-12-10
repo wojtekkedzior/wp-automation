@@ -38,7 +38,7 @@ spec:
         - name: TOTAL_CHAOS_DURATION
           value: "300"
         - name: CHAOS_INTERVAL
-          value: "30"
+          value: "20"
 ---
 apiVersion: litmuschaos.io/v1alpha1
 kind: ChaosEngine
@@ -82,7 +82,7 @@ spec:
         - name: TOTAL_CHAOS_DURATION
           value: "300"
         - name: CHAOS_INTERVAL
-          value: "30"          
+          value: "45"          
 ---
 apiVersion: v1
 kind: ServiceAccount
