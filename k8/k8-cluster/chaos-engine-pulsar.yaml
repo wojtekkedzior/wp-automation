@@ -109,8 +109,9 @@ metadata:
   name: litmus-pulsar-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
+  kind: ClusterRole
   name: litmus-pulsar-sa
 subjects:
   - kind: ServiceAccount
     name: litmus-pulsar-sa
+    namespace: litmus
