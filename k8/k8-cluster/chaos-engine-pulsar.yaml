@@ -1,13 +1,53 @@
+# apiVersion: litmuschaos.io/v1alpha1
+# kind: ChaosEngine
+# metadata:
+#   name: engine-pulsar-bookie
+# spec:
+#   engineState: "active"
+#   annotationCheck: "false"
+#   appinfo:
+#     appns: "default"
+#     applabel: "component=bookie"
+#     appkind: "statefulset"
+#   chaosServiceAccount: litmus-pulsar-sa
+#   experiments:
+#   - name: pod-delete
+#     spec:
+#       components:
+#         env:
+#         - name: TOTAL_CHAOS_DURATION
+#           value: "300"
+# ---
 apiVersion: litmuschaos.io/v1alpha1
 kind: ChaosEngine
 metadata:
-  name: engine-pulsar-bookie
+  name: engine-pulsar-proxy
 spec:
   engineState: "active"
   annotationCheck: "false"
   appinfo:
     appns: "default"
-    applabel: "component=bookie"
+    applabel: "component=proxy"
+    appkind: "statefulset"
+  chaosServiceAccount: litmus-pulsar-sa
+  experiments:
+  - name: pod-delete
+    spec:
+      components:
+        env:
+        - name: TOTAL_CHAOS_DURATION
+          value: "300"
+---
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosEngine
+metadata:
+  name: engine-pulsar-broker
+spec:
+  engineState: "active"
+  annotationCheck: "false"
+  appinfo:
+    appns: "default"
+    applabel: "component=broker"
     appkind: "statefulset"
   chaosServiceAccount: litmus-pulsar-sa
   experiments:
