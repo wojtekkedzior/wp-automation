@@ -5,7 +5,6 @@ metadata:
 spec:
   engineState: "active"
   annotationCheck: "false"
-  # AUT details
   appinfo:
     appns: "litmus"
     applabel: "app=nginx"

@@ -1,0 +1,116 @@
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosEngine
+metadata:
+  name: engine-pulsar-bookie
+spec:
+  engineState: "active"
+  annotationCheck: "false"
+  appinfo:
+    appns: "default"
+    applabel: "component=bookie"
+    appkind: "statefulset"
+  chaosServiceAccount: litmus-pulsar-sa
+  experiments:
+  - name: pod-delete
+    spec:
+      components:
+        env:
+        - name: TOTAL_CHAOS_DURATION
+          value: "300"
+---
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosEngine
+metadata:
+  name: engine-pulsar-zookeeper
+spec:
+  engineState: "active"
+  annotationCheck: "false"
+  appinfo:
+    appns: "default"
+    applabel: "component=zookeeper"
+    appkind: "statefulset"
+  chaosServiceAccount: litmus-pulsar-sa
+  experiments:
+  - name: pod-delete
+    spec:
+      components:
+        env:
+        - name: TOTAL_CHAOS_DURATION
+          value: "300"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: litmus-pulsar-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: litmus-pulsar-sa
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - events
+    verbs:
+      - list
+      - create
+      - update
+      - watch
+      - delete
+      - get
+  - apiGroups:
+      - "apps"
+    resources:
+      - replicasets
+    verbs:
+      - list
+      - update
+      - watch
+      - get
+  - apiGroups:
+      - "batch"
+    resources:
+      - jobs
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - "apps/v1"
+    resources:
+      - deployments
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - "litmuschaos.io"
+    resources:
+      - chaosengines
+      - chaosexperiments
+      - chaosresults
+    verbs:
+      - create
+      - get
+      - list
+      - update
+      - watch
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: litmus-pulsar-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: litmus-pulsar-sa
+subjects:
+  - kind: ServiceAccount
+    name: litmus-pulsar-sa
