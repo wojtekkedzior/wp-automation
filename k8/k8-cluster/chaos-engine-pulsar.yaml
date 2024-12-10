@@ -38,7 +38,7 @@ spec:
         - name: TOTAL_CHAOS_DURATION
           value: "300"
         - name: CHAOS_INTERVAL
-          value: "30"
+          value: "40"
         - name: RAMP_TIME
           value: "5"
 ---
@@ -62,7 +62,7 @@ spec:
         - name: TOTAL_CHAOS_DURATION
           value: "300"
         - name: CHAOS_INTERVAL
-          value: "45"
+          value: "120"
         - name: RAMP_TIME
           value: "30"                 
 ---
