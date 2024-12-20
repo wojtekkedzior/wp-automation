@@ -69,20 +69,20 @@ bookkeeper:
   topologySpreadConstraints: []
   annotations: {}
   tolerations: 
-  # - key: "pulsar"
-  #   operator: "Equal"
-  #   value: "storage"
-  #   effect: "NoSchedule"
+  - key: "pulsar"
+    operator: "Equal"
+    value: "storage"
+    effect: "NoSchedule"
   gracePeriod: 30
   ## Timeout for waiting for bookkeeper cluster metadata to be initialized before starting a bookie
   waitMetadataTimeout: 600
   resources:
     requests:
       memory: 4G
-      cpu: 0.5
+      cpu: 1.5
     limits:
       memory: 4G
-      cpu: 0.5
+      cpu: 1.5
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
@@ -105,19 +105,19 @@ bookkeeper:
     persistence: true
     journal:
       name: journal
-      size: 9G
+      size: 65G
       storageClassName: fast-disks
       selector: {}
       useMultiVolumes: true
       multiVolumes:
         - name: journal0
-          size: 9G
+          size: 65G
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal0
-        # - name: journal1
-        #   size: 72G
-        #   storageClassName: fast-disks
-        #   mountPath: /pulsar/data/bookkeeper/journal1
+        - name: journal1
+          size: 65G
+          storageClassName: fast-disks
+          mountPath: /pulsar/data/bookkeeper/journal1
     ledgers: 
       name: ledgers
       size: 9G
@@ -126,13 +126,13 @@ bookkeeper:
       useMultiVolumes: true
       multiVolumes:
         - name: ledgers0
-          size: 9G
+          size: 570G
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers0
-        # - name: ledgers1
-        #   size: 570G
-        #   storageClassName: fast-disks
-        #   mountPath: /pulsar/data/bookkeeper/ledgers1
+        - name: ledgers1
+          size: 570G
+          storageClassName: fast-disks
+          mountPath: /pulsar/data/bookkeeper/ledgers1
 
     ## use a single common volume for both journal and ledgers
     useSingleCommonVolume: false

@@ -1,6 +1,4 @@
-## Pulsar: Proxy Cluster
-## templates/proxy-statefulset.yaml
-##
+
 proxy:
   # use a component name that matches your grafana configuration
   # so the metrics are correctly rendered in grafana dashboard
@@ -9,7 +7,7 @@ proxy:
   autoscaling:
     enabled: false
     minReplicas: 1
-    maxReplicas: 3
+    maxReplicas: 2
     metrics: ~
     behavior: ~
   initContainers: []
@@ -63,10 +61,10 @@ proxy:
   resources:
     requests:
       memory: 2Gi
-      cpu: 0.2
+      cpu: 0.5
     limits:
       memory: 2Gi
-      cpu: 0.2
+      cpu: 0.5
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
