@@ -80,8 +80,8 @@ function k8() {
 
   kubectl create -f k8-cluster/local-volume-provisioner.generated.yaml
 
-  # kubectl taint nodes worker-1-large pulsar=storage:NoSchedule
-  # kubectl taint nodes worker-2-large pulsar=storage:NoSchedule
+  kubectl taint nodes worker-1-large pulsar=storage:NoSchedule
+  kubectl taint nodes worker-2-large pulsar=storage:NoSchedule
 
 }
 
