@@ -14,6 +14,9 @@ echo "domain: " $domain
 echo "email: " $email
 
 if [[ -z $skipCert_flag ]] ; then
+    source venv/bin/activate
+    python -m pip install -r requirements.txt
+
     echo 2 | \
         /snap/bin/certbot certonly \
             --config-dir /opt/certbot/config \
@@ -27,11 +30,11 @@ if [[ -z $skipCert_flag ]] ; then
             --manual \
             --manual-auth-hook /home/wojtek/git/wp-automation/certs/authenticator.sh \
             --manual-cleanup-hook /home/wojtek/git/wp-automation/certs/cleanup.sh \
-            --manual-public-ip-logging-ok \
             --preferred-challenges dns && {
                 echo "cert created"
             } || {
                 echo "Failed to create a new certificate"
+                deactivate
                 exit 1
             }
 fi
@@ -44,3 +47,5 @@ echo "Finished copying keys."
 ssh -oStrictHostKeyChecking=no -i $AWS_SSH_KEY ec2-user@backend.$domain "sudo service httpd restart"
 ssh -oStrictHostKeyChecking=no -i $AWS_SSH_KEY ec2-user@backend.$domain "sudo service httpd status"
 echo "Finished restarting"
+
+deactivate

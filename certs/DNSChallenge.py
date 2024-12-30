@@ -4,7 +4,6 @@ Created on Apr 13, 2020
 @author: wojtek
 """
 import time
-import dns.resolver
 import sys
 import argparse
 from AWSAccount import AWSAccount
@@ -60,7 +59,7 @@ class DNSChallenge(AWSAccount):
         
     def handleChallenge(self):
         print("handling ", challenge, "for: ", domain)
-        time.sleep(10)
+        time.sleep(delay)
         self._requestToRoute53('UPSERT')
         while True:
             try:
@@ -75,13 +74,14 @@ class DNSChallenge(AWSAccount):
                     break
                 
             except self.route53Client.exceptions.NoSuchHostedZone:
-                  print("TXT record resolved, but does not have the expected value:. ", dnsTxtRecord)
+                  print("TXT record resolved, but does not have the expected value:. ")
 
             print("sleeping...")
-            time.sleep(5)
+            time.sleep(60)
+            print("resuming...")
         
         print("Route53 is resolving correctly. waiting ", delay)
-        time.sleep(10)
+        time.sleep(delay)
         print("Wait finished")
 
     def cleanup(self):

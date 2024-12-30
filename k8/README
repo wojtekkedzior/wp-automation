@@ -53,7 +53,7 @@ https://www.ibm.com/docs/en/linux-on-systems?topic=commands-qemu-image-command
 
 
 
-In case you move the VM from one machine to another - implying that your virtb is a differente device, then the device names may change.
+In case you move the VM from one machine to another - implying that your virtb is a different device, then the device names may change.
 make sure to update the /etc/netplan/00-installer-config.yaml with the correct interface so that it can fetch IPs from the DHCP
 
 
