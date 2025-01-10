@@ -76,7 +76,7 @@ function k8() {
   time startWorker 4 192.168.122.14 > out-log-4 2>&1 &
 
   # block on checking whether the first worker is up. All the workers should come up at around the same time.
-  wait "${pids[@]}"
+  wait "${pids[@]}" && echo "All workers are up"
 
   kubectl create -f k8-cluster/local-volume-provisioner.generated.yaml
 

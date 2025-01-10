@@ -60,11 +60,11 @@ proxy:
   waitBrokerTimeout: 120
   resources:
     requests:
-      memory: 2Gi
-      cpu: 0.5
+      memory: 6Gi
+      cpu: 2
     limits:
-      memory: 2Gi
-      cpu: 0.5
+      memory: 6Gi
+      cpu: 2
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
@@ -93,7 +93,7 @@ proxy:
   ##
   configData:
     PULSAR_MEM: >
-      -Xms64m -Xmx400m -XX:MaxDirectMemorySize=1500m
+      -Xms64m -Xmx1000m -XX:MaxDirectMemorySize=4900m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10
