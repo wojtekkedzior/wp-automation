@@ -2,7 +2,7 @@ broker:
   # use a component name that matches your grafana configuration
   # so the metrics are correctly rendered in grafana dashboard
   component: broker
-  replicaCount: 2
+  replicaCount: 1
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -50,7 +50,7 @@ broker:
   gracePeriod: 30
   resources:
     requests:
-      memory: 2500Mi
+      memory: 6000Mi
       cpu: 1
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
@@ -76,7 +76,7 @@ broker:
   ##
   configData:
     PULSAR_MEM: >
-      -Xms128m -Xmx300m -XX:MaxDirectMemorySize=2200m
+      -Xms128m -Xmx1000m -XX:MaxDirectMemorySize=5000m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10
