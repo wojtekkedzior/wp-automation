@@ -79,10 +79,10 @@ bookkeeper:
   resources:
     requests:
       memory: 4G
-      cpu: 1.5
+      cpu: 3.5
     limits:
-      memory: 4G
-      cpu: 1.5
+      memory: 12G
+      cpu: 3.5
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
@@ -156,8 +156,8 @@ bookkeeper:
     # we use `bin/pulsar` for starting bookie daemons
     PULSAR_MEM: >
       -Xms1000m
-      -Xmx1000m
-      -XX:MaxDirectMemorySize=2900m
+      -Xmx2000m
+      -XX:MaxDirectMemorySize=10000m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10
