@@ -70,10 +70,10 @@ broker:
   resources:
     requests:
       memory: 8000Mi
-      cpu: 1.5
+      cpu: 5
     limits:
       memory: 10000Mi
-      cpu: 1.5
+      cpu: 5
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:

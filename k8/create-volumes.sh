@@ -69,7 +69,7 @@ function create() {
 function staticVolumes() {
 
     path="/mnt/k8volumes"
-    smallVolSz="10G"
+    smallVolSz="5G"
     verySmallVolSz="1G"
 
     #worker 1
@@ -77,8 +77,8 @@ function staticVolumes() {
         qemu-img create "${path}/worker1-1.qcow2" 70G -f qcow2 -o preallocation=full
         qemu-img create "${path}/worker1-2.qcow2" 70G -f qcow2 -o preallocation=full
         #ledgers
-        qemu-img create "${path}/worker1-3.qcow2" 600G -f qcow2 -o preallocation=full
-        qemu-img create "${path}/worker1-4.qcow2" 600G -f qcow2 -o preallocation=full
+        qemu-img create "${path}/worker1-3.qcow2" 500G -f qcow2 -o preallocation=full
+        qemu-img create "${path}/worker1-4.qcow2" 500G -f qcow2 -o preallocation=full
         # small volumes
         qemu-img create "${path}/worker1-5.qcow2" ${smallVolSz} -f qcow2 -o preallocation=full
         qemu-img create "${path}/worker1-6.qcow2" ${smallVolSz} -f qcow2 -o preallocation=full
@@ -88,8 +88,8 @@ function staticVolumes() {
         qemu-img create "${path}/worker2-1.qcow2" 70G -f qcow2 -o preallocation=full
         qemu-img create "${path}/worker2-2.qcow2" 70G -f qcow2 -o preallocation=full
         #ledgers
-        qemu-img create "${path}/worker2-3.qcow2" 600G -f qcow2 -o preallocation=full
-        qemu-img create "${path}/worker2-4.qcow2" 600G -f qcow2 -o preallocation=full
+        qemu-img create "${path}/worker2-3.qcow2" 500G -f qcow2 -o preallocation=full
+        qemu-img create "${path}/worker2-4.qcow2" 500G -f qcow2 -o preallocation=full
         # small volumes
         qemu-img create "${path}/worker2-5.qcow2" ${smallVolSz} -f qcow2 -o preallocation=full
         qemu-img create "${path}/worker2-6.qcow2" ${smallVolSz} -f qcow2 -o preallocation=full
