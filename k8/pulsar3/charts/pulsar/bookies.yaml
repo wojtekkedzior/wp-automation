@@ -81,7 +81,7 @@ bookkeeper:
       memory: 4G
       cpu: 4
     limits:
-      memory: 12G
+      memory: 8G
       cpu: 4
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
