@@ -73,7 +73,7 @@ function k8() {
   time startWorker 1 192.168.122.11 > out-log-1 2>&1 &
   time startWorker 2 192.168.122.12 > out-log-2 2>&1 &
   time startWorker 3 192.168.122.13 > out-log-3 2>&1 &
-  # time startWorker 4 192.168.122.14 > out-log-4 2>&1 &
+  time startWorker 4 192.168.122.14 > out-log-4 2>&1 &
 
   # block on checking whether the first worker is up. All the workers should come up at around the same time.
   wait "${pids[@]}" && echo "All workers are up"
