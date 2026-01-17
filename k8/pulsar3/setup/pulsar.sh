@@ -4,7 +4,6 @@ pollInterval=10
 
 function pulsarMonitoring() {
     #install local volume provisioner and give it some time to start and identify the nodes' volumes
-    # kubectl create -f k8-cluster/local-volume-provisioner.generated.yaml
 
     helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --version=50.3.0 --values pulsar3/setup/prom-values.yaml || exit 1
 
@@ -32,6 +31,8 @@ function pulsar3Config() {
 
     sudo sed -i "/setenv GRAFANA_IP/c\\\tsetenv GRAFANA_IP $(kubectl get svc prometheus-grafana -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
     sudo sed -i "/setenv PROXY_IP/c\\\tsetenv PROXY_IP $(kubectl get svc primary-proxy -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
+
+    sudo sed -i "/setenv PROMETHEUS/c\\\tsetenv PROMETHEUS $(kubectl get svc prometheus-kube-prometheus-prometheus -o json | jq -r '.spec.clusterIP')" /etc/haproxy/haproxy.cfg
 
     sudo service haproxy restart
 
@@ -75,7 +76,7 @@ function singleCluster() {
 }
 
 function multiCluster() {
-    pulsar3 mc-
+    pulsar3
 
     # install a standalone version of zookeeper. This is known as the 'configurationStore' when it comes to working with geo-replication. Make sure to  change the client.port to something other than 2181 as that port is already used by the other zookeepers
     #helm repo add bitnami https://charts.bitnami.com/bitnami

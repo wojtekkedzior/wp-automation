@@ -134,6 +134,12 @@ menu/lambda.zip
 
 
 initout.txt
-out-*
-test.sh
-k8/test-2.sh
+# out-*
+
+k8/meta-data-worker*
+k8/user-data-worker*
+
+ip-update.sh
+github-actions-builder
+
+temp/
