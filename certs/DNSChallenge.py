@@ -109,9 +109,9 @@ if __name__ == "__main__":
 
     # The lookup with a .cz domain needs more time between challanges.
     if (domain[-3:] == ".cz") :
-        delay = 600
+        delay = 1200 # 20 mins
     else:
-        delay = 60
+        delay = 600 # 10 mins
 
     print("starting chellenge ", challenge, "for: ", domain)
     dnsChallenge = DNSChallenge(domain, challenge, delay)
