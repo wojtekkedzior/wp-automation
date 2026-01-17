@@ -132,10 +132,6 @@ dmypy.json
 menu/email
 menu/lambda.zip
 
-
-initout.txt
-# out-*
-
 k8/meta-data-worker*
 k8/user-data-worker*
 
