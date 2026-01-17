@@ -1,0 +1,27 @@
+apiVersion: v2
+appVersion: "3.19.0"
+description: A Helm chart to install ChaosCenter
+name: litmus
+version: 3.19.0
+kubeVersion: ">=1.16.0-0"
+home: https://litmuschaos.io
+sources:
+  - https://github.com/litmuschaos/litmus
+keywords:
+  - chaos-engineering
+  - resiliency
+  - kubernetes
+maintainers:
+  - name: imrajdas
+    email: raj.das@mayadata.io
+  - name: ispeakc0de
+    email: shubham.chaudhary@mayadata.io
+  - name: jasstkn
+    email: jasssstkn@yahoo.com
+icon: https://raw.githubusercontent.com/litmuschaos/icons/master/litmus.png
+
+# dependencies:
+#   - name: mongodb
+#     version: "16.5.26"
+#     repository: "https://charts.bitnami.com/bitnami"
+#     condition: mongodb.enabled

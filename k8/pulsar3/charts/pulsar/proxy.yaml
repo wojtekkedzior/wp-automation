@@ -22,7 +22,7 @@ proxy:
   # True includes annotation for statefulset that contains hash of corresponding configmap, which will cause pods to restart on configmap change
   restartPodsOnConfigMapChange: false
   # nodeSelector:
-    # cloud.google.com/gke-nodepool: default-pool
+  #   kubernetes.io/hostname: server-worker-1
   probe:
     liveness:
       enabled: true
@@ -60,11 +60,11 @@ proxy:
   waitBrokerTimeout: 120
   resources:
     requests:
-      memory: 4Gi
-      cpu: 1.5
+      memory: 12Gi
+      cpu: 4
     limits:
-      memory: 4Gi
-      cpu: 1.5
+      memory: 12Gi
+      cpu: 4
   # extraVolumes and extraVolumeMounts allows you to mount other volumes
   # Example Use Case: mount ssl certificates
   # extraVolumes:
@@ -93,7 +93,7 @@ proxy:
   ##
   configData:
     PULSAR_MEM: >
-      -Xms64m -Xmx1000m -XX:MaxDirectMemorySize=2900m
+      -Xms64m -Xmx1000m -XX:MaxDirectMemorySize=10000m
     PULSAR_GC: >
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=10
