@@ -64,8 +64,8 @@ EOF
 
     virt-install \
     --name ${hostname} \
-    --memory 16384 \
-    --vcpus 4 \
+    --memory 20000 \
+    --vcpus 6 \
     --cpu host \
     --disk path=/mnt/e1/${hostname}.qcow2,format=qcow2,bus=virtio \
     --disk path=/mnt/e1/worker-iso/${hostname}-seed.iso,device=cdrom \
@@ -79,7 +79,7 @@ EOF
     --import \
     --noautoconsole
 
-    sleep 10
+    # sleep 10
 }
 
 function startRemoteWorker() {
@@ -116,7 +116,7 @@ function createCluster() {
     ssh -tt "w@${controlPlane}" "sudo sudo systemctl restart containerd kubelet"
     ssh -tt "w@${controlPlane}" "sudo kubeadm init --pod-network-cidr=10.244.0.0/16 | tee initout.txt"
 
-    # wait for cluster intit
+    # wait for cluster init
     sleep 6
     ssh "w@${controlPlane}" "sudo cat /etc/kubernetes/admin.conf" > ~/.kube/config
     kubectl create -f cluster/tigera-operator.yaml
@@ -125,8 +125,8 @@ function createCluster() {
     sleep 6
     kubectl create -f cluster/tigera-install.yaml
 
-    ssh "w@${controlPlane}" "sudo cat initout.txt"  > initout.txt # no -tt to capture the output
-    join_cmd=$(grep -A 2 "kubeadm join" initout.txt | sed 's/\\//g' | tr '\n' ' ' | xargs)
+    ssh "w@${controlPlane}" "sudo cat initout.txt"  > temp/initout.txt # no -tt to capture the output
+    join_cmd=$(grep -A 2 "kubeadm join" temp/initout.txt | sed 's/\\//g' | tr '\n' ' ' | xargs)
 
     # sleep 5
 }
