@@ -30,8 +30,8 @@ broker:
     https: 8443
     pulsar: 6650
     pulsarssl: 6651
-  nodeSelector:
-    kubernetes.io/hostname: worker-3-large 
+  # nodeSelector:
+  #   kubernetes.io/hostname: worker-3-large 
   probe:
     liveness:
       enabled: true

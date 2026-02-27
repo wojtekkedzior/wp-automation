@@ -10,9 +10,8 @@ function generateDiskCommands() {
         disk="/dev/disk/by-id/virtio-${hostname}-$n"
         mountpoint="/mnt/fast-disks/disk$n"
 
-        echo "mkdir -p $mountpoint"
-        echo "mkdir -p $mountpoint && blkid $disk || mkfs.ext4 -F $disk"
-        echo "grep -q $mountpoint /etc/fstab || echo $disk $mountpoint ext4 defaults 0 0 >> /etc/fstab"
+        echo "mkdir -p $mountpoint && blkid $disk && mkfs.ext4 -F $disk"
+        echo "echo $disk $mountpoint ext4 defaults 0 0 | sudo tee -a /etc/fstab"
     done
 }
 
@@ -212,7 +211,7 @@ do
     litmus
     ;;
   pulsar-cleanup )
-    echo "cleaing up pulsar"
+    echo "cleaning up pulsar"
     #TODO add helm uninstall
     kubectl delete pvc --all
     ;;

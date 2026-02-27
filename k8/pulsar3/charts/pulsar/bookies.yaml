@@ -69,10 +69,10 @@ bookkeeper:
   topologySpreadConstraints: []
   annotations: {}
   tolerations: 
-  - key: "pulsar"
-    operator: "Equal"
-    value: "storage"
-    effect: "NoSchedule"
+  # - key: "pulsar"
+  #   operator: "Equal"
+  #   value: "storage"
+  #   effect: "NoSchedule"
   gracePeriod: 30
   ## Timeout for waiting for bookkeeper cluster metadata to be initialized before starting a bookie
   waitMetadataTimeout: 600
@@ -118,10 +118,6 @@ bookkeeper:
           size: 65G
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/journal1
-        - name: journal2
-          size: 65G
-          storageClassName: fast-disks
-          mountPath: /pulsar/data/bookkeeper/journal2
     ledgers: 
       name: ledgers
       size: 9G
@@ -137,10 +133,10 @@ bookkeeper:
           size: 190G
           storageClassName: fast-disks
           mountPath: /pulsar/data/bookkeeper/ledgers1
-        - name: ledgers2
-          size: 190G
-          storageClassName: fast-disks
-          mountPath: /pulsar/data/bookkeeper/ledgers2
+        # - name: ledgers2
+        #   size: 190G
+        #   storageClassName: fast-disks
+        #   mountPath: /pulsar/data/bookkeeper/ledgers2
         # - name: ledgers1
         #   size: 470G
         #   storageClassName: fast-disks

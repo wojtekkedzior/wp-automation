@@ -51,24 +51,22 @@ function nginx() {
     kubectl apply -f nginx/nginx.yaml -n litmus
 }
 
-function litmus() {
-    controlPlane=192.168.1.34
+function litmus() {    
+    # Randomly selected worker 1 to load litmus config
+    workerIp=$(kubectl get nodes --field-selector metadata.name=worker-1-135 -o json | jq -r '.items[0].status.addresses[0].address')
+
+    # controlPlane=192.168.1.34
 
     kubectl create ns litmus
 
     # installing from local because the mongodb chart uses an initContainer from an archive repo which has been removed. I update the initContainer to use a new image.
-    helm install chaos ./litmus/chaos/litmus --namespace=litmus --set portal.frontend.service.type=NodePort
+    helm install chaos ./litmus/chaos/litmus --namespace=litmus --set portal.frontend.service.type=NodePort --set portal.frontend.service.nodePort=30004
     
     # but we can install the kubernetes-chaos chart from the helm repo
     helm repo add litmuschaos https://litmuschaos.github.io/litmus-helm/
     helm install kube-chaos litmuschaos/kubernetes-chaos --namespace=litmus  --version 3.19.0
 
     kubectl -n litmus apply -f litmus/chaos/chaos-rbac.yaml
-
-    # for the the service to get an IP
-    sleep 3
-    ssh -tt "w@${controlPlane}" "sudo sed -i \"/setenv LITMUS_UI_IP/c\\\  setenv LITMUS_UI_IP $(kubectl -n litmus get svc chaos-litmus-frontend-service -o json | jq -r '.spec.clusterIP')\" /etc/haproxy/haproxy.cfg"
-    ssh -tt "w@${controlPlane}" "sudo service haproxy restart"
 
     password="Litmus1!"
     ct="Content-Type: application/json"
@@ -78,17 +76,17 @@ function litmus() {
     sleep 60
 
     # 1.
-    bearerToken=$(curl -s -X POST http://${controlPlane}:15000/auth/login -H "${ct}" -H "${a}" -d '{"username": "admin", "password": "litmus"}' | jq -r '.accessToken')
+    bearerToken=$(curl -s -X POST http://${workerIp}:30004/auth/login -H "${ct}" -H "${a}" -d '{"username": "admin", "password": "litmus"}' | jq -r '.accessToken')
     echo "initial login done. Bearer: ${bearerToken}"
 
     # 2.
-    curl -s -X POST http://${controlPlane}:15000/auth/update/password -H "${ct}" -H "${a}" -d '{"username": "admin", "oldPassword": "litmus", "newPassword": "'${password}'"}' -H "Authorization: Bearer ${bearerToken}"
+    curl -s -X POST http://${workerIp}:30004/auth/update/password -H "${ct}" -H "${a}" -d '{"username": "admin", "oldPassword": "litmus", "newPassword": "'${password}'"}' -H "Authorization: Bearer ${bearerToken}"
 
     # 3. 
     rm ~/.litmusconfig
 
     #install from https://github.com/litmuschaos/litmusctl#installation
-    litmusctl config set-account -n --endpoint "http://${controlPlane}:15000" --password "${password}" --username "admin"
+    litmusctl config set-account -n --endpoint "http://${workerIp}:30004" --password "${password}" --username "admin"
 
     # 4.
     litmusctl create project --name test-project

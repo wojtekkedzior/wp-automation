@@ -97,3 +97,14 @@ sudo chown w:w /home/w/.kube/config
 sudo visudo
 w ALL=(ALL) NOPASSWD:ALL
 
+
+
+# It's super important to sanitise the baseimage after booting into it make changes
+sudo truncate -s 0 /etc/machine-id
+sudo rm -f /var/lib/dbus/machine-id
+sudo rm -f /etc/ssh/ssh_host_*
+sudo journalctl --rotate
+sudo journalctl --vacuum-time=1s
+sudo rm -rf /var/log/journal/*
+history -c
+sudo rm -f /root/.bash_history

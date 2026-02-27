@@ -125,7 +125,7 @@ proxy:
       https: 8443
   service:
     annotations: {}
-    type: ClusterIP
+    type: NodePort
     ## Optional. Leave it blank to get next available random IP.
     loadBalancerIP: ""
     ## Set external traffic policy to: "Local" to preserve source IP on providers supporting it.
@@ -137,9 +137,9 @@ proxy:
     # Optional. When setting proxy.service.type is set to NodePort, nodePorts allows to choose the port that will be open on each node to proxy requests to each destination proxy service.
     # Ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
     nodePorts:
-      http: ""
+      http: "30001"
       https: ""
-      pulsar: ""
+      pulsar: "30002"
       pulsarssl: ""
   ## Proxy ingress
   ## templates/proxy-ingress.yaml

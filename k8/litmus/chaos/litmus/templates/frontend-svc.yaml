@@ -16,5 +16,6 @@ spec:
     - name: http
       port: {{ .Values.portal.frontend.service.port }}
       targetPort: {{ .Values.portal.frontend.service.targetPort }}
+      nodePort: {{ .Values.portal.frontend.service.nodePort }}
   selector:
     app.kubernetes.io/component: {{ include "litmus-portal.name" . }}-frontend
