@@ -3,9 +3,8 @@
 source pulsar3/setup/pulsar.sh
 source third-party-tools.sh
 
-pids=()
-
-function generateDiskCommands() {
+# this will create mount points for up to 8 disks which are provided to virt-install.
+function generateDiskMountCommands() {
     for n in $(seq 1 8); do
         disk="/dev/disk/by-id/virtio-${hostname}-$n"
         mountpoint="/mnt/fast-disks/disk$n"
@@ -15,9 +14,7 @@ function generateDiskCommands() {
     done
 }
 
-function createWorker() {
-    pids+=($BASHPID)
-
+function createVmData() {
     hostname=$1
 
     cat > temp/user-data-${hostname}.yaml <<EOF
@@ -39,7 +36,7 @@ write_files:
 - path: /usr/local/bin/mount-fast-disks.sh
   permissions: '0755'
   content: |
-$(generateDiskCommands "$hostname" | sed 's/^/    /')
+$(generateDiskMountCommands "$hostname" | sed 's/^/    /')
 
 runcmd:
   - swapoff -a
@@ -53,13 +50,23 @@ EOF
 instance-id: ${hostname}
 local-hostname: ${hostname}
 EOF
-    sudo qemu-img create \
-    -f qcow2 \
-    -F qcow2 \
-    -b /mnt/e1/worker-base.qcow2 \
-    /mnt/e1/${hostname}.qcow2
+}
 
-    sudo cloud-localds /mnt/e1/worker-iso/${hostname}-seed.iso temp/user-data-${hostname}.yaml temp/meta-data-${hostname}.yaml
+function createWorker() {
+    hostname=$1
+
+    createVmData $hostname
+
+    sudo qemu-img create \
+         -f qcow2 \
+         -F qcow2 \
+         -b /mnt/e1/worker-base.qcow2 \
+         /mnt/e1/${hostname}.qcow2
+
+    sudo cloud-localds \
+         /mnt/e1/worker-iso/${hostname}-seed.iso \
+         temp/user-data-${hostname}.yaml \
+         temp/meta-data-${hostname}.yaml
 
     virt-install \
     --name ${hostname} \
@@ -77,24 +84,40 @@ EOF
     --console pty,target_type=serial \
     --import \
     --noautoconsole
-
-    # sleep 10
 }
 
-function startRemoteWorker() {
-    pids+=($BASHPID)
-    workerAddress=$1
+function createRemoteWorker() {
+  hostname=$1
 
-    echo w | ssh -tt "w@${workerAddress}" "sudo swapoff -a && sudo kubeadm reset -f && sudo rm -R /etc/cni/net.d"
-    sleep 10
-    echo w | ssh -tt "w@${workerAddress}" "sudo ${join_cmd}"
-    sleep 10
-    echo w | ssh -tt "w@${workerAddress}" "sudo umount -f /mnt/fast-disks/disk1 /mnt/fast-disks/disk2"
-    echo w | ssh -tt "w@${workerAddress}" "sudo mkfs.ext4 -F /dev/sda && sudo mount /dev/sda /mnt/fast-disks/disk1"
-    echo w | ssh -tt "w@${workerAddress}" "sudo mkfs.ext4 -F /dev/sdb && sudo mount /dev/sdb /mnt/fast-disks/disk2"
+  createVmData $hostname
 
-    # since these workers are created using this .iso image, then their cloud-init scripts will never run. Hence, we need to restart the containerd service
-    echo w | ssh -tt "w@${workerAddress}" "sudo systemctl restart containerd"
+  scp temp/user-data-${hostname}.yaml wojtek@192.168.1.17:/mnt/workers
+  scp temp/meta-data-${hostname}.yaml wojtek@192.168.1.17:/mnt/workers
+
+  echo w | ssh -tt "wojtek@192.168.1.17" "sudo qemu-img create -f qcow2 -F qcow2 -b /mnt/storage/wojtek/vms/worker-base.qcow2 /mnt/workers/${hostname}.qcow2"
+  echo w | ssh -tt "wojtek@192.168.1.17" "sudo cloud-localds /mnt/workers/worker-iso/${hostname}-seed.iso /mnt/workers/user-data-${hostname}.yaml /mnt/workers/meta-data-${hostname}.yaml"
+
+  disk_args=""
+  for n in $(seq 1 2); do
+    disk_args+=" --disk path=/mnt/workers/${hostname}-${n}.qcow2,format=qcow2,bus=virtio,serial=${hostname}-${n}"
+  done
+
+  # echo w | ssh -tt "wojtek@192.168.1.17" "sudo virt-install --name ${hostname} --memory 10000 --vcpus 5 --cpu host --disk path=/mnt/workers/${hostname}.qcow2,format=qcow2,bus=virtio --disk path=/mnt/workers/worker-iso/${hostname}-seed.iso,device=cdrom ${disk_args} --network bridge=br0,model=virtio --os-variant ubuntu24.04 --graphics none --console pty,target_type=serial --import --noautoconsole"
+
+  cmd="sudo virt-install \
+      --name ${hostname} \
+      --memory 10000 \
+      --vcpus 5 \
+      --cpu host \
+      --disk path=/mnt/workers/${hostname}.qcow2,format=qcow2,bus=virtio \
+      --disk path=/mnt/workers/worker-iso/${hostname}-seed.iso,device=cdrom \
+      ${disk_args} \
+      --network bridge=br0,model=virtio --os-variant ubuntu24.04 \
+      --graphics none \
+      --console pty,target_type=serial \
+      --import --noautoconsole"
+
+  echo w | ssh -tt "wojtek@192.168.1.17" "$cmd"
 }
 
 function cleanupClusterWorkers() {
@@ -104,6 +127,9 @@ function cleanupClusterWorkers() {
         echo "worker-$n"
         virsh destroy "worker-$n"
         virsh undefine "worker-$n"
+
+        echo w | ssh -tt "wojtek@192.168.1.17" "sudo virsh destroy remote-worker-$n"
+        echo w | ssh -tt "wojtek@192.168.1.17" "sudo virsh undefine remote-worker-$n"
     done
 }
 
@@ -126,28 +152,10 @@ function createCluster() {
 
     ssh "w@${controlPlane}" "sudo cat initout.txt"  > temp/initout.txt # no -tt to capture the output
     join_cmd=$(grep -A 2 "kubeadm join" temp/initout.txt | sed 's/\\//g' | tr '\n' ' ' | xargs)
-
-    # sleep 5
-}
-
-# sometimes I need to attach very large volumes to a handful of workers. Here I can do that without making the automation way to complicated
-function attachExtraStorage() {
-    echo "attaching extra storage"
-
-#   index=1
-#   echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks"
-#   for disk in {a..k}
-#   do
-#     echo w | ssh -tt "w@${host}" "sudo mkdir /mnt/fast-disks/disk${index}"
-#     echo w | ssh -tt "w@${host}" "sudo umount -f /mnt/fast-disks/disk${index}"
-#     echo w | ssh -tt "w@${host}" "yes | sudo mkfs.ext4 /dev/sd${disk} && sudo mount /dev/sd${disk} /mnt/fast-disks/disk${index}"
-#     (( index++ ))
-#   done
 }
 
 function k8() {
     workers=( "1-135" "2-135" "3-135" "4-135" )
-
     cleanupClusterWorkers "${workers[@]}"
 
     createCluster
@@ -155,16 +163,12 @@ function k8() {
     sudo rm /mnt/e1/worker-iso/worker-*-seed.iso temp/user-data-worker*.yaml temp/meta-data*.yaml
 
     for n in "${workers[@]}"; do
-        createWorker "worker-$n" &
+        createWorker "worker-$n" >> out-log-$n 2>&1 &
+        createRemoteWorker "remote-worker-$n" >> out-log-remote-$n 2>&1 &
     done
 
-    # not creating the remote workers on the fly as the server is quite slow. Reusing VMs created from the same base image as the VMs running on localhost.
-    time startRemoteWorker 192.168.1.131 >> temp/out-log-1 2>&1 &
-    time startRemoteWorker 192.168.1.132 >> temp/out-log-2 2>&1 &
-
-    wait "${pids[@]}" && echo "All workers are up"
-
-    attachExtraStorage
+    # there is no point in waiting for PIDs now that the VMs are getting created on the fly. This is because the scripts execute and return quickly, while the VMs start in the background.
+    sleep 30
 
     kubectl create -f cluster/local-volume-provisioner.generated.yaml
 

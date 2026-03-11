@@ -139,3 +139,4 @@ ip-update.sh
 github-actions-builder
 
 temp/
+k8/out-log-*

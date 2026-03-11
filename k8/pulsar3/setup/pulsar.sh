@@ -47,10 +47,14 @@ function singleCluster() {
         gr=$?
     done
 
+    echo "grafana is ready. proceeding to import dashboards"
+
     # now upload all of our dashboards
     for filename in dashboards/ds/*.json; do
         curl -X POST -u ${creds} -H "Content-Type: application/json" -d @${filename} http://${workerIp}:30003/api/dashboards/import
     done;
+
+    echo "dashboards imported"
 
     while [ "$(curl -s http://${workerIp}:30001/status.html)" != "OK" ];
     do
